@@ -2,12 +2,12 @@
 ---
 dependency
 
--[x] Retrofit
+- [x] Retrofit
 
--[x] ViewModel
+- [x] ViewModel
 
--[x] Coroutines
+- [x] Coroutines
 
--[x] Hilt
+- [x] Hilt
 
 onprogress 🧙‍♂️
