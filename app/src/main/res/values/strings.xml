@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Masak Apa</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="dificulty">Tingkat Kesulitan</string>
+    <string name="desc_text">Deskripsi</string>
+    <string name="ingredients_text">Ingredients</string>
+    <string name="cara_masak_text">Cara Masak</string>
+</resources>
