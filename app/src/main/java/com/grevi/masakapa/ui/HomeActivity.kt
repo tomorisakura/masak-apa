@@ -1,6 +1,7 @@
 package com.grevi.masakapa.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatDelegate
@@ -38,15 +39,20 @@ class HomeActivity : BaseActivity() {
         when(item.itemId) {
             R.id.dayNight -> {
                 //Toast.makeText(this, "state : ${state}", Toast.LENGTH_SHORT).show()
-                when(state) {
-                    true -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                    false -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                state = when(state) {
+                    true -> {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                        false
+                    }
+                    else -> {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                        true
+                    }
                 }
-                state = true
             }
         }
-        return true
+        //return true
+        return super.onOptionsItemSelected(item)
     }
 
 }

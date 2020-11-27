@@ -24,7 +24,7 @@ screen
 
 - [x] Detail recipes
 
-- [ ] Search recipes
+- [x] Search recipes
 
 - [ ] Category recipes
 

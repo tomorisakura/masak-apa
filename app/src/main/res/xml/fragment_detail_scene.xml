@@ -20,6 +20,14 @@
                 motion:motionTarget="@+id/imgDetail"
                 motion:framePosition="70"
                 android:scaleY="1.2" />
+            <KeyAttribute
+                motion:motionTarget="@+id/floatButton"
+                motion:framePosition="50"
+                android:scaleX="1.2" />
+            <KeyAttribute
+                motion:motionTarget="@+id/floatButton"
+                motion:framePosition="100"
+                android:alpha="0" />
         </KeyFrameSet>
         <OnSwipe
             motion:touchAnchorId="@+id/imgDetail"
@@ -39,5 +47,11 @@
             android:layout_height="1dp"
             android:layout_width="match_parent"
             android:id="@+id/imgDetail" />
+        <Constraint
+            android:id="@+id/floatButton"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            motion:layout_constraintBottom_toBottomOf="parent" />
     </ConstraintSet>
 </MotionScene>

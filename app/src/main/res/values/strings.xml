@@ -8,4 +8,7 @@
     <string name="cara_masak_text">Cara Masak</string>
     <string name="by_text">by</string>
     <string name="search_hint_text">Mo masak apa ya hari ini..</string>
+    <string name="failed_found_text">Tidak dapat menemukan resep </string>
+    <string name="categorys_hint_label">Resep Untuk Kamu ❤</string>
+    <string name="search_success_text">Menampilkan hasil pencarian</string>
 </resources>

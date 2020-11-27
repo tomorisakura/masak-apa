@@ -18,19 +18,6 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"/>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/app_name"
-            android:layout_margin="10dp"
-            android:elevation="1dp"
-            android:backgroundTint="?colorSurface"
-            app:liftOnScroll="true">
-
-
-        </com.google.android.material.textfield.TextInputEditText>
-
-
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.fragment.app.FragmentContainerView

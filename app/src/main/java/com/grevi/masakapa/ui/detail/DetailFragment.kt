@@ -14,6 +14,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import com.grevi.masakapa.R
 import com.grevi.masakapa.ui.adapter.IngredientsAdapter
 import com.grevi.masakapa.ui.adapter.StepAdapte
@@ -34,8 +35,6 @@ class DetailFragment : Fragment() {
     private lateinit var ingredientsAdapter : IngredientsAdapter
     private lateinit var stepAdapte: StepAdapte
 
-    private var expanded : Boolean = false
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,7 +51,7 @@ class DetailFragment : Fragment() {
 
     private fun prepareView(view: View) {
         //Log.v("ARGS", args.key)
-        recipesViewModel.getDetail(args.key).observe(viewLifecycleOwner, Observer {results ->
+        recipesViewModel.getDetail(args.key!!).observe(viewLifecycleOwner, Observer {results ->
             when(results.status) {
                 Resource.Status.ERROR -> toast(view.context, results.msg.toString())
                 Resource.Status.LOADING -> prepareViewLayout(false)
@@ -73,6 +72,10 @@ class DetailFragment : Fragment() {
                 }
             }
         })
+
+        floatButton.setOnClickListener {
+            Snackbar.make(view, "clicked", Snackbar.LENGTH_SHORT).show()
+        }
     }
 
     private fun prepareRV(stringList: MutableList<String>, stepList : MutableList<String>) {
@@ -90,6 +93,7 @@ class DetailFragment : Fragment() {
     private fun prepareViewLayout(state : Boolean) {
         when(state) {
             false -> {
+                floatButton.animate().alpha(0f)
                 textChefLayout.animate().alpha(0f)
                 cardLayout.animate().alpha(0f)
                 textIngredientLabel.animate().alpha(0f)
@@ -98,6 +102,7 @@ class DetailFragment : Fragment() {
             }
 
             true -> {
+                floatButton.animate().alpha(1f).duration = 2000L
                 textChefLayout.animate().alpha(1f).duration = 1000L
                 cardLayout.animate().alpha(1f).duration = 1000L
                 textIngredientLabel.animate().alpha(1f)

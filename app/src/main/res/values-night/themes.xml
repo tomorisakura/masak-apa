@@ -6,8 +6,8 @@
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
+        <item name="colorSecondary">@color/forestGreen</item>
+        <item name="colorSecondaryVariant">@color/forestGreen</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">@color/black</item>
@@ -18,13 +18,13 @@
     </style>
 
     <style name="rv_style" parent="Theme.MaterialComponents.DayNight">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/silver</item>
         <item name="android:padding">8dp</item>
         <item name="android:textSize">12sp</item>
     </style>
 
     <style name="title_rv" parent="Theme.MaterialComponents.DayNight">
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/silver</item>
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:focusable">true</item>
@@ -62,10 +62,9 @@
     </style>
 
     <style name="textMini_style" parent="Theme.MaterialComponents.DayNight">
-        <item name="android:textColor">@color/forestGreen</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textSize">13sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:layout_marginTop">10dp</item>
     </style>
 
 </resources>
