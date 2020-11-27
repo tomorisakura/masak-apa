@@ -1,5 +1,6 @@
 package com.grevi.masakapa.ui.recipes
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,9 +18,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.grevi.masakapa.R
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.RecipesAdapter
+import com.grevi.masakapa.ui.search.SearchActivity
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
 import com.grevi.masakapa.util.Listenear
 import com.grevi.masakapa.util.Resource.Status
+import com.grevi.masakapa.util.ResponseException
+import com.grevi.masakapa.util.toast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_recipes.*
 
@@ -40,37 +44,36 @@ class RecipesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //recipesViewModel = ViewModelProvider(this).get(RecipesViewModel::class.java)
         navController = Navigation.findNavController(view)
         recipesAdapter = RecipesAdapter()
-        prepareView()
-        swipeRefresh()
+        prepareView(view)
+        swipeRefresh(view)
     }
 
-    private fun prepareView() {
+    private fun prepareView(view: View) {
 
         rv_recipes_list.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         rv_recipes_list.adapter = recipesAdapter
         refresh_layout.isRefreshing = true
 
+        rv_recipes_list.animate().alpha(0f).duration = 1000L
+
         try {
             recipesViewModel.recipes.observe(viewLifecycleOwner, Observer {response ->
+                Log.v("RESPONSE", response.status.name)
                 when(response.status) {
+                    Status.ERROR -> Toast.makeText(this.context, response.msg, Toast.LENGTH_SHORT).show()
+                    Status.LOADING -> {
+                        toast(view.context, response.msg.toString())
+                        refresh_layout.isRefreshing = true
+                    }
                     Status.SUCCESS -> {
                         response.data?.results?.let {
                             recipesAdapter.addItem(it)
                             recipesAdapter.notifyDataSetChanged()
                         }
-
+                        rv_recipes_list.animate().alpha(1f).duration = 1000L
                         refresh_layout.isRefreshing = false
-                    }
-
-                    Status.LOADING -> {
-                        refresh_layout.isRefreshing = true
-                    }
-
-                    Status.ERROR -> {
-                        Toast.makeText(this.context, response.msg, Toast.LENGTH_SHORT).show()
                     }
                 }
 
@@ -81,8 +84,13 @@ class RecipesFragment : Fragment() {
 
                 })
             })
-        } catch (e : Exception) {
-            Log.e("P_VIEW", e.toString())
+        } catch (e : ResponseException) {
+            Log.v("NO_INET", e.message.toString())
+        }
+
+        search_card.setOnClickListener {
+            val intent = Intent(view.context, SearchActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -91,10 +99,10 @@ class RecipesFragment : Fragment() {
         navController.navigate(action)
     }
 
-    private fun swipeRefresh() {
+    private fun swipeRefresh(view: View) {
         refresh_layout.setOnRefreshListener {
             Handler(Looper.getMainLooper()).postDelayed({
-                prepareView()
+                prepareView(view)
             }, 2000L)
         }
     }

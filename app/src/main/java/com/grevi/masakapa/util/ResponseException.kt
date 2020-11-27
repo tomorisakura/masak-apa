@@ -2,7 +2,9 @@ package com.grevi.masakapa.util
 
 import java.io.IOException
 
-open class ResponseException(private val msg : String) : IOException(msg) {
+open class ResponseException() : IOException() {
     override val message: String?
-        get() = msg
+        get() = "No Internet Connection"
 }
+
+class ResultException(msg : String) : IOException(msg)

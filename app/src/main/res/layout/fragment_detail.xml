@@ -1,137 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:orientation="vertical"
+    android:id="@+id/mainDetail"
+    app:layoutDescription="@xml/fragment_detail_scene"
     tools:context=".ui.detail.DetailFragment">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <ImageView
+        android:id="@+id/imgDetail"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="250dp"
+        android:contentDescription="@string/app_name"
+        android:scaleType="fitXY"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/placeholder" />
 
-        <!-- TODO: Update blank fragment layout -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgDetail">
 
-        <ImageView
-            android:id="@+id/imgDetail"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearLayoutCompat4"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:contentDescription="@string/app_name"
-            android:scaleType="fitXY"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/placeholder" />
-
-        <TextView
-            android:id="@+id/recipeTitleText"
-            style="@style/title_head_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imgDetail"
-            tools:text="Resep Masakan Padang" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                style="@style/text_style"
-                android:text="by"/>
-
-            <TextView
-                android:id="@+id/chefText"
-                style="@style/text_style"
+                android:id="@+id/recipeTitleText"
+                style="@style/title_head_style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/recipeTitleText"
-                tools:text="Chef Grevi" />
+                app:layout_constraintTop_toBottomOf="@+id/imgDetail"
+                tools:text="Resep Masakan Padang" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textChefLayout"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/text_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="@string/by_text" />
+
+                <TextView
+                    android:id="@+id/chefText"
+                    style="@style/text_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="10dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/recipeTitleText"
+                    tools:text="Chef Grevi" />
+
+                <TextView
+                    android:id="@+id/publishedText"
+                    style="@style/text_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toEndOf="@+id/chefText"
+                    app:layout_constraintTop_toBottomOf="@+id/recipeTitleText"
+                    tools:text="Januari 12, 2019" />
+
+            </LinearLayout>
+
+            <include android:id="@+id/cardLayout" layout="@layout/item_card" />
+
+            <!--        <TextView-->
+            <!--            android:layout_width="wrap_content"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            style="@style/textMiniHead_style"-->
+            <!--            android:layout_marginTop="40dp"-->
+            <!--            android:layout_marginStart="10dp"-->
+            <!--            android:layout_marginEnd="10dp"-->
+            <!--            android:text="@string/desc_text"/>-->
+
+            <!--        <TextView-->
+            <!--            android:id="@+id/descText"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            style="@style/desc_style"-->
+            <!--            android:lineSpacingExtra="12sp"-->
+            <!--            android:layout_marginTop="20dp"-->
+            <!--            android:layout_marginStart="10dp"-->
+            <!--            android:layout_marginEnd="10dp"-->
+            <!--            tools:text="desc"/>-->
 
             <TextView
-                android:id="@+id/publishedText"
-                style="@style/text_style"
+                android:id="@+id/textIngredientLabel"
+                style="@style/textMiniHead_style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                app:layout_constraintStart_toEndOf="@+id/chefText"
-                app:layout_constraintTop_toBottomOf="@+id/recipeTitleText"
-                tools:text="Januari 12, 2019" />
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="10dp"
+                android:text="@string/ingredients_text" />
 
-        </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_ingredients"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="10dp"
+                tools:listitem="@layout/lists_ingredients" />
 
-        <include layout="@layout/item_card"/>
+            <TextView
+                android:id="@+id/textStepLabel"
+                style="@style/textMiniHead_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="10dp"
+                android:text="@string/cara_masak_text" />
 
-<!--        <TextView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            style="@style/textMiniHead_style"-->
-<!--            android:layout_marginTop="40dp"-->
-<!--            android:layout_marginStart="10dp"-->
-<!--            android:layout_marginEnd="10dp"-->
-<!--            android:text="@string/desc_text"/>-->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_step"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="10dp"
+                tools:listitem="@layout/lists_ingredients" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/descText"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            style="@style/desc_style"-->
-<!--            android:lineSpacingExtra="12sp"-->
-<!--            android:layout_marginTop="20dp"-->
-<!--            android:layout_marginStart="10dp"-->
-<!--            android:layout_marginEnd="10dp"-->
-<!--            tools:text="desc"/>-->
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/textMiniHead_style"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="30dp"
-            android:text="@string/ingredients_text"/>
+    </androidx.core.widget.NestedScrollView>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_ingredients"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            tools:listitem="@layout/lists_ingredients"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/textMiniHead_style"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="30dp"
-            android:text="@string/cara_masak_text"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_step"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            tools:listitem="@layout/lists_ingredients"/>
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
-
-</androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.motion.widget.MotionLayout>

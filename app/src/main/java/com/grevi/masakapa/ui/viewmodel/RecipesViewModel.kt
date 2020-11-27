@@ -1,8 +1,6 @@
 package com.grevi.masakapa.ui.viewmodel
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +9,8 @@ import com.grevi.masakapa.network.response.RecipesResponse
 import com.grevi.masakapa.repos.Remote
 import com.grevi.masakapa.util.Resource
 import com.grevi.masakapa.util.ResponseException
+import com.grevi.masakapa.util.ResultException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class RecipesViewModel @ViewModelInject constructor(private val remote: Remote) : ViewModel() {
@@ -29,27 +29,27 @@ class RecipesViewModel @ViewModelInject constructor(private val remote: Remote) 
         viewModelScope.launch {
             val data = remote.getRecipes()
             try {
-                _recipesData.postValue(Resource.loading(null, "Loading"))
-                data?.let {
-                    _recipesData.postValue(Resource.success(it))
-                }
-            } catch (e : ResponseException) {
+                _recipeDetail.postValue(Resource.loading(null, "Load"))
+                _recipesData.postValue(Resource.success(data))
+            } catch (e : ResultException) {
                 _recipesData.postValue(Resource.error(null, e.message))
-                Log.e("INET", e.message.toString())
+            } catch (e : ResponseException) {
+                _recipeDetail.postValue(Resource.error(null, e.message))
             }
         }
     }
 
-    fun getDetail(key : String) : LiveData<Resource<DetailResponse>> {
+    fun getDetail(key : String) : MutableLiveData<Resource<DetailResponse>> {
         viewModelScope.launch {
+            delay(1000L)
             val data = remote.getDetailRecipes(key)
             try {
                 _recipeDetail.postValue(Resource.loading(null, "Load"))
-                data?.let {
-                    _recipeDetail.postValue(Resource.success(data, null))
-                }
+                _recipeDetail.postValue(Resource.success(data))
+            } catch (e : ResultException) {
+                _recipeDetail.postValue(Resource.error(null, e.message))
             } catch (e : ResponseException) {
-                _recipeDetail.postValue(Resource.error(data, e.message))
+                _recipeDetail.postValue(Resource.error(null, e.message))
             }
         }
 

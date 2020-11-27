@@ -1,6 +1,8 @@
 package com.grevi.masakapa.ui.detail
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,9 +18,13 @@ import com.grevi.masakapa.R
 import com.grevi.masakapa.ui.adapter.IngredientsAdapter
 import com.grevi.masakapa.ui.adapter.StepAdapte
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
+import com.grevi.masakapa.util.Resource
+import com.grevi.masakapa.util.toast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_detail.*
 import kotlinx.android.synthetic.main.item_card.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class DetailFragment : Fragment() {
@@ -40,24 +46,31 @@ class DetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        prepareView()
+        prepareViewLayout(false)
+        prepareView(view)
     }
 
-    private fun prepareView() {
-        //Log.v("ARGS", args.key
-
-        Glide.with(this).load(args.thumb).placeholder(R.drawable.placeholder).into(imgDetail)
+    private fun prepareView(view: View) {
+        //Log.v("ARGS", args.key)
         recipesViewModel.getDetail(args.key).observe(viewLifecycleOwner, Observer {results ->
-            results.data?.results?.let {
-                recipeTitleText.text = it.name
-                textDiffItem.text = it.dificulty
-                textPortionItems.text = it.servings
-                textTimesItem.text = it.times
-                chefText.text = it.author.author
-                publishedText.text = it.author.published
-                //descText.text = it.desc
-                prepareRV(it.ingredients, it.step)
-                println(it.ingredients)
+            when(results.status) {
+                Resource.Status.ERROR -> toast(view.context, results.msg.toString())
+                Resource.Status.LOADING -> prepareViewLayout(false)
+                Resource.Status.SUCCESS -> {
+                    Glide.with(view).load(args.thumb).placeholder(R.drawable.placeholder).into(imgDetail)
+                    results.data?.results?.let {
+                        recipeTitleText.text = it.name
+                        textDiffItem.text = it.dificulty
+                        textPortionItems.text = it.servings
+                        textTimesItem.text = it.times
+                        chefText.text = it.author.author
+                        publishedText.text = it.author.published
+                        //descText.text = it.desc
+                        prepareRV(it.ingredients, it.step)
+                        println(it.ingredients)
+                    }
+                    prepareViewLayout(true)
+                }
             }
         })
     }
@@ -72,5 +85,25 @@ class DetailFragment : Fragment() {
         rv_step.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         rv_step.adapter = stepAdapte
         stepAdapte.addList(stepList)
+    }
+
+    private fun prepareViewLayout(state : Boolean) {
+        when(state) {
+            false -> {
+                textChefLayout.animate().alpha(0f)
+                cardLayout.animate().alpha(0f)
+                textIngredientLabel.animate().alpha(0f)
+                textStepLabel.animate().alpha(0f)
+                recipeTitleText.animate().alpha(0f)
+            }
+
+            true -> {
+                textChefLayout.animate().alpha(1f).duration = 1000L
+                cardLayout.animate().alpha(1f).duration = 1000L
+                textIngredientLabel.animate().alpha(1f)
+                textStepLabel.animate().alpha(1f)
+                recipeTitleText.animate().alpha(1f)
+            }
+        }
     }
 }

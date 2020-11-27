@@ -82,4 +82,6 @@ dependencies {
     //swipe refresh
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'com.github.florent37:shapeofview:1.4.7'
+
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0-alpha1'
 }

@@ -4,10 +4,8 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
-import android.widget.Toast
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.Interceptor
-import okhttp3.Request
 import okhttp3.Response
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -15,7 +13,7 @@ import javax.inject.Singleton
 @Singleton
 class NetworkConfig @Inject constructor(@ApplicationContext private val context: Context) : Interceptor {
 
-    fun isNetworkConnected() :Boolean {
+    private fun isNetworkConnected() :Boolean {
         var result = false
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
@@ -46,11 +44,11 @@ class NetworkConfig @Inject constructor(@ApplicationContext private val context:
 
     override fun intercept(chain: Interceptor.Chain): Response {
         if (!isNetworkConnected()) {
-            throw ResponseException("No Inet Connection")
+            throw ResponseException()
         }
 
-        val builder = chain.request().newBuilder()
-        return chain.proceed(builder.build())
+        val builder = chain.request()
+        return chain.proceed(builder)
     }
 
 }
