@@ -28,8 +28,4 @@ screen
 
 - [x] Category recipes
 
-issue 😪
-
-- [ ] swipe refresh
-
-onprogress 🧙‍♂️
+status onprogress 🧙‍♂️

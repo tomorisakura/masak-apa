@@ -1,11 +1,14 @@
 package com.grevi.masakapa.ui.search
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
@@ -51,11 +54,34 @@ class SearchFragment : Fragment() {
         searchAdapter = SearchAdapter()
         prepareCategory(view)
         snapLayout.animate().alpha(1f)
-        textInputSearch.setOnClickListener {
-            val ed = textInputSearch.editableText
-            //Log.v("SEARCH_RESULT", ed.toString())
-            snapLayout.animate().alpha(0f)
-            prepareRV(query = ed.toString(), view = view)
+        showSoftKey(textInputSearch, true)
+        textInputSearch.setOnKeyListener { v, keyCode, event ->
+            val ed = textInputSearch.editableText.toString()
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                Log.v("PRESSED", ed)
+                prepareRV(query = ed, view = view)
+                showSoftKey(v, false)
+                return@setOnKeyListener true
+            }
+            false
+        }
+    }
+
+    private fun showSoftKey(view: View, state : Boolean) {
+        when(state) {
+            true -> {
+                view.requestFocus().run {
+                    val input = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    input.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+                }
+            }
+
+            false -> {
+                view.requestFocus().run {
+                    val input = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    input.hideSoftInputFromWindow(view.windowToken, 0)
+                }
+            }
         }
     }
 
