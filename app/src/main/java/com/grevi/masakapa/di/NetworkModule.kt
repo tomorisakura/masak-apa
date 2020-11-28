@@ -5,7 +5,6 @@ import com.grevi.masakapa.network.data.ApiHelperImpl
 import com.grevi.masakapa.network.data.ApiService
 import com.grevi.masakapa.repos.Remote
 import com.grevi.masakapa.util.Constant
-import com.grevi.masakapa.util.NetworkConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,12 +22,12 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(networkConfig: NetworkConfig) : OkHttpClient {
+    fun provideOkHttpClient() : OkHttpClient {
         val httpLoggingInterceptor = HttpLoggingInterceptor()
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
         return OkHttpClient.Builder()
-            .addInterceptor(networkConfig)
+            .addInterceptor(httpLoggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
             .retryOnConnectionFailure(true)

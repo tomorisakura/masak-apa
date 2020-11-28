@@ -21,6 +21,7 @@
         <item name="android:textColor">#393939</item>
         <item name="android:padding">8dp</item>
         <item name="android:textSize">12sp</item>
+        <item name="fontFamily">@font/dm_sans_regular</item>
     </style>
 
     <style name="title_rv" parent="Theme.MaterialComponents.DayNight">
@@ -28,18 +29,21 @@
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:focusable">true</item>
+        <item name="fontFamily">@font/playfair_display_bold</item>
     </style>
 
     <style name="text_style" parent="Theme.MaterialComponents.DayNight">
         <item name="android:textColor">#393939</item>
         <item name="android:textSize">13sp</item>
         <item name="android:layout_marginTop">10dp</item>
+        <item name="fontFamily">@font/dm_sans_regular</item>
     </style>
 
     <style name="desc_style" parent="Theme.MaterialComponents.DayNight">
         <item name="android:textColor">#393939</item>
         <item name="android:textSize">16sp</item>
         <item name="android:layout_marginTop">10dp</item>
+        <item name="fontFamily">@font/dm_sans_regular</item>
     </style>
 
     <style name="title_head_style" parent="Theme.MaterialComponents.DayNight">
@@ -47,6 +51,7 @@
         <item name="android:textSize">22sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:focusable">true</item>
+        <item name="fontFamily">@font/playfair_display_bold</item>
     </style>
 
     <style name="textMiniHead_style" parent="Theme.MaterialComponents.DayNight">
@@ -54,17 +59,20 @@
         <item name="android:textSize">13sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_marginTop">10dp</item>
+        <item name="fontFamily">@font/dm_sans_regular</item>
     </style>
 
     <style name="listText_style" parent="Theme.MaterialComponents.DayNight">
         <item name="android:textColor">#393939</item>
         <item name="android:textSize">16sp</item>
+        <item name="fontFamily">@font/dm_sans_regular</item>
     </style>
 
     <style name="textMini_style" parent="Theme.MaterialComponents.DayNight">
         <item name="android:textColor">@color/forestGreen</item>
         <item name="android:textSize">13sp</item>
         <item name="android:textStyle">bold</item>
+        <item name="fontFamily">@font/dm_sans_regular</item>
     </style>
 
 </resources>

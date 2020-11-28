@@ -27,4 +27,7 @@ interface ApiService {
 
     @GET("/api/categorys/recipes")
     suspend fun getCategorys() : Response<CategorysResponse>
+
+    @GET("/api/categorys/recipes/{key}")
+    suspend fun getCategoryRecipes(@Path("key") key: String) : Response<RecipesResponse>
 }

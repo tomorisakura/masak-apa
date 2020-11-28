@@ -20,6 +20,7 @@ import com.grevi.masakapa.ui.adapter.CategorysAdapter
 import com.grevi.masakapa.ui.adapter.SearchAdapter
 import com.grevi.masakapa.ui.recipes.RecipesFragmentDirections
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
+import com.grevi.masakapa.util.CategoryListenear
 import com.grevi.masakapa.util.Resource
 import com.grevi.masakapa.util.SearchListenear
 import com.grevi.masakapa.util.toast
@@ -68,8 +69,10 @@ class SearchFragment : Fragment() {
                     results.data?.let{
                         if (!it.results.isNullOrEmpty()) {
                             val text = getString(R.string.search_success_text)
-                            searchResultHintText.text = "$text $query"
+                            val combine = "$text $query"
+                            searchResultHintText.text = combine
                             searchResultHintText.animate().alpha(1f)
+                            snackBar(view, combine)
                             prepareRV(it.results)
                         } else {
                             val text = resources.getString(R.string.failed_found_text)
@@ -116,16 +119,28 @@ class SearchFragment : Fragment() {
         rv_categorys_list.animate().alpha(0f)
         categorysHintLabel.animate().alpha(0f)
         categorysAdapter = CategorysAdapter()
-        rv_categorys_list.layoutManager = GridLayoutManager(view.context, 2)
+        rv_categorys_list.layoutManager = GridLayoutManager(view.context, 3)
         rv_categorys_list.adapter = categorysAdapter
         categorysAdapter.addItem(categorys)
         categorysAdapter.notifyDataSetChanged()
         categorysHintLabel.animate().alpha(1f).duration = 1000L
         rv_categorys_list.animate().alpha(1f).duration = 2000L
+
+        categorysAdapter.itemCategory(object : CategoryListenear {
+            override fun onItemSelected(categorys: Categorys) {
+                prepareNavigateCategory(categorys)
+            }
+
+        })
     }
 
     private fun prepareNavigate(search: Search) {
         val action = SearchFragmentDirections.actionSearchFragmentToDetailFragment(search.key, search.imageThumb)
+        navController.navigate(action)
+    }
+
+    private fun prepareNavigateCategory(categorys: Categorys) {
+        val action = SearchFragmentDirections.actionSearchFragmentToCategoryFragment(categorys.key, categorys.category)
         navController.navigate(action)
     }
 

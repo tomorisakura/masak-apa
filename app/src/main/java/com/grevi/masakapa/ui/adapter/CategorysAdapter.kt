@@ -17,6 +17,7 @@ class CategorysAdapter : RecyclerView.Adapter<CategorysAdapter.CategoryVH>() {
     inner class CategoryVH(view : View) : RecyclerView.ViewHolder(view) {
         fun bind(categorys: Categorys) {
             itemView.categorysText.text = categorys.category
+            itemView.setOnClickListener { listenear?.onItemSelected(categorys) }
         }
     }
 

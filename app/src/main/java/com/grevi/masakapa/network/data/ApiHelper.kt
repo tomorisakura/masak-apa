@@ -11,4 +11,5 @@ interface ApiHelper {
     suspend fun getDetailRecipes(key : String) : Response<DetailResponse>
     suspend fun getSearchRecipes(query : String) : Response<SearchResponse>
     suspend fun getCategorys() : Response<CategorysResponse>
+    suspend fun getCategoryRecipes(key: String) : Response<RecipesResponse>
 }

@@ -26,10 +26,10 @@ screen
 
 - [x] Search recipes
 
-- [ ] Category recipes
+- [x] Category recipes
 
 issue 😪
 
-- [ ] Network Handler Okhttp
+- [ ] swipe refresh
 
 onprogress 🧙‍♂️

@@ -11,19 +11,23 @@ import javax.inject.Inject
 
 class Remote @Inject constructor(private val apiHelper: ApiHelper) : SafeApiResponse() {
 
-    suspend fun getRecipes() : RecipesResponse {
+    suspend fun getRecipes() : Resource<RecipesResponse> {
         return apiResponse { apiHelper.getAllRecipes() }
     }
 
-    suspend fun getDetailRecipes(key : String) : DetailResponse {
+    suspend fun getDetailRecipes(key : String) : Resource<DetailResponse> {
         return apiResponse { apiHelper.getDetailRecipes(key) }
     }
 
-    suspend fun getSearchRecipe(query : String) : SearchResponse {
+    suspend fun getSearchRecipe(query : String) : Resource<SearchResponse> {
         return apiResponse { apiHelper.getSearchRecipes(query) }
     }
 
-    suspend fun getCategorys() : CategorysResponse {
+    suspend fun getCategorys() : Resource<CategorysResponse> {
         return apiResponse { apiHelper.getCategorys() }
+    }
+
+    suspend fun getCategoryRecipes(key: String) : Resource<RecipesResponse> {
+        return apiResponse { apiHelper.getCategoryRecipes(key) }
     }
 }

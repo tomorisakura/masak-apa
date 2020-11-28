@@ -23,4 +23,8 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun getCategorys(): Response<CategorysResponse> {
         return apiService.getCategorys()
     }
+
+    override suspend fun getCategoryRecipes(key: String): Response<RecipesResponse> {
+        return apiService.getCategoryRecipes(key)
+    }
 }
