@@ -136,6 +136,7 @@ class SearchFragment : Fragment() {
                     results.data?.let {
                         prepareCategoryRV(view, it.results)
                     }
+                    pgMainCategory.visibility = View.GONE
                 }
             }
         })

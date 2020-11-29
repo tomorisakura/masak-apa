@@ -24,30 +24,38 @@
                 android:id="@+id/search_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="?colorSurface"
-                android:layout_margin="10dp">
+                android:layout_margin="10dp"
+                android:backgroundTint="?colorSurface">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center|center_horizontal"
-                    android:padding="10dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:padding="10dp">
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp"
-                        android:src="@drawable/ic_search_light"/>
+                        android:src="@drawable/ic_search_light" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/search_hint_text"/>
+                        android:text="@string/search_hint_text" />
 
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_gravity="center"
+                style="@style/textMiniHead_style"
+                android:text="@string/recipe_for_you_text" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_recipes_list"
@@ -56,7 +64,7 @@
                 android:layout_gravity="center_vertical"
                 android:clipChildren="false"
                 android:clipToPadding="false"
-                tools:listitem="@layout/lists_recipes" />
+                tools:listitem="@layout/list_main_recipes" />
 
         </LinearLayout>
 

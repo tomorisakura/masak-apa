@@ -70,9 +70,10 @@ class DetailFragment : Fragment() {
                         publishedText.text = it.author.published
                         //descText.text = it.desc
                         prepareRV(it.ingredients, it.step)
-                        println(it.ingredients)
+                        //println(it.ingredients)
                     }
                     prepareViewLayout(true)
+                    pgMainRecipes.visibility = View.GONE
                 }
             }
         })

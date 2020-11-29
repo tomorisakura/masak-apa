@@ -29,7 +29,7 @@
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:focusable">true</item>
-        <item name="fontFamily">@font/playfair_display_bold</item>
+        <item name="fontFamily">@font/dm_sans_regular</item>
     </style>
 
     <style name="text_style" parent="Theme.MaterialComponents.DayNight">

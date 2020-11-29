@@ -16,7 +16,7 @@ import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 
 interface ApiService {
-    @GET("/api/recipes")
+    @GET("/api/recipes-length/?limit=5")
     suspend fun getAllRecipes() : Response<RecipesResponse>
 
     @GET("/api/recipe/{key}")

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:backgroundTint="?colorSurface"
+    app:cardElevation="4dp"
+    android:focusable="true"
+    android:layout_margin="30dp"
+    app:cardCornerRadius="10dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.github.florent37.shapeofview.shapes.RoundRectView
+            android:id="@+id/imgGuideLine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shape_roundRect_bottomLeftRadius="0dp"
+            app:shape_roundRect_bottomRightRadius="0dp"
+            app:shape_roundRect_topLeftRadius="10dp"
+            app:shape_roundRect_topRightRadius="10dp">
+
+            <ImageView
+                android:id="@+id/imgThumb"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:contentDescription="@string/app_name"
+                android:scaleType="fitXY"
+                tools:src="@drawable/ic_launcher_background" />
+
+        </com.github.florent37.shapeofview.shapes.RoundRectView>
+
+        <TextView
+            android:id="@+id/recipesTitleMain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lines="3"
+            style="@style/title_rv"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imgGuideLine"
+            app:layout_constraintTop_toTopOf="@+id/imgGuideLine"
+            tools:text="Resep Tahu Telur, Jawaban Kerinduan Kuliner Khas Jawa Timur" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:paddingBottom="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/recipesTitle"
+            app:layout_constraintTop_toBottomOf="@+id/recipesTitle">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_diff_icon"/>
+
+                <TextView
+                    android:id="@+id/dificultyTextMain"
+                    style="@style/rv_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="MUDAH" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_portion_icon"/>
+
+                <TextView
+                    android:id="@+id/portionTextMain"
+                    style="@style/rv_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="3 PORSI" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_times_icon"/>
+
+                <TextView
+                    android:id="@+id/timesTextMain"
+                    style="@style/rv_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="1JAM30MNT" />
+            </LinearLayout>
+
+
+
+
+        </LinearLayout>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</com.google.android.material.card.MaterialCardView>

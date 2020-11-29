@@ -8,13 +8,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
 import com.grevi.masakapa.R
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.RecipesAdapter
@@ -22,7 +22,6 @@ import com.grevi.masakapa.ui.search.SearchActivity
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
 import com.grevi.masakapa.util.Listenear
 import com.grevi.masakapa.util.Resource.Status
-import com.grevi.masakapa.util.ResponseException
 import com.grevi.masakapa.util.toast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_recipes.*
@@ -33,6 +32,7 @@ class RecipesFragment : Fragment() {
     private val recipesViewModel by viewModels<RecipesViewModel>()
     private lateinit var recipesAdapter: RecipesAdapter
     private lateinit var navController: NavController
+    private lateinit var snapHelper: LinearSnapHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,16 +46,16 @@ class RecipesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
         recipesAdapter = RecipesAdapter()
+        snapHelper = LinearSnapHelper()
         prepareView(view)
         swipeRefresh(view)
     }
 
     private fun prepareView(view: View) {
-
         rv_recipes_list.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         rv_recipes_list.adapter = recipesAdapter
         refresh_layout.isRefreshing = true
-
+        snapHelper.attachToRecyclerView(rv_recipes_list)
         rv_recipes_list.animate().alpha(0f).duration = 1000L
 
         recipesViewModel.recipes.observe(viewLifecycleOwner, Observer {response ->
@@ -69,7 +69,6 @@ class RecipesFragment : Fragment() {
                 Status.SUCCESS -> {
                     response.data?.results?.let {
                         recipesAdapter.addItem(it)
-                        recipesAdapter.notifyDataSetChanged()
                     }
                     rv_recipes_list.animate().alpha(1f).duration = 1000L
                     refresh_layout.isRefreshing = false

@@ -54,6 +54,12 @@
             android:layout_marginBottom="13dp"
             android:text="@string/categorys_hint_label" />
 
+        <ProgressBar
+            android:id="@+id/pgMainCategory"
+            android:layout_width="30dp"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_categorys_list"
             android:layout_width="match_parent"

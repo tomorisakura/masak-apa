@@ -34,6 +34,12 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <ProgressBar
+                android:id="@+id/pgMainRecipes"
+                android:layout_width="30dp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"/>
+
             <TextView
                 android:id="@+id/recipeTitleText"
                 style="@style/title_head_style"

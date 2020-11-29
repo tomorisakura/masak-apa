@@ -8,24 +8,20 @@ import com.bumptech.glide.Glide
 import com.grevi.masakapa.R
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.util.Listenear
-import kotlinx.android.synthetic.main.list_main_recipes.view.*
 import kotlinx.android.synthetic.main.lists_recipes.view.*
-import kotlinx.android.synthetic.main.lists_recipes.view.imgThumb
-import kotlinx.android.synthetic.main.lists_recipes.view.recipesTitle
 
-class RecipesAdapter : RecyclerView.Adapter<RecipesAdapter.RecipesVH>() {
-
+class CategoryItemAdapter : RecyclerView.Adapter<CategoryItemAdapter.CategoryItemVH>() {
     private val recipes : MutableList<Recipes> = mutableListOf()
     private var listenear : Listenear? = null
 
-    inner class RecipesVH(view : View) : RecyclerView.ViewHolder(view) {
+    inner class CategoryItemVH(view : View) : RecyclerView.ViewHolder(view) {
         fun bind(recipes : Recipes) {
             with(itemView) {
                 Glide.with(this.context).load(recipes.imageThumb).placeholder(R.drawable.placeholder).into(imgThumb)
-                recipesTitleMain.text = recipes.name
-                dificultyTextMain.text = recipes.dificulty
-                portionTextMain.text = recipes.portion
-                timesTextMain.text = recipes.times
+                recipesTitle.text = recipes.name
+                dificultyText.text = recipes.dificulty
+                portionText.text = recipes.portion
+                timesText.text = recipes.times
                 this.setOnClickListener { listenear?.onItemSelected(recipes) }
             }
         }
@@ -36,21 +32,21 @@ class RecipesAdapter : RecyclerView.Adapter<RecipesAdapter.RecipesVH>() {
     }
 
     fun addItem(item : MutableList<Recipes>) {
-        notifyDataSetChanged()
         recipes.clear()
         recipes.addAll(item)
+        notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipesVH {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_main_recipes, parent, false)
-        return RecipesVH(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryItemVH {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.lists_recipes, parent, false)
+        return CategoryItemVH(view)
     }
 
     override fun getItemCount(): Int {
         return recipes.size
     }
 
-    override fun onBindViewHolder(holder: RecipesVH, position: Int) {
+    override fun onBindViewHolder(holder: CategoryItemVH, position: Int) {
         holder.bind(recipes[position])
     }
 }
