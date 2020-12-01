@@ -87,7 +87,14 @@
 
             </LinearLayout>
 
-            <include android:id="@+id/cardLayout" layout="@layout/item_card" />
+            <LinearLayout
+                android:id="@+id/cardLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center">
+                <include layout="@layout/item_card" />
+            </LinearLayout>
 
             <!--        <TextView-->
             <!--            android:layout_width="wrap_content"-->
@@ -159,6 +166,7 @@
         android:text="Tandai"
         android:src="@drawable/ic_mark_icon"
         android:layout_margin="20dp"
+        app:fabSize="mini"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

@@ -11,7 +11,6 @@ import com.grevi.masakapa.ui.base.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_home.*
 
-@AndroidEntryPoint
 class HomeActivity : BaseActivity() {
 
     private var state = false

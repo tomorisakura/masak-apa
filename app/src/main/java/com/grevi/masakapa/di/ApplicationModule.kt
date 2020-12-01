@@ -1,5 +1,12 @@
 package com.grevi.masakapa.di
 
+import android.content.Context
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import com.grevi.masakapa.db.RecipesDAO
+import com.grevi.masakapa.db.RecipesDataSource
+import com.grevi.masakapa.db.RecipesDataSourceImpl
+import com.grevi.masakapa.db.RecipesDatabase
 import com.grevi.masakapa.network.data.ApiHelper
 import com.grevi.masakapa.network.data.ApiHelperImpl
 import com.grevi.masakapa.network.data.ApiService
@@ -9,6 +16,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -18,7 +26,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(ApplicationComponent::class)
-object NetworkModule {
+object ApplicationModule {
 
     @Provides
     @Singleton
@@ -59,5 +67,22 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRemote(apiHelper: ApiHelper) = Remote(apiHelper)
+    fun provideRecipesDatabase(@ApplicationContext context: Context) : RecipesDatabase {
+        return Room.databaseBuilder(context, RecipesDatabase::class.java, "recipesDB").fallbackToDestructiveMigration().build()
+    }
+
+    @Provides
+    fun provideRecipesDAO(database : RecipesDatabase) : RecipesDAO {
+        return database.recipesDAO()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRecipesDataSource(recipesDataSourceImpl: RecipesDataSourceImpl) : RecipesDataSource {
+        return recipesDataSourceImpl
+    }
+
+    @Provides
+    @Singleton
+    fun provideRemote(apiHelper: ApiHelper, recipesDataSource: RecipesDataSource) = Remote(apiHelper, recipesDataSource)
 }

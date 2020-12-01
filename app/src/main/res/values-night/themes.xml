@@ -75,4 +75,10 @@
         <item name="fontFamily">@font/dm_sans_regular</item>
     </style>
 
+    <style name="mainButton" parent="Theme.MaterialComponents.DayNight">
+        <item name="background">@color/forestGreen</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:backgroundTint">@color/forestGreen</item>
+    </style>
+
 </resources>

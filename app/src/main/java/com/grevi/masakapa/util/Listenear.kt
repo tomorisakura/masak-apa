@@ -1,5 +1,6 @@
 package com.grevi.masakapa.util
 
+import android.view.View
 import com.grevi.masakapa.model.Categorys
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.model.Search
@@ -14,4 +15,12 @@ interface SearchListenear {
 
 interface CategoryListenear {
     fun onItemSelected(categorys: Categorys)
+}
+
+interface HandlerListener {
+    fun message(msg : String, state : Boolean)
+}
+
+interface MarkListener {
+    fun onItemSelected(recipes: com.grevi.masakapa.db.entity.Recipes)
 }

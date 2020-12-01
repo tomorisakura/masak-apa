@@ -95,7 +95,7 @@ class SearchFragment : Fragment() {
                     results.data?.let{
                         if (!it.results.isNullOrEmpty()) {
                             val text = getString(R.string.search_success_text)
-                            val combine = "$text $query"
+                            val combine = "$text $query (${it.results.size})"
                             searchResultHintText.text = combine
                             searchResultHintText.animate().alpha(1f)
                             snackBar(view, combine)

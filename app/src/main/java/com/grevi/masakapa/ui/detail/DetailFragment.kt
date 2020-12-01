@@ -1,10 +1,12 @@
 package com.grevi.masakapa.ui.detail
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.*
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -14,24 +16,27 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.grevi.masakapa.R
+import com.grevi.masakapa.model.Detail
 import com.grevi.masakapa.ui.adapter.IngredientsAdapter
 import com.grevi.masakapa.ui.adapter.StepAdapte
+import com.grevi.masakapa.ui.viewmodel.DatabaseViewModel
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
+import com.grevi.masakapa.util.Constant.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE
+import com.grevi.masakapa.util.HandlerListener
 import com.grevi.masakapa.util.Resource
 import com.grevi.masakapa.util.toast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_detail.*
 import kotlinx.android.synthetic.main.item_card.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class DetailFragment : Fragment() {
+class DetailFragment : Fragment(), HandlerListener {
 
     private val args : DetailFragmentArgs by navArgs()
     private val recipesViewModel : RecipesViewModel by viewModels()
     private lateinit var ingredientsAdapter : IngredientsAdapter
     private lateinit var stepAdapte: StepAdapte
+    private val databaseViewModel : DatabaseViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,6 +48,7 @@ class DetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        databaseViewModel.handlerListener = this
         prepareViewLayout(false)
         prepareView(view)
     }
@@ -74,13 +80,15 @@ class DetailFragment : Fragment() {
                     }
                     prepareViewLayout(true)
                     pgMainRecipes.visibility = View.GONE
+
+                    floatButton.setOnClickListener {
+                        results.data?.results?.let { data ->
+                            storageHandler(data, args.key, args.thumb)
+                        }
+                    }
                 }
             }
         })
-
-        floatButton.setOnClickListener {
-            Snackbar.make(view, "clicked", Snackbar.LENGTH_SHORT).show()
-        }
     }
 
     private fun prepareRV(stringList: MutableList<String>, stepList : MutableList<String>) {
@@ -101,6 +109,7 @@ class DetailFragment : Fragment() {
                 floatButton.animate().alpha(0f)
                 textChefLayout.animate().alpha(0f)
                 cardLayout.animate().alpha(0f)
+                cardLayout.visibility = ViewGroup.INVISIBLE
                 textIngredientLabel.animate().alpha(0f)
                 textStepLabel.animate().alpha(0f)
                 recipeTitleText.animate().alpha(0f)
@@ -110,10 +119,37 @@ class DetailFragment : Fragment() {
                 floatButton.animate().alpha(1f).duration = 2000L
                 textChefLayout.animate().alpha(1f).duration = 1000L
                 cardLayout.animate().alpha(1f).duration = 1000L
+                cardLayout.visibility = ViewGroup.VISIBLE
                 textIngredientLabel.animate().alpha(1f)
                 textStepLabel.animate().alpha(1f)
                 recipeTitleText.animate().alpha(1f)
             }
+        }
+    }
+
+    private fun snackBar(view: View, msg : String) {
+        Snackbar.make(view, msg, Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun storageHandler(detail: Detail, key : String?, thumb : String?) {
+        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                snackBar(mainDetail, "Tidak boleh akses memori 😒")
+            } else {
+                ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE
+                )
+                Log.v("PERMISSION", "FAIL")
+            }
+        } else {
+            databaseViewModel.keyChecker(detail, key!!, thumb!!)
+        }
+    }
+
+    override fun message(msg: String, state: Boolean) {
+        when(state) {
+            true -> snackBar(mainDetail, msg)
+            false -> snackBar(mainDetail, msg)
         }
     }
 }

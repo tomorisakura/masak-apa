@@ -8,6 +8,8 @@ dependency
 
 - [x] Coroutines
 
+- [x] LiveData
+
 - [x] Hilt
 
 - [x] Motion Layout
@@ -16,7 +18,7 @@ dependency
 
 - [x] Jetpack Navigation
 
-- [ ] Room
+- [x] Room
 
 screen
 
@@ -27,5 +29,7 @@ screen
 - [x] Search recipes
 
 - [x] Category recipes
+
+- [x] Mark recipes
 
 status onprogress 🧙‍♂️

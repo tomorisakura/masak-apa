@@ -9,7 +9,6 @@ import com.grevi.masakapa.ui.HomeActivity
 import com.grevi.masakapa.ui.base.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

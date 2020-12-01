@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MasakApa">
-        <activity android:name=".ui.search.SearchActivity"></activity>
+        <activity android:name=".ui.marked.MarkActivity"></activity>
+        <activity android:name=".ui.search.SearchActivity" />
         <activity android:name=".ui.HomeActivity" />
         <activity android:name=".ui.splash.SplashActivity">
             <intent-filter>
