@@ -28,6 +28,7 @@ class CategorysAdapter : RecyclerView.Adapter<CategorysAdapter.CategoryVH>() {
     fun addItem(item : List<Categorys>) {
         categorys.clear()
         categorys.addAll(item)
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryVH {

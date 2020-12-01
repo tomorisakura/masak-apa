@@ -8,4 +8,5 @@ interface RecipesDataSource  {
     suspend fun insertRecipes(recipes: Recipes)
     suspend fun isExistRecipes(key : String) : Boolean
     suspend fun getMarkRecipes() : List<Recipes>
+    suspend fun deleteRecipes(recipes: Recipes)
 }

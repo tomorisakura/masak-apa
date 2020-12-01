@@ -45,4 +45,6 @@ class Remote @Inject constructor(private val apiHelper: ApiHelper, private val r
     suspend fun getMarkedRecipes() : List<Recipes> {
         return recipesDataSource.getMarkRecipes()
     }
+
+    suspend fun deleteRecipes(recipes: Recipes) = recipesDataSource.deleteRecipes(recipes)
 }

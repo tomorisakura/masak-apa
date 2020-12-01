@@ -10,8 +10,6 @@ import com.grevi.masakapa.db.entity.Recipes
 import com.grevi.masakapa.model.Detail
 import com.grevi.masakapa.repos.Remote
 import com.grevi.masakapa.util.HandlerListener
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 class DatabaseViewModel @ViewModelInject constructor(private val remote: Remote) : ViewModel() {
@@ -61,5 +59,12 @@ class DatabaseViewModel @ViewModelInject constructor(private val remote: Remote)
             _listMarkRecipes.postValue(data)
         }
         return _listMarkRecipes
+    }
+
+    fun deleteRecipes(recipes: Recipes){
+        viewModelScope.launch {
+            Log.v("DELETE_RECIPES", "delete ${recipes.name}")
+            remote.deleteRecipes(recipes)
+        }
     }
 }

@@ -59,7 +59,7 @@ class CategoryFragment : Fragment() {
 
         recipesViewModel.categoryResult(arg.catKey!!).observe(viewLifecycleOwner, Observer {response ->
             Log.v("RESPONSE", response.status.name)
-            categoryHintText.text = arg.catName
+            categoryHintText.text = "${arg.catName} (${response.data?.results?.size})"
             when(response.status) {
                 Resource.Status.ERROR -> toast(view.context, "Err : ${response.msg}")
                 Resource.Status.LOADING -> {
@@ -67,9 +67,7 @@ class CategoryFragment : Fragment() {
                     refresh_cat_layout.isRefreshing = true
                 }
                 Resource.Status.SUCCESS -> {
-                    response.data?.results?.let {
-                        categoryItemAdapter.addItem(it)
-                    }
+                    response.data?.results?.let { categoryItemAdapter.addItem(it) }
                     rv_recipes_category_list.animate().alpha(1f).duration = 1000L
                     refresh_cat_layout.isRefreshing = false
                 }

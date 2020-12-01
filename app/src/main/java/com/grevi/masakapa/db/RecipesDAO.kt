@@ -1,11 +1,6 @@
 package com.grevi.masakapa.db
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.grevi.masakapa.db.entity.Recipes
 
 @Dao
@@ -19,4 +14,7 @@ interface RecipesDAO {
 
     @Query("SELECT * FROM recipes")
     suspend fun getAllMarkRecipes() : List<Recipes>
+
+    @Delete
+    suspend fun deleteRecipes(recipes: Recipes)
 }
