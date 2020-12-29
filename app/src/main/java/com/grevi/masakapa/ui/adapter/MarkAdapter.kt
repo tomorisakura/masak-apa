@@ -45,6 +45,8 @@ class MarkAdapter : RecyclerView.Adapter<MarkAdapter.MarkVH>() {
     fun removeItem(item: Recipes, position: Int) {
         recipes.remove(item)
         notifyItemRemoved(position)
+        notifyItemChanged(position)
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MarkVH {

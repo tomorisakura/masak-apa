@@ -5,17 +5,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.grevi.masakapa.R
+import com.grevi.masakapa.db.entity.Category
 import com.grevi.masakapa.model.Categorys
 import com.grevi.masakapa.util.CategoryListenear
 import kotlinx.android.synthetic.main.lists_categorys.view.*
 
 class CategorysAdapter : RecyclerView.Adapter<CategorysAdapter.CategoryVH>() {
 
-    private val categorys : MutableList<Categorys> = mutableListOf()
+    private val categorys : MutableList<Category> = mutableListOf()
     private var listenear : CategoryListenear? = null
 
     inner class CategoryVH(view : View) : RecyclerView.ViewHolder(view) {
-        fun bind(categorys: Categorys) {
+        fun bind(categorys: Category) {
             itemView.categorysText.text = categorys.category
             itemView.setOnClickListener { listenear?.onItemSelected(categorys) }
         }
@@ -25,7 +26,7 @@ class CategorysAdapter : RecyclerView.Adapter<CategorysAdapter.CategoryVH>() {
         this.listenear = listenear
     }
 
-    fun addItem(item : List<Categorys>) {
+    fun addItem(item : List<Category>) {
         categorys.clear()
         categorys.addAll(item)
         notifyDataSetChanged()

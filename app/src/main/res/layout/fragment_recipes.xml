@@ -50,6 +50,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <TextView
+                android:id="@+id/tv_greeting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
@@ -65,6 +66,10 @@
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 tools:listitem="@layout/list_main_recipes" />
+
+            <include
+                android:id="@+id/snap_no_inet"
+                layout="@layout/snap_no_inet" />
 
         </LinearLayout>
 

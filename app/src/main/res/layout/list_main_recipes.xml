@@ -31,7 +31,7 @@
             <ImageView
                 android:id="@+id/imgThumb"
                 android:layout_width="match_parent"
-                android:layout_height="400dp"
+                android:layout_height="300dp"
                 android:contentDescription="@string/app_name"
                 android:scaleType="fitXY"
                 tools:src="@drawable/ic_launcher_background" />

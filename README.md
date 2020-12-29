@@ -11,8 +11,6 @@ __Masak Apa__
 for this app i try to consume a [Masak Apa](https://github.com/tomorisakura/unofficial-masakapahariini-api)
 this app build with MVVM pattern and Jetpack Component 🚀
 
-__status__ : onprogress 🧙‍♂️
-
 ### Screen
 ---
 
@@ -45,3 +43,7 @@ __status__ : onprogress 🧙‍♂️
 - [x] Jetpack Navigation
 
 - [x] Room
+
+- [x] Coroutine Flow
+
+- [ ] ViewBinding

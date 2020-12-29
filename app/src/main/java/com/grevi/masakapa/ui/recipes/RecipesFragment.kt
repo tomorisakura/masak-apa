@@ -15,6 +15,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
+import com.google.android.material.snackbar.Snackbar
 import com.grevi.masakapa.R
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.RecipesAdapter
@@ -22,7 +23,6 @@ import com.grevi.masakapa.ui.search.SearchActivity
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
 import com.grevi.masakapa.util.Listenear
 import com.grevi.masakapa.util.Resource.Status
-import com.grevi.masakapa.util.toast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_recipes.*
 
@@ -54,16 +54,20 @@ class RecipesFragment : Fragment() {
     private fun prepareView(view: View) {
         rv_recipes_list.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         rv_recipes_list.adapter = recipesAdapter
-        refresh_layout.isRefreshing = true
+        //refresh_layout.isRefreshing = true
+        showInetSnap(false, view)
         snapHelper.attachToRecyclerView(rv_recipes_list)
         rv_recipes_list.animate().alpha(0f).duration = 1000L
 
         recipesViewModel.recipes.observe(viewLifecycleOwner, Observer {response ->
             Log.v("RESPONSE", response.status.name)
             when(response.status) {
-                Status.ERROR -> toast(view.context, "Err : ${response.msg}")
+                Status.ERROR -> {
+                    snackBar(view, getString(R.string.no_inet_text)).show()
+                    showInetSnap(true, view)
+                }
                 Status.LOADING -> {
-                    toast(view.context, response.msg.toString())
+                    snackBar(view, response.msg.toString()).show()
                     refresh_layout.isRefreshing = true
                 }
                 Status.SUCCESS -> {
@@ -72,6 +76,9 @@ class RecipesFragment : Fragment() {
                     }
                     rv_recipes_list.animate().alpha(1f).duration = 1000L
                     refresh_layout.isRefreshing = false
+                    showInetSnap(false, view)
+                    tv_greeting.visibility = View.VISIBLE
+                    tv_greeting.animate().alpha(1f).duration = 1000L
                 }
             }
 
@@ -99,6 +106,26 @@ class RecipesFragment : Fragment() {
             Handler(Looper.getMainLooper()).postDelayed({
                 prepareView(view)
             }, 2000L)
+        }
+    }
+
+    private fun snackBar(view: View, msg: String) : Snackbar {
+        return Snackbar.make(view, msg, Snackbar.LENGTH_SHORT)
+    }
+
+    private fun showInetSnap(state : Boolean, view: View) {
+        when(state) {
+            true -> {
+                snap_no_inet.visibility = View.VISIBLE
+                snap_no_inet.animate().alpha(1f)
+            }
+
+            false -> {
+                snap_no_inet.visibility = View.INVISIBLE
+                tv_greeting.visibility = View.INVISIBLE
+                snap_no_inet.animate().alpha(0f)
+                tv_greeting.animate().alpha(0f)
+            }
         }
     }
 }

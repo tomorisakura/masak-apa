@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.grevi.masakapa.R
+import com.grevi.masakapa.db.entity.Category
 import com.grevi.masakapa.model.Categorys
 import com.grevi.masakapa.model.Search
 import com.grevi.masakapa.ui.adapter.CategorysAdapter
@@ -128,13 +129,13 @@ class SearchFragment : Fragment() {
     }
 
     private fun prepareCategory(view: View) {
-        recipesViewModel.categorys.observe(viewLifecycleOwner, Observer { results ->
+        recipesViewModel.categoryFlow.observe(viewLifecycleOwner, Observer { results ->
             when (results.status) {
                 Resource.Status.LOADING -> Log.v("SEARCH_LOAD", "loading...")
                 Resource.Status.ERROR -> toast(view.context, results.msg.toString())
                 Resource.Status.SUCCESS -> {
                     results.data?.let {
-                        prepareCategoryRV(view, it.results)
+                        prepareCategoryRV(view, it)
                     }
                     pgMainCategory.visibility = View.GONE
                 }
@@ -142,7 +143,7 @@ class SearchFragment : Fragment() {
         })
     }
 
-    private fun prepareCategoryRV(view: View, categorys : MutableList<Categorys>) {
+    private fun prepareCategoryRV(view: View, categorys : MutableList<Category>) {
         rv_categorys_list.animate().alpha(0f)
         categorysHintLabel.animate().alpha(0f)
         categorysAdapter = CategorysAdapter()
@@ -154,7 +155,7 @@ class SearchFragment : Fragment() {
         rv_categorys_list.animate().alpha(1f).duration = 2000L
 
         categorysAdapter.itemCategory(object : CategoryListenear {
-            override fun onItemSelected(categorys: Categorys) {
+            override fun onItemSelected(categorys: Category) {
                 prepareNavigateCategory(categorys)
             }
 
@@ -166,7 +167,7 @@ class SearchFragment : Fragment() {
         navController.navigate(action)
     }
 
-    private fun prepareNavigateCategory(categorys: Categorys) {
+    private fun prepareNavigateCategory(categorys: Category) {
         val action = SearchFragmentDirections.actionSearchFragmentToCategoryFragment(categorys.key, categorys.category)
         navController.navigate(action)
     }

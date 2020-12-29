@@ -1,11 +1,7 @@
 package com.grevi.masakapa.ui.marked
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +13,6 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.grevi.masakapa.R
 import com.grevi.masakapa.db.entity.Recipes
@@ -25,12 +20,11 @@ import com.grevi.masakapa.ui.adapter.MarkAdapter
 import com.grevi.masakapa.ui.search.SearchActivity
 import com.grevi.masakapa.ui.viewmodel.DatabaseViewModel
 import com.grevi.masakapa.util.MarkListener
+import com.grevi.masakapa.util.Resource
 import com.grevi.masakapa.util.toast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_mark.*
-import kotlinx.android.synthetic.main.fragment_recipes.*
 import kotlinx.android.synthetic.main.snap_mark_layout.*
-import java.text.FieldPosition
 
 @AndroidEntryPoint
 class MarkFragment : Fragment() {
@@ -57,13 +51,24 @@ class MarkFragment : Fragment() {
         markAdapter = MarkAdapter()
         rv_recipes_mark.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         rv_recipes_mark.adapter = markAdapter
-        databaseViewModel.lisMark.observe(viewLifecycleOwner, Observer {
-            if (!it.isNullOrEmpty()) {
-                markAdapter.addItem(it)
-                prepareSwipe(it)
-                showSnap(false)
-            } else {
-                showSnap(true)
+        databaseViewModel.listMark.observe(viewLifecycleOwner, Observer { response ->
+            when(response.status) {
+                Resource.Status.SUCCESS -> {
+                    response.data?.let {
+                        markAdapter.addItem(it)
+                        prepareSwipe(it)
+                    }
+                    showSnap(false)
+                }
+
+                Resource.Status.LOADING -> {
+                    toast(requireContext(),  response.msg.toString())
+                }
+
+                Resource.Status.ERROR -> {
+                    showSnap(true)
+                    toast(requireContext(),  response.msg.toString())
+                }
             }
         })
 
@@ -72,6 +77,14 @@ class MarkFragment : Fragment() {
                 prepareNavigate(recipes)
             }
 
+        })
+
+        databaseViewModel.state.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                showSnap(it)
+            } else {
+                showSnap(it)
+            }
         })
     }
 
@@ -87,9 +100,10 @@ class MarkFragment : Fragment() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                val msg = "Hapus ${recipes[position].name} ?"
+                val msg = "Resep ${recipes[position].name} dihapus"
                 markAdapter.removeItem(recipes[position], position)
-                materialDialog(requireContext(), msg, recipes[position], position).show()
+                databaseViewModel.deleteRecipes(recipes[position], position)
+                materialDialog(mainMark, msg).show()
             }
 
         }
@@ -122,23 +136,7 @@ class MarkFragment : Fragment() {
     }
 
 
-    private fun materialDialog(context: Context, msg: String, recipes: Recipes, position : Int) : MaterialAlertDialogBuilder {
-        return MaterialAlertDialogBuilder(context)
-            .setTitle("Hapus Resep Dari List Favorite")
-            .setMessage(msg)
-            .setPositiveButton("Hapus") { dialog, which ->
-                Log.v("POSITION_RECIPES", position.toString())
-                databaseViewModel.deleteRecipes(recipes)
-                markAdapter.notifyItemRemoved(position)
-                markAdapter.notifyDataSetChanged()
-                dialog.dismiss()
-            }
-            .setNegativeButton("Batal") { dialog, which ->
-                Log.v("POSITION_UNDO", recipes.name)
-                markAdapter.restoreItem(recipes, position)
-                markAdapter.notifyItemChanged(position)
-                markAdapter.notifyDataSetChanged()
-                dialog.cancel()
-            }
+    private fun materialDialog(view: View, msg: String) : Snackbar {
+        return Snackbar.make(view, msg, Snackbar.LENGTH_SHORT)
     }
 }

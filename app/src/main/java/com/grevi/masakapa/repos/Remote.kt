@@ -1,15 +1,16 @@
 package com.grevi.masakapa.repos
 
-import androidx.lifecycle.LiveData
 import com.grevi.masakapa.db.RecipesDataSource
+import com.grevi.masakapa.db.entity.Category
 import com.grevi.masakapa.db.entity.Recipes
-import com.grevi.masakapa.network.data.ApiHelper
 import com.grevi.masakapa.network.SafeApiResponse
+import com.grevi.masakapa.network.data.ApiHelper
 import com.grevi.masakapa.network.response.CategorysResponse
 import com.grevi.masakapa.network.response.DetailResponse
 import com.grevi.masakapa.network.response.RecipesResponse
 import com.grevi.masakapa.network.response.SearchResponse
 import com.grevi.masakapa.util.Resource
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class Remote @Inject constructor(private val apiHelper: ApiHelper, private val recipesDataSource: RecipesDataSource) : SafeApiResponse() {
@@ -42,9 +43,15 @@ class Remote @Inject constructor(private val apiHelper: ApiHelper, private val r
         return recipesDataSource.isExistRecipes(key)
     }
 
-    suspend fun getMarkedRecipes() : List<Recipes> {
+    suspend fun getMarkedRecipes() : MutableList<Recipes> {
         return recipesDataSource.getMarkRecipes()
     }
 
     suspend fun deleteRecipes(recipes: Recipes) = recipesDataSource.deleteRecipes(recipes)
+
+    suspend fun getFlowRecipes() : Flow<List<Recipes>> = recipesDataSource.getFlowRecipes()
+
+    suspend fun getFlowCategory() : Flow<MutableList<Category>> = recipesDataSource.getFlowCategory()
+
+    suspend fun insertCategory(category: Category) = recipesDataSource.insertCategory(category)
 }

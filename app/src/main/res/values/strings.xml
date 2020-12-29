@@ -13,4 +13,5 @@
     <string name="search_success_text">Menampilkan hasil pencarian</string>
     <string name="recipe_for_you_text">Resep Untukmu Hari ini 😍</string>
     <string name="list_empty_text">List kamu saat ini kosong ayo coba cari resep masakan favoritemu 😘</string>
+    <string name="no_inet_text">Oops.. Koneksi Internet Kamu Terputus 😥</string>
 </resources>

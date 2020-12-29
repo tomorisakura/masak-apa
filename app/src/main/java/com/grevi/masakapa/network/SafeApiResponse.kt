@@ -22,7 +22,7 @@ open class SafeApiResponse {
                 is ConnectException -> Resource.error(null, "connection failure")
                 is IOException -> Resource.error(null,"no inet")
                 is OkHttpClient -> Resource.error(null, "unable host")
-                else -> error(e.message ?: e.toString())
+                else -> Resource.error(null, e.message)
             }
         }
     }
