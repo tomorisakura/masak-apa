@@ -88,7 +88,7 @@ class MarkFragment : Fragment() {
         })
     }
 
-    private fun prepareSwipe(recipes : List<Recipes>) {
+    private fun prepareSwipe(recipes : MutableList<Recipes>) {
         val simpleTouchCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -102,7 +102,7 @@ class MarkFragment : Fragment() {
                 val position = viewHolder.adapterPosition
                 val msg = "Resep ${recipes[position].name} dihapus"
                 markAdapter.removeItem(recipes[position], position)
-                databaseViewModel.deleteRecipes(recipes[position], position)
+                databaseViewModel.deleteRecipes(recipes[position])
                 materialDialog(mainMark, msg).show()
             }
 
@@ -134,7 +134,6 @@ class MarkFragment : Fragment() {
             }
         }
     }
-
 
     private fun materialDialog(view: View, msg: String) : Snackbar {
         return Snackbar.make(view, msg, Snackbar.LENGTH_SHORT)

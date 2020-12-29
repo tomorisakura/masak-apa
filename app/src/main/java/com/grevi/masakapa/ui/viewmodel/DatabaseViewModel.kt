@@ -80,13 +80,15 @@ class DatabaseViewModel @ViewModelInject constructor(private val remote: Remote)
         return _listMarkRecipes
     }
 
-    fun deleteRecipes(recipes: Recipes, position : Int) {
+    fun deleteRecipes(recipes: Recipes) {
         viewModelScope.launch {
-            Log.v("DELETE_RECIPES", "delete ${recipes.name}")
-            Log.v("DELETE_RECIPES_POSITION", position.toString())
-            _state.value = position == 0
-            Log.v("DELETE_RECIPES_STATUS", _state.value.toString())
+            Log.v("DELETE_RECIPES", "Delete : ${recipes.name}")
+
             remote.deleteRecipes(recipes)
+            val data = remote.getMarkedRecipes()
+            Log.v("DELETE_RECIPES_SIZE", data.size.toString())
+            _state.value = data.size == 0
+            Log.v("DELETE_RECIPES_STATUS", _state.value.toString())
             delay(1000L)
         }
     }
