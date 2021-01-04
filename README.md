@@ -8,8 +8,9 @@
 
 __Masak Apa__ 
 
-for this app i try to consume a [Masak Apa](https://github.com/tomorisakura/unofficial-masakapahariini-api)
-this app build with MVVM pattern and Jetpack Component 🚀
+Masak apa is a recipes app made with MVVM pattern and Jetpack Component, this app consume api from [Masak Apa](https://github.com/tomorisakura/unofficial-masakapahariini-api) 🚀
+
+[MAD Score](https://madscorecard.withgoogle.com/scorecards/2679097760/) 🎯
 
 ### Screen
 ---
