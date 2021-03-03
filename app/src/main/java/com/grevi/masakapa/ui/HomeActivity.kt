@@ -1,25 +1,23 @@
 package com.grevi.masakapa.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.fragment.NavHostFragment
 import com.grevi.masakapa.R
+import com.grevi.masakapa.databinding.ActivityHomeBinding
 import com.grevi.masakapa.ui.base.BaseActivity
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_home.*
 
 class HomeActivity : BaseActivity() {
-
+    private lateinit var binding : ActivityHomeBinding
     private var state = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_home)
-
-        setSupportActionBar(toolbar)
+        binding = ActivityHomeBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setIcon(R.drawable.ic_icon_text)
         supportActionBar?.title = null
 

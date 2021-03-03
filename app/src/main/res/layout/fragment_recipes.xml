@@ -66,11 +66,6 @@
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 tools:listitem="@layout/list_main_recipes" />
-
-            <include
-                android:id="@+id/snap_no_inet"
-                layout="@layout/snap_no_inet" />
-
         </LinearLayout>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

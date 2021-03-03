@@ -2,7 +2,6 @@ package com.grevi.masakapa.di
 
 import android.content.Context
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import com.grevi.masakapa.db.RecipesDAO
 import com.grevi.masakapa.db.RecipesDataSource
 import com.grevi.masakapa.db.RecipesDataSourceImpl
@@ -10,13 +9,15 @@ import com.grevi.masakapa.db.RecipesDatabase
 import com.grevi.masakapa.network.data.ApiHelper
 import com.grevi.masakapa.network.data.ApiHelperImpl
 import com.grevi.masakapa.network.data.ApiService
-import com.grevi.masakapa.repos.Remote
+import com.grevi.masakapa.repository.Repository
+import com.grevi.masakapa.repository.RepositoryImpl
 import com.grevi.masakapa.util.Constant
+import com.grevi.masakapa.util.NetworkUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -25,7 +26,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 object ApplicationModule {
 
     @Provides
@@ -84,5 +85,11 @@ object ApplicationModule {
 
     @Provides
     @Singleton
-    fun provideRemote(apiHelper: ApiHelper, recipesDataSource: RecipesDataSource) = Remote(apiHelper, recipesDataSource)
+    fun provideRepository(repositoryImpl: RepositoryImpl) : Repository {
+        return repositoryImpl
+    }
+
+    @Provides
+    @Singleton
+    fun provideNetworkUtils(@ApplicationContext context: Context) : NetworkUtils = NetworkUtils(context)
 }

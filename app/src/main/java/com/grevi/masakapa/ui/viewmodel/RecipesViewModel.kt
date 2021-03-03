@@ -1,7 +1,6 @@
 package com.grevi.masakapa.ui.viewmodel
 
-import android.util.Log
-import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,127 +8,105 @@ import com.grevi.masakapa.db.entity.Category
 import com.grevi.masakapa.network.response.DetailResponse
 import com.grevi.masakapa.network.response.RecipesResponse
 import com.grevi.masakapa.network.response.SearchResponse
-import com.grevi.masakapa.repos.Remote
-import com.grevi.masakapa.util.Resource
+import com.grevi.masakapa.repository.RepositoryImpl
+import com.grevi.masakapa.util.NetworkUtils
+import com.grevi.masakapa.util.ResponseException
+import com.grevi.masakapa.util.State
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RecipesViewModel @ViewModelInject constructor(private val remote: Remote) : ViewModel() {
+@HiltViewModel
+class RecipesViewModel @Inject constructor(private val repositoryImpl: RepositoryImpl, private val networkUtils: NetworkUtils) : ViewModel() {
 
-    private val _recipesData = MutableLiveData<Resource<RecipesResponse>>()
-    private val _recipeDetail = MutableLiveData<Resource<DetailResponse>>()
-    private val _recipeSearch = MutableLiveData<Resource<SearchResponse>>()
+    private val _recipesData = MutableLiveData<State<RecipesResponse>>()
+    private val _recipeDetail = MutableLiveData<State<DetailResponse>>()
+    private val _recipeSearch = MutableLiveData<State<SearchResponse>>()
+    private val _category = MutableStateFlow<State<MutableList<Category>>>(State.Data)
 
-    private val categoryLiveData = MutableLiveData<Resource<MutableList<Category>>>()
+    val recipes : MutableLiveData<State<RecipesResponse>> get() = _recipesData
+    val category : MutableStateFlow<State<MutableList<Category>>> get() = _category
 
-    val recipes : MutableLiveData<Resource<RecipesResponse>>
-    get() = _recipesData
-
-    val categoryFlow : MutableLiveData<Resource<MutableList<Category>>>
-    get() = categoryLiveData
+    private val netWorkObserver = networkUtils.networkDataStatus
 
     init {
         getRecipes()
-        categorysRecipes()
-        insertFlowCategory()
-        showFlow()
+        getCategoryLocal()
     }
 
-    private fun getRecipes(){
+    private fun getRecipes() {
         viewModelScope.launch {
-            val data = remote.getRecipes()
-            _recipesData.postValue(Resource.loading(null, "Load"))
-            try {
-                _recipesData.postValue(Resource.success(data.data!!))
-                Log.v("LDATA", "OKE")
-            } catch (e : Exception) {
-                _recipesData.postValue(Resource.error(null, e.toString()))
+            val data = repositoryImpl.getRecipes()
+            if (netWorkObserver.value == true) {
+                _recipesData.postValue(data)
+            }else {
+                _recipesData.postValue(State.Error("No Internet Connection"))
             }
         }
     }
 
-    fun getDetail(key : String) : MutableLiveData<Resource<DetailResponse>> {
+    fun getDetail(key : String) : LiveData<State<DetailResponse>> {
         viewModelScope.launch {
             delay(1000L)
-            val data = remote.getDetailRecipes(key)
-            _recipeDetail.postValue(Resource.loading(null, "Load"))
+            val data = repositoryImpl.getDetailRecipes(key)
+            _recipeDetail.postValue(State.Loading())
             try {
-                _recipeDetail.postValue(Resource.success(data.data!!))
+                _recipeDetail.postValue(data)
             } catch (e : Exception) {
-                _recipeDetail.postValue(Resource.error(null, e.toString()))
+                e.printStackTrace()
+                _recipeDetail.postValue(State.Error(e.toString()))
+            }catch (e : ResponseException) {
+                e.printStackTrace()
+                _recipeDetail.postValue(State.Error(e.toString()))
             }
         }
 
         return _recipeDetail
     }
 
-    fun searchRecipe(query : String) : MutableLiveData<Resource<SearchResponse>> {
+    fun searchRecipe(query : String) : LiveData<State<SearchResponse>> {
         viewModelScope.launch {
-            val data = remote.getSearchRecipe(query)
-            _recipeSearch.postValue(Resource.loading(null, "Load"))
+            val data = repositoryImpl.getSearchRecipe(query)
+            _recipeSearch.postValue(State.Loading())
             try {
-                _recipeSearch.postValue(Resource.success(data.data!!))
+                _recipeSearch.postValue(data)
             }catch (e : Exception) {
-                Log.v("LDATA", e.message.toString())
-                _recipeSearch.postValue(Resource.error(null, e.toString()))
+                e.printStackTrace()
+                _recipeSearch.postValue(State.Error(e.toString()))
             }
         }
         return _recipeSearch
     }
 
-    private fun insertFlowCategory() : Flow<MutableList<Category>> = flow {
-        val data = remote.getCategorys()
-
-        try {
-            for (category in data.data!!.results) {
-                val category = Category(
-                    category = category.category,
-                    key = category.key
-                )
-                remote.insertCategory(category)
-                emit(mutableListOf(category))
-            }
-        }catch (e : Exception) {
-            emit(mutableListOf())
-        }
-    }
-
-    private fun showFlow() {
+    private fun getCategoryLocal() {
         viewModelScope.launch {
-            insertFlowCategory().collect {
-                Log.d("DATA_FLOW", it.toString())
-            }
-        }
-    }
-
-    private fun categorysRecipes() {
-        viewModelScope.launch {
-
-            val dataFLow = remote.getFlowCategory()
-            dataFLow.collect{
-                Log.d("DATA_FLOW_ROOM", it.toString())
-
-                categoryLiveData.postValue(Resource.loading(null, "Load"))
+            repositoryImpl.getFlowCategory().collect {
+                _category.value = State.Loading()
                 try {
-                    categoryLiveData.postValue(Resource.success(it))
+                    _category.value = State.Success(it)
                 }catch (e : Exception) {
-                    categoryLiveData.postValue(Resource.error(null, e.toString()))
+                    e.printStackTrace()
+                    _category.value = State.Error(e.toString())
+                }catch (e : ResponseException) {
+                    e.printStackTrace()
+                    _category.value = State.Error(e.toString())
                 }
             }
         }
     }
 
-    fun categoryResult(key: String) : MutableLiveData<Resource<RecipesResponse>> {
+    fun categoryResult(key: String) : LiveData<State<RecipesResponse>> {
         viewModelScope.launch {
-            val data = remote.getCategoryRecipes(key)
-            _recipesData.postValue(Resource.loading(null, "Load"))
+            val data = repositoryImpl.getCategoryRecipes(key)
+            _recipesData.postValue(State.Loading())
             try {
-                _recipesData.postValue(Resource.success(data.data!!))
+                _recipesData.postValue(data)
             } catch (e : Exception) {
-                _recipesData.postValue(Resource.error(null, e.toString()))
+                e.printStackTrace()
+                _recipesData.postValue(State.Error(e.toString()))
             }
         }
         return _recipesData

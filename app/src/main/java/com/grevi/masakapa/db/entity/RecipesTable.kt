@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "recipes")
-data class Recipes(
+data class RecipesTable(
     @PrimaryKey @ColumnInfo(name = "key") var key : String,
     @ColumnInfo(name = "title") var name : String,
     @ColumnInfo(name = "thumb") var imageThumb : String,

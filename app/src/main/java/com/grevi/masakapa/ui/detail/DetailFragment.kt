@@ -16,41 +16,48 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.grevi.masakapa.R
+import com.grevi.masakapa.databinding.FragmentDetailBinding
+import com.grevi.masakapa.databinding.ItemCardBinding
 import com.grevi.masakapa.model.Detail
 import com.grevi.masakapa.ui.adapter.IngredientsAdapter
-import com.grevi.masakapa.ui.adapter.StepAdapte
+import com.grevi.masakapa.ui.adapter.StepAdapter
 import com.grevi.masakapa.ui.viewmodel.DatabaseViewModel
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
 import com.grevi.masakapa.util.Constant.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE
 import com.grevi.masakapa.util.HandlerListener
 import com.grevi.masakapa.util.Resource
+import com.grevi.masakapa.util.State
 import com.grevi.masakapa.util.toast
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_detail.*
-import kotlinx.android.synthetic.main.item_card.*
 
 @AndroidEntryPoint
 class DetailFragment : Fragment(), HandlerListener {
 
+    private lateinit var binding : FragmentDetailBinding
+    private lateinit var itemCardBinding: ItemCardBinding
     private val args : DetailFragmentArgs by navArgs()
     private val recipesViewModel : RecipesViewModel by viewModels()
-    private lateinit var ingredientsAdapter : IngredientsAdapter
-    private lateinit var stepAdapte: StepAdapte
+    private val ingredientsAdapter : IngredientsAdapter by lazy { IngredientsAdapter() }
+    private val stepAdapter: StepAdapter by lazy { StepAdapter() }
     private val databaseViewModel : DatabaseViewModel by viewModels()
+
+    private val TAG = DetailFragment::class.java.simpleName
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_detail, container, false)
+        binding = FragmentDetailBinding.inflate(inflater)
+        itemCardBinding = ItemCardBinding.bind(binding.cardLayout)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         databaseViewModel.handlerListener = this
         prepareViewLayout(false)
-        prepareView(view)
+        prepareView()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -59,69 +66,75 @@ class DetailFragment : Fragment(), HandlerListener {
         item?.isEnabled = false
     }
 
-    private fun prepareView(view: View) {
-        //Log.v("ARGS", args.key)
-        recipesViewModel.getDetail(args.key!!).observe(viewLifecycleOwner, Observer {results ->
-            when(results.status) {
-                Resource.Status.ERROR -> toast(view.context, results.msg.toString())
-                Resource.Status.LOADING -> prepareViewLayout(false)
-                Resource.Status.SUCCESS -> {
-                    Glide.with(view).load(args.thumb).placeholder(R.drawable.placeholder).into(imgDetail)
-                    results.data?.results?.let {
+    private fun prepareView() = with(binding) {
+        recipesViewModel.getDetail(args.key!!).observe(viewLifecycleOwner, {results ->
+            when(results) {
+                is State.Loading -> Log.i(TAG, results.msg)
+                is State.Error -> toast(requireContext(), results.msg)
+                is State.Success -> {
+                    Glide.with(requireContext()).load(args.thumb).placeholder(R.drawable.placeholder).into(imgDetail)
+                    results.data.results.let {
                         recipeTitleText.text = it.name
-                        textDiffItem.text = it.dificulty
-                        textPortionItems.text = it.servings
-                        textTimesItem.text = it.times
+                        itemCardBinding.textDiffItem.text = it.dificulty
+                        itemCardBinding.textPortionItems.text = it.servings
+                        itemCardBinding.textTimesItem.text = it.times
                         chefText.text = it.author.author
                         publishedText.text = it.author.published
-                        //descText.text = it.desc
                         prepareRV(it.ingredients, it.step)
-                        //println(it.ingredients)
                     }
                     prepareViewLayout(true)
                     pgMainRecipes.visibility = View.GONE
 
                     floatButton.setOnClickListener {
-                        results.data?.results?.let { data ->
+                        results.data.results.let { data ->
                             storageHandler(data, args.key, args.thumb)
                         }
                     }
                 }
+                else -> Log.i(TAG, "")
             }
         })
     }
 
-    private fun prepareRV(stringList: MutableList<String>, stepList : MutableList<String>) {
-        ingredientsAdapter = IngredientsAdapter()
-        rv_ingredients.layoutManager = GridLayoutManager(this.context, 2)
-        rv_ingredients.adapter = ingredientsAdapter
+    private fun prepareRV(stringList: MutableList<String>, stepList : MutableList<String>) = with(binding) {
+        rvIngredients.layoutManager = GridLayoutManager(requireContext(), 2)
+        rvIngredients.adapter = ingredientsAdapter
         ingredientsAdapter.addList(stringList)
 
-        stepAdapte = StepAdapte()
-        rv_step.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
-        rv_step.adapter = stepAdapte
-        stepAdapte.addList(stepList)
+        rvStep.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        rvStep.adapter = stepAdapter
+        stepAdapter.addList(stepList)
     }
 
-    private fun prepareViewLayout(state : Boolean) {
+    private fun prepareViewLayout(state : Boolean) = with(binding) {
         when(state) {
             false -> {
-                floatButton.animate().alpha(0f)
-                textChefLayout.animate().alpha(0f)
                 cardLayout.animate().alpha(0f)
                 cardLayout.visibility = ViewGroup.INVISIBLE
+                floatButton.animate().alpha(0f)
+                floatButton.visibility = View.INVISIBLE
+                textChefLayout.animate().alpha(0f)
+                textChefLayout.visibility = View.INVISIBLE
                 textIngredientLabel.animate().alpha(0f)
+                textIngredientLabel.visibility = View.INVISIBLE
                 textStepLabel.animate().alpha(0f)
+                textStepLabel.visibility = View.INVISIBLE
                 recipeTitleText.animate().alpha(0f)
+                recipeTitleText.visibility = View.INVISIBLE
             }
 
             true -> {
-                floatButton.animate().alpha(1f).duration = 2000L
-                textChefLayout.animate().alpha(1f).duration = 1000L
-                cardLayout.animate().alpha(1f).duration = 1000L
                 cardLayout.visibility = ViewGroup.VISIBLE
+                cardLayout.animate().alpha(1f).duration = 1000L
+                floatButton.visibility = View.VISIBLE
+                floatButton.animate().alpha(1f).duration = 2000L
+                textChefLayout.visibility = View.VISIBLE
+                textChefLayout.animate().alpha(1f).duration = 1000L
+                textIngredientLabel.visibility = View.VISIBLE
                 textIngredientLabel.animate().alpha(1f)
+                textStepLabel.visibility = View.VISIBLE
                 textStepLabel.animate().alpha(1f)
+                recipeTitleText.visibility = View.VISIBLE
                 recipeTitleText.animate().alpha(1f)
             }
         }
@@ -134,7 +147,7 @@ class DetailFragment : Fragment(), HandlerListener {
     private fun storageHandler(detail: Detail, key : String?, thumb : String?) {
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                snackBar(mainDetail, "Tidak boleh akses memori 😒")
+                snackBar(binding.root, "Tidak boleh akses memori 😒")
             } else {
                 ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
                     MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE
@@ -148,8 +161,8 @@ class DetailFragment : Fragment(), HandlerListener {
 
     override fun message(msg: String, state: Boolean) {
         when(state) {
-            true -> snackBar(mainDetail, msg)
-            false -> snackBar(mainDetail, msg)
+            true -> snackBar(binding.root, msg)
+            false -> snackBar(binding.root, msg)
         }
     }
 }

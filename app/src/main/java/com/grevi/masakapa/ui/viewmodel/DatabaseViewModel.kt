@@ -1,32 +1,29 @@
 package com.grevi.masakapa.ui.viewmodel
 
 import android.util.Log
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import com.grevi.masakapa.db.entity.Recipes
+import com.grevi.masakapa.db.entity.RecipesTable
 import com.grevi.masakapa.model.Detail
-import com.grevi.masakapa.repos.Remote
+import com.grevi.masakapa.repository.RepositoryImpl
 import com.grevi.masakapa.util.HandlerListener
 import com.grevi.masakapa.util.Resource
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class DatabaseViewModel @ViewModelInject constructor(private val remote: Remote) : ViewModel() {
+@HiltViewModel
+class DatabaseViewModel @Inject constructor(private val repositoryImpl: RepositoryImpl) : ViewModel() {
 
     var handlerListener : HandlerListener? = null
-    private var _listMarkRecipes = MutableLiveData<Resource<MutableList<Recipes>>>()
-
-    private lateinit var listFlow : Flow<List<Recipes>>
-
+    private var _listMarkRecipes = MutableLiveData<Resource<MutableList<RecipesTable>>>()
+    private lateinit var listFlow : Flow<List<RecipesTable>>
     private var _state = MutableLiveData<Boolean>()
 
-    val listMark : MutableLiveData<Resource<MutableList<Recipes>>>
-    get() = _listMarkRecipes
-
-    val state : MutableLiveData<Boolean>
-    get() = _state
+    val listMark : MutableLiveData<Resource<MutableList<RecipesTable>>> get() = _listMarkRecipes
+    val state : MutableLiveData<Boolean> get() = _state
 
     init {
         getMarkRecipes()
@@ -35,7 +32,7 @@ class DatabaseViewModel @ViewModelInject constructor(private val remote: Remote)
 
     private fun insertRecipes(detail : Detail, key : String, thumb : String) {
         viewModelScope.launch {
-            val recipes = Recipes(
+            val recipes = RecipesTable(
                 key = key,
                 name = detail.name,
                 dificulty = detail.dificulty,
@@ -43,13 +40,13 @@ class DatabaseViewModel @ViewModelInject constructor(private val remote: Remote)
                 portion = detail.servings,
                 times = detail.times
             )
-            remote.insertRecipes(recipes)
+            repositoryImpl.insertRecipes(recipes)
         }
     }
 
     fun keyChecker(detail : Detail, key : String, thumb : String) {
         viewModelScope.launch {
-            val data = remote.isExistRecipes(key)
+            val data = repositoryImpl.isExistRecipes(key)
             if (!data) {
                 insertRecipes(detail, key, thumb)
                 handlerListener?.message("Resep Berhasil Disimpan", data)
@@ -60,9 +57,9 @@ class DatabaseViewModel @ViewModelInject constructor(private val remote: Remote)
         }
     }
 
-    private fun getMarkRecipes() : LiveData<Resource<MutableList<Recipes>>> {
+    private fun getMarkRecipes() : LiveData<Resource<MutableList<RecipesTable>>> {
         viewModelScope.launch {
-            val data = remote.getMarkedRecipes()
+            val data = repositoryImpl.getMarkedRecipes()
 
             if (!data.isNullOrEmpty()) {
                 _listMarkRecipes.postValue(Resource.loading(null, "Load"))
@@ -80,12 +77,12 @@ class DatabaseViewModel @ViewModelInject constructor(private val remote: Remote)
         return _listMarkRecipes
     }
 
-    fun deleteRecipes(recipes: Recipes) {
+    fun deleteRecipes(recipesTable: RecipesTable) {
         viewModelScope.launch {
-            Log.v("DELETE_RECIPES", "Delete : ${recipes.name}")
+            Log.v("DELETE_RECIPES", "Delete : ${recipesTable.name}")
 
-            remote.deleteRecipes(recipes)
-            val data = remote.getMarkedRecipes()
+            repositoryImpl.deleteRecipes(recipesTable)
+            val data = repositoryImpl.getMarkedRecipes()
             Log.v("DELETE_RECIPES_SIZE", data.size.toString())
             _state.value = data.size == 0
             Log.v("DELETE_RECIPES_STATUS", _state.value.toString())
@@ -93,9 +90,9 @@ class DatabaseViewModel @ViewModelInject constructor(private val remote: Remote)
         }
     }
 
-    private fun getMarkFLow() : Flow<List<Recipes>> {
+    private fun getMarkFLow() : Flow<List<RecipesTable>> {
         viewModelScope.launch {
-            listFlow = remote.getFlowRecipes()
+            listFlow = repositoryImpl.getFlowRecipes()
             listFlow.collect { data ->
                 Log.v("LIST_FLOW", data.toString())
             }

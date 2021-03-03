@@ -1,29 +1,20 @@
 package com.grevi.masakapa.ui.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.grevi.masakapa.R
+import com.grevi.masakapa.databinding.ListsCategorysBinding
 import com.grevi.masakapa.db.entity.Category
-import com.grevi.masakapa.model.Categorys
-import com.grevi.masakapa.util.CategoryListenear
-import kotlinx.android.synthetic.main.lists_categorys.view.*
 
 class CategorysAdapter : RecyclerView.Adapter<CategorysAdapter.CategoryVH>() {
 
     private val categorys : MutableList<Category> = mutableListOf()
-    private var listenear : CategoryListenear? = null
+    internal var itemTouch : ((category : Category) -> Unit)? = null
 
-    inner class CategoryVH(view : View) : RecyclerView.ViewHolder(view) {
-        fun bind(categorys: Category) {
-            itemView.categorysText.text = categorys.category
-            itemView.setOnClickListener { listenear?.onItemSelected(categorys) }
+    inner class CategoryVH(private val binding : ListsCategorysBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(categorys: Category) = with(binding) {
+            categorysText.text = categorys.category
         }
-    }
-
-    internal fun itemCategory(listenear : CategoryListenear) {
-        this.listenear = listenear
     }
 
     fun addItem(item : List<Category>) {
@@ -33,7 +24,7 @@ class CategorysAdapter : RecyclerView.Adapter<CategorysAdapter.CategoryVH>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryVH {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.lists_categorys, parent, false)
+        val view = ListsCategorysBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CategoryVH(view)
     }
 
@@ -43,5 +34,6 @@ class CategorysAdapter : RecyclerView.Adapter<CategorysAdapter.CategoryVH>() {
 
     override fun onBindViewHolder(holder: CategoryVH, position: Int) {
         holder.bind(categorys[position])
+        holder.itemView.setOnClickListener { itemTouch?.invoke(categorys[position]) }
     }
 }

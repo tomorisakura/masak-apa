@@ -1,14 +1,11 @@
 package com.grevi.masakapa.ui.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.grevi.masakapa.R
-import kotlinx.android.synthetic.main.lists_ingredients.view.*
+import com.grevi.masakapa.databinding.ListsIngredientsBinding
 
 class IngredientsAdapter : RecyclerView.Adapter<IngredientsAdapter.IngredientsVH>() {
-
     private val ingredient : MutableList<String> = mutableListOf()
 
     fun addList(list : MutableList<String>) {
@@ -16,16 +13,14 @@ class IngredientsAdapter : RecyclerView.Adapter<IngredientsAdapter.IngredientsVH
         ingredient.addAll(list)
     }
 
-    inner class IngredientsVH(view : View) : RecyclerView.ViewHolder(view) {
-        fun bind(name : String) {
-            with(itemView) {
-                this.ingredientsText.text = name
-            }
+    inner class IngredientsVH(private val binding : ListsIngredientsBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(name : String) = with(binding) {
+            ingredientsText.text = name
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IngredientsVH {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.lists_ingredients, parent, false)
+        val view = ListsIngredientsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return IngredientsVH(view)
     }
 

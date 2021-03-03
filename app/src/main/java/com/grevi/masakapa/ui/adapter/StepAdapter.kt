@@ -1,19 +1,16 @@
 package com.grevi.masakapa.ui.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.grevi.masakapa.R
-import kotlinx.android.synthetic.main.lists_ingredients.view.*
+import com.grevi.masakapa.databinding.ListsIngredientsBinding
 
-class StepAdapte :RecyclerView.Adapter<StepAdapte.StepVH>() {
-
+class StepAdapter :RecyclerView.Adapter<StepAdapter.StepVH>() {
     private val steps : MutableList<String> = mutableListOf()
 
-    inner class StepVH(view : View) : RecyclerView.ViewHolder(view) {
-        fun bind(string: String) {
-            itemView.ingredientsText.text = string
+    inner class StepVH(private val binding : ListsIngredientsBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(string: String) = with(binding) {
+            ingredientsText.text = string
         }
     }
 
@@ -23,7 +20,7 @@ class StepAdapte :RecyclerView.Adapter<StepAdapte.StepVH>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StepVH {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.lists_ingredients, parent, false)
+        val view = ListsIngredientsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return StepVH(view)
     }
 

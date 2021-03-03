@@ -16,83 +16,70 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import com.google.android.material.snackbar.Snackbar
-import com.grevi.masakapa.R
+import com.grevi.masakapa.databinding.FragmentRecipesBinding
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.RecipesAdapter
 import com.grevi.masakapa.ui.search.SearchActivity
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
-import com.grevi.masakapa.util.Listenear
-import com.grevi.masakapa.util.Resource.Status
+import com.grevi.masakapa.util.State
+import com.grevi.masakapa.util.toast
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_recipes.*
 
 @AndroidEntryPoint
 class RecipesFragment : Fragment() {
 
-    private val recipesViewModel by viewModels<RecipesViewModel>()
-    private lateinit var recipesAdapter: RecipesAdapter
+    private lateinit var binding : FragmentRecipesBinding
     private lateinit var navController: NavController
-    private lateinit var snapHelper: LinearSnapHelper
+    private val recipesViewModel by viewModels<RecipesViewModel>()
+    private val recipesAdapter: RecipesAdapter by lazy { RecipesAdapter() }
+    private val snapHelper: LinearSnapHelper by lazy { LinearSnapHelper() }
+
+    private val TAG = RecipesFragment::class.java.simpleName
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_recipes, container, false)
+        binding = FragmentRecipesBinding.inflate(inflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        recipesAdapter = RecipesAdapter()
-        snapHelper = LinearSnapHelper()
-        prepareView(view)
-        swipeRefresh(view)
+        prepareView()
+        swipeRefresh()
     }
 
-    private fun prepareView(view: View) {
-        rv_recipes_list.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
-        rv_recipes_list.adapter = recipesAdapter
-        //refresh_layout.isRefreshing = true
-        showInetSnap(false, view)
-        snapHelper.attachToRecyclerView(rv_recipes_list)
-        rv_recipes_list.animate().alpha(0f).duration = 1000L
+    private fun prepareView() = with(binding) {
+        rvRecipesList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        rvRecipesList.adapter = recipesAdapter
+
+        snapHelper.attachToRecyclerView(rvRecipesList)
+        rvRecipesList.animate().alpha(0f).duration = 1000L
 
         recipesViewModel.recipes.observe(viewLifecycleOwner, Observer {response ->
-            Log.v("RESPONSE", response.status.name)
-            when(response.status) {
-                Status.ERROR -> {
-                    snackBar(view, getString(R.string.no_inet_text)).show()
-                    showInetSnap(true, view)
+            when(response) {
+                is State.Loading -> Log.i(TAG, response.msg)
+                is State.Error -> toast(requireContext(), response.msg)
+                is State.Success -> {
+                    refreshLayout.isRefreshing = false
+                    recipesAdapter.addItem(response.data.results)
+                    rvRecipesList.animate().alpha(1f).duration = 1000L
+                    tvGreeting.visibility = View.VISIBLE
+                    tvGreeting.animate().alpha(1f).duration = 1000L
+                    recipesAdapter.itemTouch = { prepareNavigate(it) }
                 }
-                Status.LOADING -> {
-                    snackBar(view, response.msg.toString()).show()
-                    refresh_layout.isRefreshing = true
-                }
-                Status.SUCCESS -> {
-                    response.data?.results?.let {
-                        recipesAdapter.addItem(it)
-                    }
-                    rv_recipes_list.animate().alpha(1f).duration = 1000L
-                    refresh_layout.isRefreshing = false
-                    showInetSnap(false, view)
-                    tv_greeting.visibility = View.VISIBLE
-                    tv_greeting.animate().alpha(1f).duration = 1000L
-                }
+                else -> Log.i(TAG, "")
             }
 
-            recipesAdapter.itemRecipes(object : Listenear{
-                override fun onItemSelected(recipes: Recipes) {
-                    prepareNavigate(recipes)
-                }
-
-            })
         })
 
-        search_card.setOnClickListener {
-            val intent = Intent(view.context, SearchActivity::class.java)
-            startActivity(intent)
+        searchCard.setOnClickListener {
+            Intent(activity, SearchActivity::class.java).also {
+                startActivity(it)
+            }
         }
     }
 
@@ -101,31 +88,15 @@ class RecipesFragment : Fragment() {
         navController.navigate(action)
     }
 
-    private fun swipeRefresh(view: View) {
-        refresh_layout.setOnRefreshListener {
+    private fun swipeRefresh() = with(binding) {
+        refreshLayout.setOnRefreshListener {
             Handler(Looper.getMainLooper()).postDelayed({
-                prepareView(view)
+                prepareView()
             }, 2000L)
         }
     }
 
     private fun snackBar(view: View, msg: String) : Snackbar {
         return Snackbar.make(view, msg, Snackbar.LENGTH_SHORT)
-    }
-
-    private fun showInetSnap(state : Boolean, view: View) {
-        when(state) {
-            true -> {
-                snap_no_inet.visibility = View.VISIBLE
-                snap_no_inet.animate().alpha(1f)
-            }
-
-            false -> {
-                snap_no_inet.visibility = View.INVISIBLE
-                tv_greeting.visibility = View.INVISIBLE
-                snap_no_inet.animate().alpha(0f)
-                tv_greeting.animate().alpha(0f)
-            }
-        }
     }
 }

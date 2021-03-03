@@ -4,19 +4,21 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.grevi.masakapa.R
+import com.grevi.masakapa.databinding.ActivitySearchBinding
 import com.grevi.masakapa.ui.base.BaseActivity
 import com.grevi.masakapa.ui.marked.MarkActivity
-import kotlinx.android.synthetic.main.activity_search.*
 
 
 class SearchActivity : BaseActivity() {
+    private lateinit var binding: ActivitySearchBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
-        setSupportActionBar(toolbar)
+        binding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
         supportActionBar?.setIcon(R.drawable.ic_icon_text)
         supportActionBar?.title = null
         val navHostSearch = supportFragmentManager.findFragmentById(R.id.nav_container_search) as NavHostFragment

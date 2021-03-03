@@ -7,7 +7,6 @@ import android.os.Looper
 import com.grevi.masakapa.R
 import com.grevi.masakapa.ui.HomeActivity
 import com.grevi.masakapa.ui.base.BaseActivity
-import dagger.hilt.android.AndroidEntryPoint
 
 class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,9 +14,10 @@ class SplashActivity : BaseActivity() {
         setContentView(R.layout.activity_main)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, HomeActivity::class.java)
-            startActivity(intent)
-            finish()
+            Intent(this, HomeActivity::class.java).apply {
+                startActivity(this)
+                finish()
+            }
         }, 2000L)
     }
 }

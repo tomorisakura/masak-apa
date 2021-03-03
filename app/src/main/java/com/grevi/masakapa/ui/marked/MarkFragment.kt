@@ -14,21 +14,21 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import com.grevi.masakapa.R
-import com.grevi.masakapa.db.entity.Recipes
+import com.grevi.masakapa.databinding.FragmentMarkBinding
+import com.grevi.masakapa.databinding.SnapMarkLayoutBinding
+import com.grevi.masakapa.db.entity.RecipesTable
 import com.grevi.masakapa.ui.adapter.MarkAdapter
 import com.grevi.masakapa.ui.search.SearchActivity
 import com.grevi.masakapa.ui.viewmodel.DatabaseViewModel
-import com.grevi.masakapa.util.MarkListener
 import com.grevi.masakapa.util.Resource
 import com.grevi.masakapa.util.toast
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_mark.*
-import kotlinx.android.synthetic.main.snap_mark_layout.*
 
 @AndroidEntryPoint
 class MarkFragment : Fragment() {
 
+    private lateinit var binding : FragmentMarkBinding
+    private lateinit var snapMarkBinding: SnapMarkLayoutBinding
     private val databaseViewModel : DatabaseViewModel by viewModels()
     private lateinit var markAdapter: MarkAdapter
     private lateinit var navController: NavController
@@ -38,19 +38,21 @@ class MarkFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_mark, container, false)
+        binding = FragmentMarkBinding.inflate(inflater)
+        snapMarkBinding = SnapMarkLayoutBinding.inflate(inflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        prepareRV()
+        prepareView()
     }
 
-    private fun prepareRV() {
+    private fun prepareView() = with(binding) {
         markAdapter = MarkAdapter()
-        rv_recipes_mark.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
-        rv_recipes_mark.adapter = markAdapter
+        rvRecipesMark.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        rvRecipesMark.adapter = markAdapter
         databaseViewModel.listMark.observe(viewLifecycleOwner, Observer { response ->
             when(response.status) {
                 Resource.Status.SUCCESS -> {
@@ -59,6 +61,7 @@ class MarkFragment : Fragment() {
                         prepareSwipe(it)
                     }
                     showSnap(false)
+                    markAdapter.itemTouch = { prepareNavigate(it) }
                 }
 
                 Resource.Status.LOADING -> {
@@ -72,13 +75,6 @@ class MarkFragment : Fragment() {
             }
         })
 
-        markAdapter.itemRecipes(object : MarkListener {
-            override fun onItemSelected(recipes: Recipes) {
-                prepareNavigate(recipes)
-            }
-
-        })
-
         databaseViewModel.state.observe(viewLifecycleOwner, Observer {
             if (it) {
                 showSnap(it)
@@ -88,7 +84,7 @@ class MarkFragment : Fragment() {
         })
     }
 
-    private fun prepareSwipe(recipes : MutableList<Recipes>) {
+    private fun prepareSwipe(recipes : MutableList<RecipesTable>) {
         val simpleTouchCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -103,28 +99,29 @@ class MarkFragment : Fragment() {
                 val msg = "Resep ${recipes[position].name} dihapus"
                 markAdapter.removeItem(recipes[position], position)
                 databaseViewModel.deleteRecipes(recipes[position])
-                materialDialog(mainMark, msg).show()
+                materialDialog(binding.root, msg).show()
             }
 
         }
         val itemTouchHelper = ItemTouchHelper(simpleTouchCallback)
-        itemTouchHelper.attachToRecyclerView(rv_recipes_mark)
+        itemTouchHelper.attachToRecyclerView(binding.rvRecipesMark)
     }
 
-    private fun prepareNavigate(recipes: Recipes) {
-        val action = MarkFragmentDirections.actionMarkFragmentToDetailFragment3(recipes.key, recipes.imageThumb)
+    private fun prepareNavigate(recipesTable: RecipesTable) {
+        val action = MarkFragmentDirections.actionMarkFragmentToDetailFragment3(recipesTable.key, recipesTable.imageThumb)
         navController.navigate(action)
     }
 
-    private fun showSnap(state : Boolean) {
+    private fun showSnap(state : Boolean) = with(binding) {
         when(state) {
             true -> {
                 snapMark.visibility = ViewGroup.VISIBLE
                 snapMark.animate().alpha(1f)
-                emptyBtn.setOnClickListener {
-                    val intent = Intent(activity, SearchActivity::class.java)
-                    startActivity(intent)
-                    activity?.finish()
+                snapMarkBinding.emptyBtn.setOnClickListener {
+                    Intent(activity, SearchActivity::class.java).also {
+                        startActivity(it)
+                        activity?.finish()
+                    }
                 }
             }
 

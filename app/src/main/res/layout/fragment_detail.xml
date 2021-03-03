@@ -96,26 +96,6 @@
                 <include layout="@layout/item_card" />
             </LinearLayout>
 
-            <!--        <TextView-->
-            <!--            android:layout_width="wrap_content"-->
-            <!--            android:layout_height="wrap_content"-->
-            <!--            style="@style/textMiniHead_style"-->
-            <!--            android:layout_marginTop="40dp"-->
-            <!--            android:layout_marginStart="10dp"-->
-            <!--            android:layout_marginEnd="10dp"-->
-            <!--            android:text="@string/desc_text"/>-->
-
-            <!--        <TextView-->
-            <!--            android:id="@+id/descText"-->
-            <!--            android:layout_width="match_parent"-->
-            <!--            android:layout_height="wrap_content"-->
-            <!--            style="@style/desc_style"-->
-            <!--            android:lineSpacingExtra="12sp"-->
-            <!--            android:layout_marginTop="20dp"-->
-            <!--            android:layout_marginStart="10dp"-->
-            <!--            android:layout_marginEnd="10dp"-->
-            <!--            tools:text="desc"/>-->
-
             <TextView
                 android:id="@+id/textIngredientLabel"
                 style="@style/textMiniHead_style"
@@ -158,15 +138,14 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/floatButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/app_name"
-        android:text="Tandai"
-        android:src="@drawable/ic_mark_icon"
+        android:text="Pin"
+        app:icon="@drawable/ic_mark_icon"
         android:layout_margin="20dp"
-        app:fabSize="mini"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

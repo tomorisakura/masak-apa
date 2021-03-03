@@ -14,78 +14,75 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.grevi.masakapa.R
+import com.grevi.masakapa.databinding.FragmentCategoryBinding
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.CategoryItemAdapter
-import com.grevi.masakapa.ui.adapter.RecipesAdapter
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
-import com.grevi.masakapa.util.Listenear
 import com.grevi.masakapa.util.Resource
+import com.grevi.masakapa.util.State
 import com.grevi.masakapa.util.toast
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_category.*
 
 @AndroidEntryPoint
 class CategoryFragment : Fragment() {
 
+    private lateinit var binding : FragmentCategoryBinding
     private val arg : CategoryFragmentArgs by navArgs()
     private val recipesViewModel by viewModels<RecipesViewModel>()
-    private lateinit var categoryItemAdapter: CategoryItemAdapter
+    private val categoryItemAdapter: CategoryItemAdapter by lazy { CategoryItemAdapter() }
     private lateinit var navController: NavController
+
+    private val TAG = CategoryFragment::class.java.simpleName
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_category, container, false)
+        binding = FragmentCategoryBinding.inflate(inflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.v("ARGS", arg.catKey.toString())
         navController = Navigation.findNavController(view)
-        prepareView(view)
-        swipeRefresh(view)
+        prepareView()
+        swipeRefresh()
     }
 
-    private fun prepareView(view: View) {
-        categoryItemAdapter = CategoryItemAdapter()
-        rv_recipes_category_list.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
-        rv_recipes_category_list.adapter = categoryItemAdapter
-        refresh_cat_layout.isRefreshing = true
+    private fun prepareView() = with(binding) {
+        rvRecipesCategoryList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        rvRecipesCategoryList.adapter = categoryItemAdapter
+        refreshCatLayout.isRefreshing = true
 
-        rv_recipes_category_list.animate().alpha(0f).duration = 1000L
+        rvRecipesCategoryList.animate().alpha(0f).duration = 1000L
 
-        recipesViewModel.categoryResult(arg.catKey!!).observe(viewLifecycleOwner, Observer {response ->
-            Log.v("RESPONSE", response.status.name)
-            categoryHintText.text = "${arg.catName} (${response.data?.results?.size})"
-            when(response.status) {
-                Resource.Status.ERROR -> toast(view.context, "Err : ${response.msg}")
-                Resource.Status.LOADING -> {
-                    toast(view.context, response.msg.toString())
-                    refresh_cat_layout.isRefreshing = true
+        recipesViewModel.categoryResult(arg.catKey!!).observe(
+            viewLifecycleOwner, { results ->
+                categoryHintText.text = "${arg.catName} (0)"
+                when (results) {
+                    is State.Loading -> Log.i(TAG, results.msg)
+                    is State.Error -> {
+                        toast(requireContext(), results.msg)
+                        refreshCatLayout.isRefreshing = true
+                    }
+                    is State.Success -> {
+                        results.data.results.let { categoryItemAdapter.addItem(it) }
+                        rvRecipesCategoryList.animate().alpha(1f).duration = 1000L
+                        refreshCatLayout.isRefreshing = false
+                        categoryHintText.text = "${arg.catName} (${results.data.results?.size})"
+                    }
+                    else -> Log.i(TAG, "")
                 }
-                Resource.Status.SUCCESS -> {
-                    response.data?.results?.let { categoryItemAdapter.addItem(it) }
-                    rv_recipes_category_list.animate().alpha(1f).duration = 1000L
-                    refresh_cat_layout.isRefreshing = false
-                }
-            }
-        })
-
-        categoryItemAdapter.itemRecipes(object : Listenear{
-            override fun onItemSelected(recipes: Recipes) {
-                prepareNavigate(recipes)
-            }
-
-        })
+            })
+        categoryItemAdapter.itemTouch = { prepareNavigate(it) }
     }
 
-    private fun swipeRefresh(view: View) {
-        refresh_cat_layout.setOnRefreshListener {
+    private fun swipeRefresh() = with(binding) {
+        refreshCatLayout.setOnRefreshListener {
             Handler(Looper.getMainLooper()).postDelayed({
-                prepareView(view)
+                prepareView()
             }, 2000L)
         }
     }

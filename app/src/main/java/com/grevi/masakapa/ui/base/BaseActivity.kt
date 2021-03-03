@@ -14,6 +14,5 @@ open class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState, persistentState)
         supportActionBar?.hide()
         supportActionBar?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
-        Log.v("BASE_ACTIVITY", "BASE RUN")
     }
 }
