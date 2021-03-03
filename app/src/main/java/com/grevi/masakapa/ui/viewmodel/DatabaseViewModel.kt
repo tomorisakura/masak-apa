@@ -5,11 +5,13 @@ import androidx.lifecycle.*
 import com.grevi.masakapa.db.entity.RecipesTable
 import com.grevi.masakapa.model.Detail
 import com.grevi.masakapa.repository.RepositoryImpl
+import com.grevi.masakapa.repository.mapper.MapperImpl
 import com.grevi.masakapa.util.HandlerListener
-import com.grevi.masakapa.util.Resource
+import com.grevi.masakapa.util.State
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,19 +20,18 @@ import javax.inject.Inject
 class DatabaseViewModel @Inject constructor(private val repositoryImpl: RepositoryImpl) : ViewModel() {
 
     var handlerListener : HandlerListener? = null
-    private var _listMarkRecipes = MutableLiveData<Resource<MutableList<RecipesTable>>>()
-    private lateinit var listFlow : Flow<List<RecipesTable>>
-    private var _state = MutableLiveData<Boolean>()
-
-    val listMark : MutableLiveData<Resource<MutableList<RecipesTable>>> get() = _listMarkRecipes
-    val state : MutableLiveData<Boolean> get() = _state
+    private val _listMarkRecipes = MutableStateFlow<State<MutableList<RecipesTable>>>(State.Data)
+    private val _state = MutableLiveData<Boolean>()
+    private val _isExist = MutableLiveData<Boolean>()
 
     init {
         getMarkRecipes()
-        getMarkFLow()
     }
+    val listMark : MutableStateFlow<State<MutableList<RecipesTable>>> get() = _listMarkRecipes
 
-    private fun insertRecipes(detail : Detail, key : String, thumb : String) {
+    val state : MutableLiveData<Boolean> get() = _state
+
+    fun insertRecipes(detail : Detail, key : String, thumb : String) {
         viewModelScope.launch {
             val recipes = RecipesTable(
                 key = key,
@@ -44,62 +45,34 @@ class DatabaseViewModel @Inject constructor(private val repositoryImpl: Reposito
         }
     }
 
-    fun keyChecker(detail : Detail, key : String, thumb : String) {
+    fun keyChecker(key : String) : LiveData<Boolean> {
         viewModelScope.launch {
-            val data = repositoryImpl.isExistRecipes(key)
-            if (!data) {
-                insertRecipes(detail, key, thumb)
-                handlerListener?.message("Resep Berhasil Disimpan", data)
-            } else {
-                Log.v("STATE", "EXISTS $data")
-                handlerListener?.message("Resep ${detail.name} Telah Ada Dalam List", data)
-            }
+            _isExist.postValue(repositoryImpl.isExistRecipes(key))
         }
+        return _isExist
     }
 
-    private fun getMarkRecipes() : LiveData<Resource<MutableList<RecipesTable>>> {
+    private fun getMarkRecipes(){
         viewModelScope.launch {
             val data = repositoryImpl.getMarkedRecipes()
-
             if (!data.isNullOrEmpty()) {
-                _listMarkRecipes.postValue(Resource.loading(null, "Load"))
+                _listMarkRecipes.value = State.Loading()
                 try {
-                    _listMarkRecipes.postValue(Resource.success(data))
-                    delay(1000L)
+                    _listMarkRecipes.value = State.Success(data)
                 }catch (e : Exception) {
-                    _listMarkRecipes.postValue(Resource.error(null, e.message))
+                    _listMarkRecipes.value = State.Error(e.toString())
                 }
-            } else {
-                Log.v("STATE_DATA", "empty list")
             }
         }
-
-        return _listMarkRecipes
     }
 
     fun deleteRecipes(recipesTable: RecipesTable) {
         viewModelScope.launch {
             Log.v("DELETE_RECIPES", "Delete : ${recipesTable.name}")
-
             repositoryImpl.deleteRecipes(recipesTable)
             val data = repositoryImpl.getMarkedRecipes()
-            Log.v("DELETE_RECIPES_SIZE", data.size.toString())
             _state.value = data.size == 0
-            Log.v("DELETE_RECIPES_STATUS", _state.value.toString())
-            delay(1000L)
         }
-    }
-
-    private fun getMarkFLow() : Flow<List<RecipesTable>> {
-        viewModelScope.launch {
-            listFlow = repositoryImpl.getFlowRecipes()
-            listFlow.collect { data ->
-                Log.v("LIST_FLOW", data.toString())
-            }
-
-        }
-
-        return listFlow
     }
 
 }

@@ -6,7 +6,6 @@ import com.grevi.masakapa.network.response.CategorysResponse
 import com.grevi.masakapa.network.response.DetailResponse
 import com.grevi.masakapa.network.response.RecipesResponse
 import com.grevi.masakapa.network.response.SearchResponse
-import com.grevi.masakapa.util.Resource
 import com.grevi.masakapa.util.State
 import kotlinx.coroutines.flow.Flow
 

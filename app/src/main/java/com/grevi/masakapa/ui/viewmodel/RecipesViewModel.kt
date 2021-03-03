@@ -9,7 +9,6 @@ import com.grevi.masakapa.network.response.DetailResponse
 import com.grevi.masakapa.network.response.RecipesResponse
 import com.grevi.masakapa.network.response.SearchResponse
 import com.grevi.masakapa.repository.RepositoryImpl
-import com.grevi.masakapa.util.NetworkUtils
 import com.grevi.masakapa.util.ResponseException
 import com.grevi.masakapa.util.State
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +19,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RecipesViewModel @Inject constructor(private val repositoryImpl: RepositoryImpl, private val networkUtils: NetworkUtils) : ViewModel() {
+class RecipesViewModel @Inject constructor(private val repositoryImpl: RepositoryImpl) : ViewModel() {
 
     private val _recipesData = MutableLiveData<State<RecipesResponse>>()
     private val _recipeDetail = MutableLiveData<State<DetailResponse>>()
@@ -30,8 +29,6 @@ class RecipesViewModel @Inject constructor(private val repositoryImpl: Repositor
     val recipes : MutableLiveData<State<RecipesResponse>> get() = _recipesData
     val category : MutableStateFlow<State<MutableList<Category>>> get() = _category
 
-    private val netWorkObserver = networkUtils.networkDataStatus
-
     init {
         getRecipes()
         getCategoryLocal()
@@ -40,10 +37,11 @@ class RecipesViewModel @Inject constructor(private val repositoryImpl: Repositor
     private fun getRecipes() {
         viewModelScope.launch {
             val data = repositoryImpl.getRecipes()
-            if (netWorkObserver.value == true) {
+            try {
                 _recipesData.postValue(data)
-            }else {
-                _recipesData.postValue(State.Error("No Internet Connection"))
+            } catch (e : ResponseException) {
+                e.printStackTrace()
+                _recipesData.postValue(State.Error(e.toString()))
             }
         }
     }
@@ -55,10 +53,7 @@ class RecipesViewModel @Inject constructor(private val repositoryImpl: Repositor
             _recipeDetail.postValue(State.Loading())
             try {
                 _recipeDetail.postValue(data)
-            } catch (e : Exception) {
-                e.printStackTrace()
-                _recipeDetail.postValue(State.Error(e.toString()))
-            }catch (e : ResponseException) {
+            } catch (e : ResponseException) {
                 e.printStackTrace()
                 _recipeDetail.postValue(State.Error(e.toString()))
             }
@@ -87,9 +82,6 @@ class RecipesViewModel @Inject constructor(private val repositoryImpl: Repositor
                 _category.value = State.Loading()
                 try {
                     _category.value = State.Success(it)
-                }catch (e : Exception) {
-                    e.printStackTrace()
-                    _category.value = State.Error(e.toString())
                 }catch (e : ResponseException) {
                     e.printStackTrace()
                     _category.value = State.Error(e.toString())
@@ -104,7 +96,7 @@ class RecipesViewModel @Inject constructor(private val repositoryImpl: Repositor
             _recipesData.postValue(State.Loading())
             try {
                 _recipesData.postValue(data)
-            } catch (e : Exception) {
+            } catch (e : ResponseException) {
                 e.printStackTrace()
                 _recipesData.postValue(State.Error(e.toString()))
             }

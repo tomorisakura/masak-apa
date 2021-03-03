@@ -1,13 +1,12 @@
 package com.grevi.masakapa.ui.marked
 
-import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -15,23 +14,28 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.grevi.masakapa.databinding.FragmentMarkBinding
-import com.grevi.masakapa.databinding.SnapMarkLayoutBinding
 import com.grevi.masakapa.db.entity.RecipesTable
 import com.grevi.masakapa.ui.adapter.MarkAdapter
-import com.grevi.masakapa.ui.search.SearchActivity
 import com.grevi.masakapa.ui.viewmodel.DatabaseViewModel
-import com.grevi.masakapa.util.Resource
-import com.grevi.masakapa.util.toast
+import com.grevi.masakapa.util.State
+import com.grevi.masakapa.util.snackBar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MarkFragment : Fragment() {
 
     private lateinit var binding : FragmentMarkBinding
-    private lateinit var snapMarkBinding: SnapMarkLayoutBinding
     private val databaseViewModel : DatabaseViewModel by viewModels()
-    private lateinit var markAdapter: MarkAdapter
+    private val markAdapter: MarkAdapter by lazy { MarkAdapter() }
+    private val job : Job by lazy { Job() }
     private lateinit var navController: NavController
+
+    private val TAG = MarkFragment::class.java.simpleName
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,7 +43,6 @@ class MarkFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentMarkBinding.inflate(inflater)
-        snapMarkBinding = SnapMarkLayoutBinding.inflate(inflater)
         return binding.root
     }
 
@@ -50,38 +53,24 @@ class MarkFragment : Fragment() {
     }
 
     private fun prepareView() = with(binding) {
-        markAdapter = MarkAdapter()
-        rvRecipesMark.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        rvRecipesMark.adapter = markAdapter
-        databaseViewModel.listMark.observe(viewLifecycleOwner, Observer { response ->
-            when(response.status) {
-                Resource.Status.SUCCESS -> {
-                    response.data?.let {
-                        markAdapter.addItem(it)
-                        prepareSwipe(it)
+        CoroutineScope(Dispatchers.Main + job).launch {
+            rvRecipesMark.apply {
+                layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                adapter = markAdapter
+            }
+            databaseViewModel.listMark.collect { state ->
+                when(state) {
+                    is State.Loading -> snackBar(root, state.msg).show()
+                    is State.Error -> snackBar(root, state.msg).show()
+                    is State.Success -> {
+                        markAdapter.addItem(state.data)
+                        markAdapter.itemTouch = { prepareNavigate(it) }
+                        prepareSwipe(state.data)
                     }
-                    showSnap(false)
-                    markAdapter.itemTouch = { prepareNavigate(it) }
-                }
-
-                Resource.Status.LOADING -> {
-                    toast(requireContext(),  response.msg.toString())
-                }
-
-                Resource.Status.ERROR -> {
-                    showSnap(true)
-                    toast(requireContext(),  response.msg.toString())
+                    else -> Log.i(TAG, "")
                 }
             }
-        })
-
-        databaseViewModel.state.observe(viewLifecycleOwner, Observer {
-            if (it) {
-                showSnap(it)
-            } else {
-                showSnap(it)
-            }
-        })
+        }
     }
 
     private fun prepareSwipe(recipes : MutableList<RecipesTable>) {
@@ -91,14 +80,14 @@ class MarkFragment : Fragment() {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                return false
+                return true
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                val msg = "Resep ${recipes[position].name} dihapus"
-                markAdapter.removeItem(recipes[position], position)
+                markAdapter.clearItem(recipes)
                 databaseViewModel.deleteRecipes(recipes[position])
+                val msg = "Resep ${recipes[position].name} dihapus"
                 materialDialog(binding.root, msg).show()
             }
 
@@ -110,26 +99,6 @@ class MarkFragment : Fragment() {
     private fun prepareNavigate(recipesTable: RecipesTable) {
         val action = MarkFragmentDirections.actionMarkFragmentToDetailFragment3(recipesTable.key, recipesTable.imageThumb)
         navController.navigate(action)
-    }
-
-    private fun showSnap(state : Boolean) = with(binding) {
-        when(state) {
-            true -> {
-                snapMark.visibility = ViewGroup.VISIBLE
-                snapMark.animate().alpha(1f)
-                snapMarkBinding.emptyBtn.setOnClickListener {
-                    Intent(activity, SearchActivity::class.java).also {
-                        startActivity(it)
-                        activity?.finish()
-                    }
-                }
-            }
-
-            false -> {
-                snapMark.visibility = ViewGroup.INVISIBLE
-                snapMark.animate().alpha(0f)
-            }
-        }
     }
 
     private fun materialDialog(view: View, msg: String) : Snackbar {

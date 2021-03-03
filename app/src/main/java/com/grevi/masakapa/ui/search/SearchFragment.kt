@@ -25,7 +25,6 @@ import com.grevi.masakapa.model.Search
 import com.grevi.masakapa.ui.adapter.CategorysAdapter
 import com.grevi.masakapa.ui.adapter.SearchAdapter
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
-import com.grevi.masakapa.util.Resource
 import com.grevi.masakapa.util.State
 import com.grevi.masakapa.util.toast
 import dagger.hilt.android.AndroidEntryPoint

@@ -9,7 +9,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,9 +24,10 @@ import com.grevi.masakapa.ui.viewmodel.DatabaseViewModel
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
 import com.grevi.masakapa.util.Constant.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE
 import com.grevi.masakapa.util.HandlerListener
-import com.grevi.masakapa.util.Resource
 import com.grevi.masakapa.util.State
+import com.grevi.masakapa.util.snackBar
 import com.grevi.masakapa.util.toast
+import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -87,7 +87,7 @@ class DetailFragment : Fragment(), HandlerListener {
 
                     floatButton.setOnClickListener {
                         results.data.results.let { data ->
-                            storageHandler(data, args.key, args.thumb)
+                            storageHandler(data)
                         }
                     }
                 }
@@ -140,29 +140,34 @@ class DetailFragment : Fragment(), HandlerListener {
         }
     }
 
-    private fun snackBar(view: View, msg : String) {
-        Snackbar.make(view, msg, Snackbar.LENGTH_SHORT).show()
+    private fun storageHandler(detail: Detail) {
+        PermissionX.init(activity)
+            .permissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .onExplainRequestReason { scope, deniedList, _ ->
+                scope.showRequestReasonDialog(deniedList, "Permission ini digunakan untuk menyimpan resep di bucket", "Ok", "Cancel")
+            }
+            .request { allGranted, _, _ ->
+                if (allGranted) {
+                    observeChecker(detail)
+                }
+            }
     }
 
-    private fun storageHandler(detail: Detail, key : String?, thumb : String?) {
-        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                snackBar(binding.root, "Tidak boleh akses memori 😒")
+    private fun observeChecker(detail : Detail) = with(binding) {
+        databaseViewModel.keyChecker(args.key!!).observe(viewLifecycleOwner) { isExist ->
+            if (!isExist) {
+                databaseViewModel.insertRecipes(detail, args.key!!, args.thumb!!)
+                snackBar(root, "${detail.name} ditambahkan di bucket !").show()
             } else {
-                ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE
-                )
-                Log.v("PERMISSION", "FAIL")
+                snackBar(root, "${detail.name} sudah ada di bucket !").show()
             }
-        } else {
-            databaseViewModel.keyChecker(detail, key!!, thumb!!)
         }
     }
 
     override fun message(msg: String, state: Boolean) {
         when(state) {
-            true -> snackBar(binding.root, msg)
-            false -> snackBar(binding.root, msg)
+            true -> snackBar(binding.root, msg).show()
+            false -> snackBar(binding.root, msg).show()
         }
     }
 }

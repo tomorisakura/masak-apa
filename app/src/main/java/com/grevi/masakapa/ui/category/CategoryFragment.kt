@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
@@ -18,7 +17,6 @@ import com.grevi.masakapa.databinding.FragmentCategoryBinding
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.CategoryItemAdapter
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
-import com.grevi.masakapa.util.Resource
 import com.grevi.masakapa.util.State
 import com.grevi.masakapa.util.toast
 import dagger.hilt.android.AndroidEntryPoint

@@ -15,13 +15,14 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
-import com.google.android.material.snackbar.Snackbar
 import com.grevi.masakapa.databinding.FragmentRecipesBinding
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.RecipesAdapter
 import com.grevi.masakapa.ui.search.SearchActivity
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
+import com.grevi.masakapa.util.NetworkUtils
 import com.grevi.masakapa.util.State
+import com.grevi.masakapa.util.snackBar
 import com.grevi.masakapa.util.toast
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,6 +34,7 @@ class RecipesFragment : Fragment() {
     private val recipesViewModel by viewModels<RecipesViewModel>()
     private val recipesAdapter: RecipesAdapter by lazy { RecipesAdapter() }
     private val snapHelper: LinearSnapHelper by lazy { LinearSnapHelper() }
+    private val networkUtils : NetworkUtils by lazy { NetworkUtils(requireContext()) }
 
     private val TAG = RecipesFragment::class.java.simpleName
 
@@ -48,8 +50,7 @@ class RecipesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        prepareView()
-        swipeRefresh()
+        observeNetwork()
     }
 
     private fun prepareView() = with(binding) {
@@ -62,7 +63,7 @@ class RecipesFragment : Fragment() {
         recipesViewModel.recipes.observe(viewLifecycleOwner, Observer {response ->
             when(response) {
                 is State.Loading -> Log.i(TAG, response.msg)
-                is State.Error -> toast(requireContext(), response.msg)
+                is State.Error -> toast(requireContext(), response.msg).show()
                 is State.Success -> {
                     refreshLayout.isRefreshing = false
                     recipesAdapter.addItem(response.data.results)
@@ -96,7 +97,14 @@ class RecipesFragment : Fragment() {
         }
     }
 
-    private fun snackBar(view: View, msg: String) : Snackbar {
-        return Snackbar.make(view, msg, Snackbar.LENGTH_SHORT)
+    private fun observeNetwork() = with(binding) {
+        networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnect ->
+            if (isConnect) {
+                prepareView()
+                swipeRefresh()
+            } else {
+                snackBar(root, "No Internet Connection").show()
+            }
+        }
     }
 }
