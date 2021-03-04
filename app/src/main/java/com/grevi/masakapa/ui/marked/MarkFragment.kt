@@ -50,6 +50,7 @@ class MarkFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
         prepareView()
+        deleteRecipes()
     }
 
     private fun prepareView() = with(binding) {
@@ -64,7 +65,6 @@ class MarkFragment : Fragment() {
                     is State.Error -> snackBar(root, state.msg).show()
                     is State.Success -> {
                         markAdapter.addItem(state.data)
-                        deleteRecipes(state.data)
                         markAdapter.itemTouch = { prepareNavigate(it) }
                     }
                     else -> Log.i(TAG, "")
@@ -73,8 +73,8 @@ class MarkFragment : Fragment() {
         }
     }
 
-    private fun deleteRecipes(recipes : List<RecipesTable>) {
-        val simpleTouchCallback = object : ItemTouchHelper.SimpleCallback(0, 0 or ItemTouchHelper.RIGHT) {
+    private fun deleteRecipes() = with(binding) {
+        val simpleTouchCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.ACTION_STATE_IDLE, 0 or ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -85,9 +85,13 @@ class MarkFragment : Fragment() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                databaseViewModel.deleteRecipes(recipes[position])
+                databaseViewModel.deleteRecipes(markAdapter.deleteItem(position))
+                snackBar(root, markAdapter.deleteItem(position).name).show()
+                /*
+                * delete array of item in recyclerView
+                * */
+                markAdapter.removeItem(position)
                 markAdapter.notifyItemRemoved(position)
-                snackBar(binding.root, recipes[position].name).show()
             }
 
             override fun clearView(
@@ -100,7 +104,7 @@ class MarkFragment : Fragment() {
 
         }
         ItemTouchHelper(simpleTouchCallback).apply {
-            attachToRecyclerView(binding.rvRecipesMark)
+            attachToRecyclerView(rvRecipesMark)
         }
     }
 

@@ -11,7 +11,7 @@ import com.grevi.masakapa.db.entity.RecipesTable
 import com.grevi.masakapa.util.DiffUtils
 
 class MarkAdapter : RecyclerView.Adapter<MarkAdapter.MarkVH>() {
-    private val recipes : MutableList<RecipesTable> = mutableListOf()
+    private val recipes : MutableList<RecipesTable> = ArrayList()
     internal var itemTouch : ((recipes : RecipesTable) -> Unit)? = null
 
     inner class MarkVH(private val binding : ListsRecipesBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -31,6 +31,10 @@ class MarkAdapter : RecyclerView.Adapter<MarkAdapter.MarkVH>() {
         recipes.addAll(item)
         diffResult.dispatchUpdatesTo(this)
     }
+
+    fun removeItem(position: Int) : Boolean = recipes.remove(recipes[position])
+
+    fun deleteItem(position: Int) : RecipesTable = recipes[position]
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MarkVH {
         val view = ListsRecipesBinding.inflate(LayoutInflater.from(parent.context), parent, false)
