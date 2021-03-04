@@ -1,16 +1,13 @@
 ## Masak Apa App
 ---
 
-### Preview
----
-
 <img src="https://github.com/tomorisakura/masak-apa/blob/master/preview/preview.png" width="600">
 
-__Masak Apa__ 
+__Masak Apa__
 
-Masak apa is a recipes app made with MVVM pattern and Jetpack Component, this app consume api from [Masak Apa](https://github.com/tomorisakura/unofficial-masakapahariini-api) 🚀
+Recipes app from [Masak Apa API](https://github.com/tomorisakura/unofficial-masakapahariini-api) made with MVVM pattern and [MAD](https://madscorecard.withgoogle.com/scorecards/2679097760/) 🚀
 
-[MAD Score](https://madscorecard.withgoogle.com/scorecards/2679097760/) 🎯
+[![Masak Apa](https://img.shields.io/badge/MasakApa🥗-APK-black.svg?style=for-the-badge&logo=android)](https://github.com/tomorisakura/masak-apa/blob/master/preview/app-debug.apk)
 
 ### Screen
 ---
@@ -47,4 +44,5 @@ Masak apa is a recipes app made with MVVM pattern and Jetpack Component, this ap
 
 - [x] Coroutine Flow
 
-- [ ] ViewBinding
+- [x] ViewBinding
+
