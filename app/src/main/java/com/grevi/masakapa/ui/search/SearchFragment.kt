@@ -25,7 +25,9 @@ import com.grevi.masakapa.model.Search
 import com.grevi.masakapa.ui.adapter.CategorysAdapter
 import com.grevi.masakapa.ui.adapter.SearchAdapter
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
+import com.grevi.masakapa.util.NetworkUtils
 import com.grevi.masakapa.util.State
+import com.grevi.masakapa.util.snackBar
 import com.grevi.masakapa.util.toast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -41,6 +43,7 @@ class SearchFragment : Fragment() {
     private lateinit var navController: NavController
     private val searchAdapter: SearchAdapter by lazy { SearchAdapter() }
     private val categoryAdapter: CategorysAdapter by lazy { CategorysAdapter() }
+    private val networkUtils : NetworkUtils by lazy { NetworkUtils(requireContext()) }
 
     private val TAG = SearchFragment::class.java.simpleName
 
@@ -63,8 +66,8 @@ class SearchFragment : Fragment() {
         binding.textInputSearch.setOnKeyListener { v, keyCode, event ->
             val ed = binding.textInputSearch.editableText.toString()
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
-                Log.v("PRESSED", ed)
-                prepareView(query = ed)
+                Log.i(TAG, ed)
+                observeNetwork(query = ed)
                 showSoftKey(v, false)
                 return@setOnKeyListener true
             }
@@ -169,8 +172,14 @@ class SearchFragment : Fragment() {
         navController.navigate(action)
     }
 
-    private fun snackBar(view: View, msg : String) {
-        Snackbar.make(view, msg, Snackbar.LENGTH_SHORT).show()
+    private fun observeNetwork(query: String) {
+        networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnect ->
+            if (isConnect) {
+                prepareView(query)
+            } else {
+                snackBar(binding.root, getString(R.string.no_inet_text)).show()
+            }
+        }
     }
 
 

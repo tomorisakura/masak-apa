@@ -12,7 +12,6 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import com.grevi.masakapa.databinding.FragmentMarkBinding
 import com.grevi.masakapa.db.entity.RecipesTable
 import com.grevi.masakapa.ui.adapter.MarkAdapter
@@ -64,8 +63,8 @@ class MarkFragment : Fragment() {
                     is State.Error -> snackBar(root, state.msg).show()
                     is State.Success -> {
                         markAdapter.addItem(state.data)
+                        deleteRecipes(state.data)
                         markAdapter.itemTouch = { prepareNavigate(it) }
-                        prepareSwipe(state.data)
                     }
                     else -> Log.i(TAG, "")
                 }
@@ -73,8 +72,8 @@ class MarkFragment : Fragment() {
         }
     }
 
-    private fun prepareSwipe(recipes : MutableList<RecipesTable>) {
-        val simpleTouchCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+    private fun deleteRecipes(recipes : MutableList<RecipesTable>) {
+        val simpleTouchCallback = object : ItemTouchHelper.SimpleCallback(0, 0 or ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -85,15 +84,23 @@ class MarkFragment : Fragment() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                markAdapter.clearItem(recipes)
                 databaseViewModel.deleteRecipes(recipes[position])
-                val msg = "Resep ${recipes[position].name} dihapus"
-                materialDialog(binding.root, msg).show()
+                markAdapter.notifyItemRemoved(position)
+                snackBar(binding.root, recipes[position].name).show()
+            }
+
+            override fun clearView(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ) {
+                super.clearView(recyclerView, viewHolder)
+                viewHolder.itemView.alpha = 1.0f
             }
 
         }
-        val itemTouchHelper = ItemTouchHelper(simpleTouchCallback)
-        itemTouchHelper.attachToRecyclerView(binding.rvRecipesMark)
+        ItemTouchHelper(simpleTouchCallback).apply {
+            attachToRecyclerView(binding.rvRecipesMark)
+        }
     }
 
     private fun prepareNavigate(recipesTable: RecipesTable) {
@@ -101,7 +108,8 @@ class MarkFragment : Fragment() {
         navController.navigate(action)
     }
 
-    private fun materialDialog(view: View, msg: String) : Snackbar {
-        return Snackbar.make(view, msg, Snackbar.LENGTH_SHORT)
+    override fun onResume() {
+        super.onResume()
+        prepareView()
     }
 }

@@ -144,7 +144,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/app_name"
         android:text="Pin"
-        app:icon="@drawable/ic_mark_icon"
+        app:icon="@drawable/ic_twotone_favorite_24"
         android:layout_margin="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

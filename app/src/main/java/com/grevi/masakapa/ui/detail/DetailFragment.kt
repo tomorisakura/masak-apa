@@ -22,11 +22,8 @@ import com.grevi.masakapa.ui.adapter.IngredientsAdapter
 import com.grevi.masakapa.ui.adapter.StepAdapter
 import com.grevi.masakapa.ui.viewmodel.DatabaseViewModel
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
+import com.grevi.masakapa.util.*
 import com.grevi.masakapa.util.Constant.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE
-import com.grevi.masakapa.util.HandlerListener
-import com.grevi.masakapa.util.State
-import com.grevi.masakapa.util.snackBar
-import com.grevi.masakapa.util.toast
 import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,6 +37,7 @@ class DetailFragment : Fragment(), HandlerListener {
     private val ingredientsAdapter : IngredientsAdapter by lazy { IngredientsAdapter() }
     private val stepAdapter: StepAdapter by lazy { StepAdapter() }
     private val databaseViewModel : DatabaseViewModel by viewModels()
+    private val networkUtils : NetworkUtils by lazy { NetworkUtils(requireContext()) }
 
     private val TAG = DetailFragment::class.java.simpleName
 
@@ -56,8 +54,7 @@ class DetailFragment : Fragment(), HandlerListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         databaseViewModel.handlerListener = this
-        prepareViewLayout(false)
-        prepareView()
+        observeNetwork()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -160,6 +157,17 @@ class DetailFragment : Fragment(), HandlerListener {
                 snackBar(root, "${detail.name} ditambahkan di bucket !").show()
             } else {
                 snackBar(root, "${detail.name} sudah ada di bucket !").show()
+            }
+        }
+    }
+
+    private fun observeNetwork() {
+        networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnect ->
+            if (isConnect) {
+                prepareViewLayout(false)
+                prepareView()
+            } else {
+                snackBar(binding.root, getString(R.string.no_inet_text)).show()
             }
         }
     }

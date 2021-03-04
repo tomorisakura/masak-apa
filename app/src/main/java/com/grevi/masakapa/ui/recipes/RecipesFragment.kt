@@ -15,6 +15,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
+import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.FragmentRecipesBinding
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.RecipesAdapter
@@ -51,6 +52,7 @@ class RecipesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
         observeNetwork()
+        swipeRefresh()
     }
 
     private fun prepareView() = with(binding) {
@@ -90,10 +92,16 @@ class RecipesFragment : Fragment() {
     }
 
     private fun swipeRefresh() = with(binding) {
-        refreshLayout.setOnRefreshListener {
-            Handler(Looper.getMainLooper()).postDelayed({
-                prepareView()
-            }, 2000L)
+        networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnect ->
+            if (isConnect) {
+                refreshLayout.setOnRefreshListener {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        prepareView()
+                    }, 2000L)
+                }
+            } else {
+                snackBar(root, getString(R.string.no_inet_text)).show()
+            }
         }
     }
 
@@ -101,9 +109,8 @@ class RecipesFragment : Fragment() {
         networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnect ->
             if (isConnect) {
                 prepareView()
-                swipeRefresh()
             } else {
-                snackBar(root, "No Internet Connection").show()
+                snackBar(root, getString(R.string.no_inet_text)).show()
             }
         }
     }

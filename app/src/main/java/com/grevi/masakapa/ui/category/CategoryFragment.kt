@@ -13,11 +13,14 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.FragmentCategoryBinding
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.CategoryItemAdapter
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
+import com.grevi.masakapa.util.NetworkUtils
 import com.grevi.masakapa.util.State
+import com.grevi.masakapa.util.snackBar
 import com.grevi.masakapa.util.toast
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,6 +32,7 @@ class CategoryFragment : Fragment() {
     private val recipesViewModel by viewModels<RecipesViewModel>()
     private val categoryItemAdapter: CategoryItemAdapter by lazy { CategoryItemAdapter() }
     private lateinit var navController: NavController
+    private val networkUtils : NetworkUtils by lazy { NetworkUtils(requireContext()) }
 
     private val TAG = CategoryFragment::class.java.simpleName
 
@@ -43,9 +47,9 @@ class CategoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.v("ARGS", arg.catKey.toString())
+        Log.v(TAG, arg.catKey.toString())
         navController = Navigation.findNavController(view)
-        prepareView()
+        observeNetwork()
         swipeRefresh()
     }
 
@@ -78,10 +82,26 @@ class CategoryFragment : Fragment() {
     }
 
     private fun swipeRefresh() = with(binding) {
-        refreshCatLayout.setOnRefreshListener {
-            Handler(Looper.getMainLooper()).postDelayed({
+        networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnect ->
+            if (isConnect) {
+                refreshCatLayout.setOnRefreshListener {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        prepareView()
+                    }, 2000L)
+                }
+            } else {
+                snackBar(root, getString(R.string.no_inet_text)).show()
+            }
+        }
+    }
+
+    private fun observeNetwork() {
+        networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnect ->
+            if (isConnect) {
                 prepareView()
-            }, 2000L)
+            } else {
+                snackBar(binding.root, getString(R.string.no_inet_text)).show()
+            }
         }
     }
 
