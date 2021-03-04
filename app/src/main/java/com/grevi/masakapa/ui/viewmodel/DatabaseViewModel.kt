@@ -1,16 +1,15 @@
 package com.grevi.masakapa.ui.viewmodel
 
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.grevi.masakapa.db.entity.RecipesTable
 import com.grevi.masakapa.model.Detail
 import com.grevi.masakapa.repository.RepositoryImpl
-import com.grevi.masakapa.repository.mapper.MapperImpl
-import com.grevi.masakapa.util.HandlerListener
 import com.grevi.masakapa.util.State
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -18,18 +17,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DatabaseViewModel @Inject constructor(private val repositoryImpl: RepositoryImpl) : ViewModel() {
-
-    var handlerListener : HandlerListener? = null
-    private val _listMarkRecipes = MutableStateFlow<State<MutableList<RecipesTable>>>(State.Data)
     private val _state = MutableLiveData<Boolean>()
     private val _isExist = MutableLiveData<Boolean>()
+    private val _markList = MutableLiveData<State<MutableList<RecipesTable>>>()
+
+    val listMarkData : MutableLiveData<State<MutableList<RecipesTable>>> get() = _markList
+    val state : MutableLiveData<Boolean> get() = _state
 
     init {
-        getMarkRecipes()
+        getMarkRecipesData()
     }
-    val listMark : MutableStateFlow<State<MutableList<RecipesTable>>> get() = _listMarkRecipes
-
-    val state : MutableLiveData<Boolean> get() = _state
 
     fun insertRecipes(detail : Detail, key : String, thumb : String) {
         viewModelScope.launch {
@@ -52,16 +49,14 @@ class DatabaseViewModel @Inject constructor(private val repositoryImpl: Reposito
         return _isExist
     }
 
-    private fun getMarkRecipes(){
+    private fun getMarkRecipesData() {
         viewModelScope.launch {
             val data = repositoryImpl.getMarkedRecipes()
-            if (!data.isNullOrEmpty()) {
-                _listMarkRecipes.value = State.Loading()
-                try {
-                    _listMarkRecipes.value = State.Success(data)
-                }catch (e : Exception) {
-                    _listMarkRecipes.value = State.Error(e.toString())
-                }
+            _markList.postValue(State.Loading())
+            try {
+                _markList.postValue(State.Success(data))
+            }catch (e : Exception) {
+                _markList.postValue(State.Error(e.toString()))
             }
         }
     }
@@ -70,8 +65,6 @@ class DatabaseViewModel @Inject constructor(private val repositoryImpl: Reposito
         viewModelScope.launch {
             Log.v("DELETE_RECIPES", "Delete : ${recipesTable.name}")
             repositoryImpl.deleteRecipes(recipesTable)
-            val data = repositoryImpl.getMarkedRecipes()
-            _state.value = data.size == 0
         }
     }
 

@@ -19,6 +19,6 @@ interface Repository {
     suspend fun isExistRecipes(key : String) : Boolean
     suspend fun getMarkedRecipes() : MutableList<RecipesTable>
     suspend fun deleteRecipes(recipesTable: RecipesTable)
-    suspend fun getFlowRecipes() : Flow<List<RecipesTable>>
+    suspend fun getFlowLocalRecipes() : Flow<List<RecipesTable>>
     suspend fun getFlowCategory() : Flow<MutableList<Category>>
 }

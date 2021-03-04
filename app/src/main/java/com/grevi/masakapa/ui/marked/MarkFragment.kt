@@ -16,6 +16,7 @@ import com.grevi.masakapa.databinding.FragmentMarkBinding
 import com.grevi.masakapa.db.entity.RecipesTable
 import com.grevi.masakapa.ui.adapter.MarkAdapter
 import com.grevi.masakapa.ui.viewmodel.DatabaseViewModel
+import com.grevi.masakapa.util.HandlerListener
 import com.grevi.masakapa.util.State
 import com.grevi.masakapa.util.snackBar
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,7 +58,7 @@ class MarkFragment : Fragment() {
                 layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                 adapter = markAdapter
             }
-            databaseViewModel.listMark.collect { state ->
+            databaseViewModel.listMarkData.observe(viewLifecycleOwner) { state ->
                 when(state) {
                     is State.Loading -> snackBar(root, state.msg).show()
                     is State.Error -> snackBar(root, state.msg).show()
@@ -72,7 +73,7 @@ class MarkFragment : Fragment() {
         }
     }
 
-    private fun deleteRecipes(recipes : MutableList<RecipesTable>) {
+    private fun deleteRecipes(recipes : List<RecipesTable>) {
         val simpleTouchCallback = object : ItemTouchHelper.SimpleCallback(0, 0 or ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,

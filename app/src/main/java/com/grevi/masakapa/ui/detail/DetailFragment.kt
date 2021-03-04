@@ -1,19 +1,15 @@
 package com.grevi.masakapa.ui.detail
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.google.android.material.snackbar.Snackbar
 import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.FragmentDetailBinding
 import com.grevi.masakapa.databinding.ItemCardBinding
@@ -22,13 +18,15 @@ import com.grevi.masakapa.ui.adapter.IngredientsAdapter
 import com.grevi.masakapa.ui.adapter.StepAdapter
 import com.grevi.masakapa.ui.viewmodel.DatabaseViewModel
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
-import com.grevi.masakapa.util.*
-import com.grevi.masakapa.util.Constant.MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE
+import com.grevi.masakapa.util.NetworkUtils
+import com.grevi.masakapa.util.State
+import com.grevi.masakapa.util.snackBar
+import com.grevi.masakapa.util.toast
 import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DetailFragment : Fragment(), HandlerListener {
+class DetailFragment : Fragment() {
 
     private lateinit var binding : FragmentDetailBinding
     private lateinit var itemCardBinding: ItemCardBinding
@@ -53,7 +51,6 @@ class DetailFragment : Fragment(), HandlerListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        databaseViewModel.handlerListener = this
         observeNetwork()
     }
 
@@ -167,15 +164,9 @@ class DetailFragment : Fragment(), HandlerListener {
                 prepareViewLayout(false)
                 prepareView()
             } else {
+                prepareViewLayout(false)
                 snackBar(binding.root, getString(R.string.no_inet_text)).show()
             }
-        }
-    }
-
-    override fun message(msg: String, state: Boolean) {
-        when(state) {
-            true -> snackBar(binding.root, msg).show()
-            false -> snackBar(binding.root, msg).show()
         }
     }
 }

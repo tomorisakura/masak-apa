@@ -63,7 +63,7 @@ class RepositoryImpl @Inject constructor(private val apiHelper: ApiHelper, priva
 
     override suspend fun deleteRecipes(recipesTable: RecipesTable) = recipesDataSource.deleteRecipes(recipesTable)
 
-    override suspend fun getFlowRecipes() : Flow<List<RecipesTable>> = recipesDataSource.getFlowRecipes()
+    override suspend fun getFlowLocalRecipes() : Flow<List<RecipesTable>> = recipesDataSource.getFlowRecipes()
 
     override suspend fun getFlowCategory() : Flow<MutableList<Category>> = recipesDataSource.getFlowCategory()
 }
