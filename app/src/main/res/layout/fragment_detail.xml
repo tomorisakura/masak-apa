@@ -34,10 +34,11 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <ProgressBar
+            <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/pgMainRecipes"
-                android:layout_width="30dp"
+                android:layout_width="150dp"
                 android:layout_gravity="center"
+                android:indeterminate="true"
                 android:layout_height="wrap_content"/>
 
             <TextView
@@ -143,7 +144,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/app_name"
-        android:text="Pin"
+        android:text="@string/add_bucket_text"
         app:icon="@drawable/ic_twotone_favorite_24"
         android:layout_margin="20dp"
         app:layout_constraintBottom_toBottomOf="parent"

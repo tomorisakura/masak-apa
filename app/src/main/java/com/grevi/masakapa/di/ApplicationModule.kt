@@ -88,8 +88,4 @@ object ApplicationModule {
     fun provideRepository(repositoryImpl: RepositoryImpl) : Repository {
         return repositoryImpl
     }
-
-    @Provides
-    @Singleton
-    fun provideNetworkUtils(@ApplicationContext context: Context) : NetworkUtils = NetworkUtils(context)
 }

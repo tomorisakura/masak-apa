@@ -32,7 +32,6 @@ class MarkFragment : Fragment() {
     private lateinit var binding : FragmentMarkBinding
     private val databaseViewModel : DatabaseViewModel by viewModels()
     private val markAdapter: MarkAdapter by lazy { MarkAdapter() }
-    private val job : Job by lazy { Job() }
     private lateinit var navController: NavController
 
     private val TAG = MarkFragment::class.java.simpleName
@@ -54,21 +53,19 @@ class MarkFragment : Fragment() {
     }
 
     private fun prepareView() = with(binding) {
-        CoroutineScope(Dispatchers.Main + job).launch {
-            rvRecipesMark.apply {
-                layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                adapter = markAdapter
-            }
-            databaseViewModel.listMarkData.observe(viewLifecycleOwner) { state ->
-                when(state) {
-                    is State.Loading -> snackBar(root, state.msg).show()
-                    is State.Error -> snackBar(root, state.msg).show()
-                    is State.Success -> {
-                        markAdapter.addItem(state.data)
-                        markAdapter.itemTouch = { prepareNavigate(it) }
-                    }
-                    else -> Log.i(TAG, "")
+        rvRecipesMark.apply {
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            adapter = markAdapter
+        }
+        databaseViewModel.listMarkData.observe(viewLifecycleOwner) { state ->
+            when(state) {
+                is State.Loading -> snackBar(root, state.msg).show()
+                is State.Error -> snackBar(root, state.msg).show()
+                is State.Success -> {
+                    markAdapter.addItem(state.data)
+                    markAdapter.itemTouch = { prepareNavigate(it) }
                 }
+                else -> Log.i(TAG, "")
             }
         }
     }
