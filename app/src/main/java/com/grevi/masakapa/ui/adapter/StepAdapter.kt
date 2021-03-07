@@ -2,11 +2,13 @@ package com.grevi.masakapa.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.grevi.masakapa.databinding.ListsIngredientsBinding
+import com.grevi.masakapa.util.DiffUtils
 
 class StepAdapter :RecyclerView.Adapter<StepAdapter.StepVH>() {
-    private val steps : MutableList<String> = mutableListOf()
+    private val steps : MutableList<String> = ArrayList()
 
     inner class StepVH(private val binding : ListsIngredientsBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(string: String) = with(binding) {
@@ -15,8 +17,11 @@ class StepAdapter :RecyclerView.Adapter<StepAdapter.StepVH>() {
     }
 
     fun addList(list: List<String>) {
+        val diffCallback = DiffUtils(steps, list)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         steps.clear()
         steps.addAll(list)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StepVH {

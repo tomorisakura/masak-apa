@@ -2,19 +2,26 @@ package com.grevi.masakapa.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.ListsRecipesBinding
 import com.grevi.masakapa.model.Search
+import com.grevi.masakapa.util.DiffUtils
 
 class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchVH>() {
-    private val recipes : MutableList<Search> = mutableListOf()
+    private val recipes : MutableList<Search> = ArrayList()
     internal var itemTouch : ((search : Search) -> Unit)? = null
 
     inner class SearchVH(private val binding : ListsRecipesBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(search : Search) = with(binding) {
-            Glide.with(root).load(search.imageThumb).placeholder(R.drawable.placeholder).into(imgThumb)
+            imgThumb.load(search.imageThumb) {
+                allowHardware(false)
+                crossfade(true)
+                placeholder(R.drawable.placeholder)
+            }
             recipesTitle.text = search.name
             dificultyText.text = search.difficulty
             portionText.text = search.servings
@@ -23,8 +30,11 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchVH>() {
     }
 
     fun addItem(item : List<Search>) {
+        val diffCallback = DiffUtils(this.recipes, item)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         recipes.clear()
         recipes.addAll(item)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchVH {

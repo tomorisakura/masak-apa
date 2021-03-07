@@ -2,11 +2,13 @@ package com.grevi.masakapa.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import coil.load
 import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.ListsRecipesBinding
 import com.grevi.masakapa.model.Recipes
+import com.grevi.masakapa.util.DiffUtils
 
 class CategoryItemAdapter : RecyclerView.Adapter<CategoryItemAdapter.CategoryItemVH>() {
     private val recipes : MutableList<Recipes> = mutableListOf()
@@ -15,7 +17,11 @@ class CategoryItemAdapter : RecyclerView.Adapter<CategoryItemAdapter.CategoryIte
     inner class CategoryItemVH(private val binding : ListsRecipesBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(recipes : Recipes) {
             with(binding) {
-                Glide.with(root).load(recipes.imageThumb).placeholder(R.drawable.placeholder).into(imgThumb)
+                imgThumb.load(recipes.imageThumb) {
+                    allowHardware(false)
+                    crossfade(true)
+                    placeholder(R.drawable.placeholder)
+                }
                 recipesTitle.text = recipes.name
                 dificultyText.text = recipes.dificulty
                 portionText.text = recipes.portion
@@ -25,9 +31,11 @@ class CategoryItemAdapter : RecyclerView.Adapter<CategoryItemAdapter.CategoryIte
     }
 
     fun addItem(item : MutableList<Recipes>) {
+        val diffCallback = DiffUtils(this.recipes, item)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         recipes.clear()
         recipes.addAll(item)
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryItemVH {

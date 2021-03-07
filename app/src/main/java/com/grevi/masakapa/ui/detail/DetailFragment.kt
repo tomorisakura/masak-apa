@@ -9,7 +9,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.FragmentDetailBinding
 import com.grevi.masakapa.databinding.ItemCardBinding
@@ -66,7 +67,11 @@ class DetailFragment : Fragment() {
                 is State.Loading -> Log.i(TAG, results.msg)
                 is State.Error -> toast(requireContext(), results.msg)
                 is State.Success -> {
-                    Glide.with(requireContext()).load(args.thumb).placeholder(R.drawable.placeholder).into(imgDetail)
+                    imgDetail.load(args.thumb) {
+                        allowHardware(false)
+                        crossfade(true)
+                        placeholder(R.drawable.placeholder)
+                    }
                     results.data.results.let {
                         recipeTitleText.text = it.name
                         itemCardBinding.textDiffItem.text = it.dificulty

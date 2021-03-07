@@ -2,9 +2,11 @@ package com.grevi.masakapa.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.grevi.masakapa.databinding.ListsCategorysBinding
 import com.grevi.masakapa.db.entity.Category
+import com.grevi.masakapa.util.DiffUtils
 
 class CategorysAdapter : RecyclerView.Adapter<CategorysAdapter.CategoryVH>() {
 
@@ -18,9 +20,11 @@ class CategorysAdapter : RecyclerView.Adapter<CategorysAdapter.CategoryVH>() {
     }
 
     fun addItem(item : List<Category>) {
+        val diffCallback = DiffUtils(categorys, item)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         categorys.clear()
         categorys.addAll(item)
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryVH {

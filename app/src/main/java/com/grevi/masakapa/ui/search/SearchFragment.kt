@@ -94,7 +94,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun prepareView(query : String) = with(binding) {
-        recipesViewModel.searchRecipe(query).observe(viewLifecycleOwner, Observer {results ->
+        recipesViewModel.searchRecipe(query).observe(viewLifecycleOwner, {results ->
             when (results) {
                 is State.Loading -> Log.i(TAG, results.msg)
                 is State.Error -> toast(requireContext(), results.msg)

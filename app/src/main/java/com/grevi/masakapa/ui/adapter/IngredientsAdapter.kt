@@ -2,15 +2,20 @@ package com.grevi.masakapa.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.grevi.masakapa.databinding.ListsIngredientsBinding
+import com.grevi.masakapa.util.DiffUtils
 
 class IngredientsAdapter : RecyclerView.Adapter<IngredientsAdapter.IngredientsVH>() {
-    private val ingredient : MutableList<String> = mutableListOf()
+    private val ingredient : MutableList<String> = ArrayList()
 
     fun addList(list : MutableList<String>) {
+        val diffCallback = DiffUtils(ingredient, list)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         ingredient.clear()
         ingredient.addAll(list)
+        diffResult.dispatchUpdatesTo(this)
     }
 
     inner class IngredientsVH(private val binding : ListsIngredientsBinding) : RecyclerView.ViewHolder(binding.root) {

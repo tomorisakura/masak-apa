@@ -4,7 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.ListMainRecipesBinding
 import com.grevi.masakapa.model.Recipes
@@ -16,7 +17,11 @@ class RecipesAdapter : RecyclerView.Adapter<RecipesAdapter.RecipesVH>() {
 
     inner class RecipesVH(private val binding : ListMainRecipesBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(recipes : Recipes) = with(binding) {
-            Glide.with(root).load(recipes.imageThumb).placeholder(R.drawable.placeholder).into(imgThumb)
+            imgThumb.load(recipes.imageThumb) {
+                allowHardware(false)
+                crossfade(true)
+                placeholder(R.drawable.placeholder)
+            }
             recipesTitleMain.text = recipes.name
             dificultyTextMain.text = recipes.dificulty
             portionTextMain.text = recipes.portion

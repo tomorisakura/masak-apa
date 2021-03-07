@@ -4,7 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.ListsRecipesBinding
 import com.grevi.masakapa.db.entity.RecipesTable
@@ -16,7 +17,11 @@ class MarkAdapter : RecyclerView.Adapter<MarkAdapter.MarkVH>() {
 
     inner class MarkVH(private val binding : ListsRecipesBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(recipesTable : RecipesTable) = with(binding) {
-            Glide.with(root).load(recipesTable.imageThumb).placeholder(R.drawable.placeholder).into(imgThumb)
+            imgThumb.load(recipesTable.imageThumb) {
+                allowHardware(false)
+                crossfade(true)
+                placeholder(R.drawable.placeholder)
+            }
             recipesTitle.text = recipesTable.name
             dificultyText.text = recipesTable.dificulty
             portionText.text = recipesTable.portion
