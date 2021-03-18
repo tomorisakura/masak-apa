@@ -1,5 +1,7 @@
 package com.grevi.masakapa.ui
 
+import android.Manifest
+import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -7,7 +9,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.fragment.NavHostFragment
 import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.ActivityHomeBinding
+import com.grevi.masakapa.model.Detail
 import com.grevi.masakapa.ui.base.BaseActivity
+import com.grevi.masakapa.util.Constant.PERMISSIONS_STORAGE
+import com.permissionx.guolindev.PermissionX
 
 class HomeActivity : BaseActivity() {
     private lateinit var binding : ActivityHomeBinding
@@ -24,6 +29,7 @@ class HomeActivity : BaseActivity() {
         //init navhost container
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_container) as NavHostFragment
         navHostFragment.navController
+        storageHandler()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -35,7 +41,6 @@ class HomeActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.dayNight -> {
-                //Toast.makeText(this, "state : ${state}", Toast.LENGTH_SHORT).show()
                 state = when(state) {
                     true -> {
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -50,6 +55,24 @@ class HomeActivity : BaseActivity() {
         }
         //return true
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun storageHandler() {
+        PermissionX.init(this)
+            .permissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .onExplainRequestReason { scope, deniedList, _ ->
+                scope.showRequestReasonDialog(deniedList, "Permission ini digunakan untuk menyimpan resep di bucket", "Ok", "Cancel")
+            }
+            .request { allGranted, _, _ ->
+                if (allGranted) {
+                    this.getSharedPreferences(PERMISSIONS_STORAGE, Context.MODE_PRIVATE).apply {
+                        edit().let {
+                            it.putBoolean(PERMISSIONS_STORAGE, true)
+                            it.apply()
+                        }
+                    }
+                }
+            }
     }
 
 }

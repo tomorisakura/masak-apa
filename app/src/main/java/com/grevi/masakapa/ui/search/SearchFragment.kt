@@ -10,13 +10,11 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
 import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.FragmentSearchBinding
 import com.grevi.masakapa.databinding.SnapLayoutBinding
@@ -25,13 +23,13 @@ import com.grevi.masakapa.model.Search
 import com.grevi.masakapa.ui.adapter.CategorysAdapter
 import com.grevi.masakapa.ui.adapter.SearchAdapter
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
+import com.grevi.masakapa.util.Constant.PERMISSIONS_STORAGE
 import com.grevi.masakapa.util.NetworkUtils
 import com.grevi.masakapa.util.State
 import com.grevi.masakapa.util.snackBar
 import com.grevi.masakapa.util.toast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -60,18 +58,28 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-        prepareCategory(view)
         snapBinding.root.animate().alpha(1f)
         showSoftKey(binding.textInputSearch, true)
-        binding.textInputSearch.setOnKeyListener { v, keyCode, event ->
-            val ed = binding.textInputSearch.editableText.toString()
-            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
-                Log.i(TAG, ed)
-                observeNetwork(query = ed)
-                showSoftKey(v, false)
-                return@setOnKeyListener true
+        networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnect ->
+            if (isConnect) {
+                binding.textInputSearch.setOnKeyListener { v, keyCode, event ->
+                    val ed = binding.textInputSearch.editableText.toString()
+                    if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                        Log.i(TAG, ed)
+                        prepareView(ed)
+                        showSoftKey(v, false)
+                        return@setOnKeyListener true
+                    }
+                    false
+                }
+                if (getSharedPermission) {
+                    prepareCategory()
+                } else {
+                    snackBar(binding.root, getString(R.string.category_permission_text)).show()
+                }
+            } else {
+                snackBar(binding.root, getString(R.string.no_inet_text)).show()
             }
-            false
         }
     }
 
@@ -132,14 +140,14 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun prepareCategory(view: View) {
-        lifecycleScope.launch{
+    private fun prepareCategory() {
+        lifecycleScope.launchWhenCreated{
             recipesViewModel.category.collect { state ->
                 when(state) {
-                    is State.Loading -> toast(requireContext(), state.msg)
-                    is State.Error -> toast(requireContext(), state.msg)
+                    is State.Loading -> toast(requireContext(), state.msg).show()
+                    is State.Error -> toast(requireContext(), state.msg).show()
                     is State.Success -> {
-                        prepareCategoryRV(view, state.data)
+                        prepareCategoryRV(state.data)
                         binding.pgMainCategory.visibility = View.GONE
                     }
                     else -> Log.i(TAG, "")
@@ -148,14 +156,13 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun prepareCategoryRV(view: View, categorys : MutableList<Category>) = with(binding) {
+    private fun prepareCategoryRV(categorys : MutableList<Category>) = with(binding) {
         categorysHintLabel.animate().alpha(0f)
         rvCategorysList.apply {
             this.animate().alpha(0f)
-            layoutManager = GridLayoutManager(view.context, 3)
+            layoutManager = GridLayoutManager(requireContext(), 3)
             adapter = categoryAdapter
             categoryAdapter.addItem(categorys)
-            categoryAdapter.notifyDataSetChanged()
             this.animate().alpha(1f).duration = 2000L
         }
         categorysHintLabel.animate().alpha(1f).duration = 1000L
@@ -172,15 +179,9 @@ class SearchFragment : Fragment() {
         navController.navigate(action)
     }
 
-    private fun observeNetwork(query: String) {
-        networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnect ->
-            if (isConnect) {
-                prepareView(query)
-            } else {
-                snackBar(binding.root, getString(R.string.no_inet_text)).show()
-            }
-        }
+    private val getSharedPermission by lazy {
+        requireContext().getSharedPreferences(PERMISSIONS_STORAGE, Context.MODE_PRIVATE)
+            .getBoolean(PERMISSIONS_STORAGE, false)
     }
-
 
 }

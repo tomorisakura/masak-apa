@@ -8,7 +8,7 @@ import com.grevi.masakapa.db.entity.Category
 import com.grevi.masakapa.network.response.DetailResponse
 import com.grevi.masakapa.network.response.RecipesResponse
 import com.grevi.masakapa.network.response.SearchResponse
-import com.grevi.masakapa.repository.RepositoryImpl
+import com.grevi.masakapa.repository.Repository
 import com.grevi.masakapa.util.ResponseException
 import com.grevi.masakapa.util.State
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RecipesViewModel @Inject constructor(private val repositoryImpl: RepositoryImpl) : ViewModel() {
+class RecipesViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
     private val _recipesData = MutableLiveData<State<RecipesResponse>>()
     private val _recipeDetail = MutableLiveData<State<DetailResponse>>()
@@ -36,7 +36,7 @@ class RecipesViewModel @Inject constructor(private val repositoryImpl: Repositor
 
     private fun getRecipes() {
         viewModelScope.launch {
-            val data = repositoryImpl.getRecipes()
+            val data = repository.getRecipes()
             try {
                 _recipesData.postValue(data)
             } catch (e : ResponseException) {
@@ -48,8 +48,7 @@ class RecipesViewModel @Inject constructor(private val repositoryImpl: Repositor
 
     fun getDetail(key : String) : LiveData<State<DetailResponse>> {
         viewModelScope.launch {
-            delay(1000L)
-            val data = repositoryImpl.getDetailRecipes(key)
+            val data = repository.getDetailRecipes(key)
             _recipeDetail.postValue(State.Loading())
             try {
                 _recipeDetail.postValue(data)
@@ -64,7 +63,7 @@ class RecipesViewModel @Inject constructor(private val repositoryImpl: Repositor
 
     fun searchRecipe(query : String) : LiveData<State<SearchResponse>> {
         viewModelScope.launch {
-            val data = repositoryImpl.getSearchRecipe(query)
+            val data = repository.getSearchRecipe(query)
             _recipeSearch.postValue(State.Loading())
             try {
                 _recipeSearch.postValue(data)
@@ -78,7 +77,8 @@ class RecipesViewModel @Inject constructor(private val repositoryImpl: Repositor
 
     private fun getCategoryLocal() {
         viewModelScope.launch {
-            repositoryImpl.getFlowCategory().collect {
+            delay(1000L)
+            repository.getFlowCategory().collect {
                 _category.value = State.Loading()
                 try {
                     _category.value = State.Success(it)
@@ -92,7 +92,7 @@ class RecipesViewModel @Inject constructor(private val repositoryImpl: Repositor
 
     fun categoryResult(key: String) : LiveData<State<RecipesResponse>> {
         viewModelScope.launch {
-            val data = repositoryImpl.getCategoryRecipes(key)
+            val data = repository.getCategoryRecipes(key)
             _recipesData.postValue(State.Loading())
             try {
                 _recipesData.postValue(data)

@@ -7,17 +7,16 @@ import retrofit2.Response
 open class ApiResponse {
     suspend fun <T : Any> apiResponse(call : suspend() -> Response<T>) : State<T> {
         call.invoke().let {
-            try {
+            return try {
                 if (it.isSuccessful) {
-                    val body = it.body() ?: return@let
-                     return State.Success(body)
+                    val body = it.body() ?: throw ResponseException("body is null")
+                    State.Success(body)
                 } else {
-                    return State.Error("Error Body : ${it.errorBody()}")
+                    State.Error("Error Body : ${it.errorBody()}")
                 }
             }catch (e : Exception) {
                 throw ResponseException(e.toString())
             }
         }
-        return State.Data
     }
 }

@@ -8,12 +8,6 @@
     app:layoutDescription="@xml/fragment_search_scene"
     tools:context=".ui.search.SearchFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <!--    <TextView-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        android:text="@string/hello_blank_fragment" />-->
-
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/textInputSearch"
         android:layout_width="match_parent"

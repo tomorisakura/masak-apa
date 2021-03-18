@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.grevi.masakapa.db.entity.RecipesTable
 import com.grevi.masakapa.model.Detail
+import com.grevi.masakapa.repository.Repository
 import com.grevi.masakapa.repository.RepositoryImpl
 import com.grevi.masakapa.util.State
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DatabaseViewModel @Inject constructor(private val repositoryImpl: RepositoryImpl) : ViewModel() {
+class DatabaseViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
     private val _state = MutableLiveData<Boolean>()
     private val _isExist = MutableLiveData<Boolean>()
     private val _markList = MutableLiveData<State<MutableList<RecipesTable>>>()
@@ -38,20 +39,20 @@ class DatabaseViewModel @Inject constructor(private val repositoryImpl: Reposito
                 portion = detail.servings,
                 times = detail.times
             )
-            repositoryImpl.insertRecipes(recipes)
+            repository.insertRecipes(recipes)
         }
     }
 
     fun keyChecker(key : String) : LiveData<Boolean> {
         viewModelScope.launch {
-            _isExist.postValue(repositoryImpl.isExistRecipes(key))
+            _isExist.postValue(repository.isExistRecipes(key))
         }
         return _isExist
     }
 
     private fun getMarkRecipesData() {
         viewModelScope.launch {
-            val data = repositoryImpl.getMarkedRecipes()
+            val data = repository.getMarkedRecipes()
             _markList.postValue(State.Loading())
             try {
                 _markList.postValue(State.Success(data))
@@ -64,7 +65,7 @@ class DatabaseViewModel @Inject constructor(private val repositoryImpl: Reposito
     fun deleteRecipes(recipesTable: RecipesTable) {
         viewModelScope.launch {
             Log.v("DELETE_RECIPES", "Delete : ${recipesTable.name}")
-            repositoryImpl.deleteRecipes(recipesTable)
+            repository.deleteRecipes(recipesTable)
         }
     }
 

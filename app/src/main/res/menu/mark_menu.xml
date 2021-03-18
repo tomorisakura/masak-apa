@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:icon="@drawable/ic_mark_icon"
+    <item android:icon="@drawable/ic_twotone_favorite_24"
         android:title="mark"
         android:id="@+id/markToolBar"
+        android:iconTint="?iconTint"
         app:showAsAction="ifRoom|collapseActionView"/>
 </menu>

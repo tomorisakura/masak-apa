@@ -5,6 +5,7 @@
         <item android:icon="@drawable/ic_day_light"
             android:title="dark mode"
             android:id="@+id/dayNight"
+            android:iconTint="?iconTint"
             app:showAsAction="ifRoom|collapseActionView"/>
     </group>
 </menu>

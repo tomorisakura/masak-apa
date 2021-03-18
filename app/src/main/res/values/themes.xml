@@ -15,6 +15,7 @@
         <!-- Customize your theme here. -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:iconTint">@color/dark</item>
     </style>
 
     <style name="rv_style" parent="Theme.MaterialComponents.DayNight">

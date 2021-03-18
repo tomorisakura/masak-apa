@@ -1,6 +1,7 @@
 package com.grevi.masakapa.ui.detail
 
 import android.Manifest
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -19,10 +20,7 @@ import com.grevi.masakapa.ui.adapter.IngredientsAdapter
 import com.grevi.masakapa.ui.adapter.StepAdapter
 import com.grevi.masakapa.ui.viewmodel.DatabaseViewModel
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
-import com.grevi.masakapa.util.NetworkUtils
-import com.grevi.masakapa.util.State
-import com.grevi.masakapa.util.snackBar
-import com.grevi.masakapa.util.toast
+import com.grevi.masakapa.util.*
 import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -86,7 +84,11 @@ class DetailFragment : Fragment() {
 
                     floatButton.setOnClickListener {
                         results.data.results.let { data ->
-                            storageHandler(data)
+                            if (getSharedPermission) {
+                                observeChecker(data)
+                            }else {
+                                snackBar(root, getString(R.string.bucket_permission_text)).show()
+                            }
                         }
                     }
                 }
@@ -139,19 +141,6 @@ class DetailFragment : Fragment() {
         }
     }
 
-    private fun storageHandler(detail: Detail) {
-        PermissionX.init(activity)
-            .permissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            .onExplainRequestReason { scope, deniedList, _ ->
-                scope.showRequestReasonDialog(deniedList, "Permission ini digunakan untuk menyimpan resep di bucket", "Ok", "Cancel")
-            }
-            .request { allGranted, _, _ ->
-                if (allGranted) {
-                    observeChecker(detail)
-                }
-            }
-    }
-
     private fun observeChecker(detail : Detail) = with(binding) {
         databaseViewModel.keyChecker(args.key!!).observe(viewLifecycleOwner) { isExist ->
             if (!isExist) {
@@ -173,5 +162,10 @@ class DetailFragment : Fragment() {
                 snackBar(binding.root, getString(R.string.no_inet_text)).show()
             }
         }
+    }
+
+    private val getSharedPermission by lazy {
+        requireContext().getSharedPreferences(Constant.PERMISSIONS_STORAGE, Context.MODE_PRIVATE)
+            .getBoolean(Constant.PERMISSIONS_STORAGE, false)
     }
 }

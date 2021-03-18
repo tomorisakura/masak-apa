@@ -15,4 +15,6 @@
     <string name="list_empty_text">List kamu saat ini kosong ayo coba cari resep masakan favoritemu 😘</string>
     <string name="no_inet_text">Oops.. Koneksi Internet Kamu Terputus 😥</string>
     <string name="add_bucket_text">Simpan</string>
+    <string name="category_permission_text">Kategori saat ini tidak dapat ditampilkan, pastikan permission disetujui</string>
+    <string name="bucket_permission_text">Gagal menyimpan resep, pastikan permission disetujui</string>
 </resources>
