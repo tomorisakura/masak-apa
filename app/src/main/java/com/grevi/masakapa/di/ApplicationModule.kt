@@ -12,7 +12,6 @@ import com.grevi.masakapa.network.data.ApiService
 import com.grevi.masakapa.repository.Repository
 import com.grevi.masakapa.repository.RepositoryImpl
 import com.grevi.masakapa.util.Constant
-import com.grevi.masakapa.util.NetworkUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

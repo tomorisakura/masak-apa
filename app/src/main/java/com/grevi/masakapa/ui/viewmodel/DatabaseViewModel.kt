@@ -11,6 +11,7 @@ import com.grevi.masakapa.repository.Repository
 import com.grevi.masakapa.repository.RepositoryImpl
 import com.grevi.masakapa.util.State
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -30,7 +31,7 @@ class DatabaseViewModel @Inject constructor(private val repository: Repository) 
     }
 
     fun insertRecipes(detail : Detail, key : String, thumb : String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val recipes = RecipesTable(
                 key = key,
                 name = detail.name,
@@ -44,14 +45,14 @@ class DatabaseViewModel @Inject constructor(private val repository: Repository) 
     }
 
     fun keyChecker(key : String) : LiveData<Boolean> {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _isExist.postValue(repository.isExistRecipes(key))
         }
         return _isExist
     }
 
     private fun getMarkRecipesData() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val data = repository.getMarkedRecipes()
             _markList.postValue(State.Loading())
             try {
@@ -63,7 +64,7 @@ class DatabaseViewModel @Inject constructor(private val repository: Repository) 
     }
 
     fun deleteRecipes(recipesTable: RecipesTable) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             Log.v("DELETE_RECIPES", "Delete : ${recipesTable.name}")
             repository.deleteRecipes(recipesTable)
         }

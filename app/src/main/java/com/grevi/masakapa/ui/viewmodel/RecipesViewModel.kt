@@ -12,6 +12,7 @@ import com.grevi.masakapa.repository.Repository
 import com.grevi.masakapa.util.ResponseException
 import com.grevi.masakapa.util.State
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -35,7 +36,7 @@ class RecipesViewModel @Inject constructor(private val repository: Repository) :
     }
 
     private fun getRecipes() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val data = repository.getRecipes()
             try {
                 _recipesData.postValue(data)
@@ -47,7 +48,7 @@ class RecipesViewModel @Inject constructor(private val repository: Repository) :
     }
 
     fun getDetail(key : String) : LiveData<State<DetailResponse>> {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val data = repository.getDetailRecipes(key)
             _recipeDetail.postValue(State.Loading())
             try {
@@ -62,7 +63,7 @@ class RecipesViewModel @Inject constructor(private val repository: Repository) :
     }
 
     fun searchRecipe(query : String) : LiveData<State<SearchResponse>> {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val data = repository.getSearchRecipe(query)
             _recipeSearch.postValue(State.Loading())
             try {
@@ -76,8 +77,7 @@ class RecipesViewModel @Inject constructor(private val repository: Repository) :
     }
 
     private fun getCategoryLocal() {
-        viewModelScope.launch {
-            delay(1000L)
+        viewModelScope.launch(Dispatchers.IO) {
             repository.getFlowCategory().collect {
                 _category.value = State.Loading()
                 try {
@@ -91,7 +91,7 @@ class RecipesViewModel @Inject constructor(private val repository: Repository) :
     }
 
     fun categoryResult(key: String) : LiveData<State<RecipesResponse>> {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val data = repository.getCategoryRecipes(key)
             _recipesData.postValue(State.Loading())
             try {

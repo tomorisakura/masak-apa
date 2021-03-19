@@ -62,7 +62,7 @@ class RecipesFragment : Fragment() {
         snapHelper.attachToRecyclerView(rvRecipesList)
         rvRecipesList.animate().alpha(0f).duration = 1000L
 
-        recipesViewModel.recipes.observe(viewLifecycleOwner, Observer {response ->
+        recipesViewModel.recipes.observe(viewLifecycleOwner, {response ->
             when(response) {
                 is State.Loading -> pg.visibility = View.VISIBLE
                 is State.Error -> toast(requireContext(), response.msg).show()
