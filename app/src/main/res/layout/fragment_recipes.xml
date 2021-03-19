@@ -58,14 +58,20 @@
                 style="@style/textMiniHead_style"
                 android:text="@string/recipe_for_you_text" />
 
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/pg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"/>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_recipes_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:clipChildren="false"
-                android:clipToPadding="false"
-                tools:listitem="@layout/list_main_recipes" />
+                android:clipToPadding="false" />
+
         </LinearLayout>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

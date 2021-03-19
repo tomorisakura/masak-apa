@@ -64,9 +64,10 @@ class RecipesFragment : Fragment() {
 
         recipesViewModel.recipes.observe(viewLifecycleOwner, Observer {response ->
             when(response) {
-                is State.Loading -> Log.i(TAG, response.msg)
+                is State.Loading -> pg.visibility = View.VISIBLE
                 is State.Error -> toast(requireContext(), response.msg).show()
                 is State.Success -> {
+                    pg.visibility = View.GONE
                     refreshLayout.isRefreshing = false
                     recipesAdapter.addItem(response.data.results)
                     rvRecipesList.animate().alpha(1f).duration = 1000L
@@ -94,12 +95,15 @@ class RecipesFragment : Fragment() {
     private fun swipeRefresh() = with(binding) {
         networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnect ->
             if (isConnect) {
+                pg.visibility = View.VISIBLE
                 refreshLayout.setOnRefreshListener {
                     Handler(Looper.getMainLooper()).postDelayed({
                         prepareView()
+                        pg.visibility = View.GONE
                     }, 2000L)
                 }
             } else {
+                pg.visibility = View.VISIBLE
                 snackBar(root, getString(R.string.no_inet_text)).show()
             }
         }
@@ -108,8 +112,10 @@ class RecipesFragment : Fragment() {
     private fun observeNetwork() = with(binding) {
         networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnect ->
             if (isConnect) {
+                pg.visibility = View.GONE
                 prepareView()
             } else {
+                pg.visibility = View.VISIBLE
                 snackBar(root, getString(R.string.no_inet_text)).show()
             }
         }
