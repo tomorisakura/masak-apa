@@ -95,7 +95,6 @@ class RecipesFragment : Fragment() {
     private fun swipeRefresh() = with(binding) {
         networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnect ->
             if (isConnect) {
-                pg.visibility = View.VISIBLE
                 refreshLayout.setOnRefreshListener {
                     Handler(Looper.getMainLooper()).postDelayed({
                         prepareView()

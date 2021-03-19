@@ -1,7 +1,7 @@
 ## Masak Apa App
 ---
 
-<img src="https://github.com/tomorisakura/masak-apa/blob/master/preview/preview.png" width="600">
+![](https://github.com/tomorisakura/masak-apa/blob/master/preview/preview.png)
 
 __Masak Apa__
 
