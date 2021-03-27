@@ -4,6 +4,5 @@
     <item android:icon="@drawable/ic_twotone_favorite_24"
         android:title="mark"
         android:id="@+id/markToolBar"
-        android:iconTint="?iconTint"
         app:showAsAction="ifRoom|collapseActionView"/>
 </menu>

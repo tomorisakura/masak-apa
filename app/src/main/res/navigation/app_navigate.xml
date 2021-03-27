@@ -15,6 +15,12 @@
             app:destination="@id/detailFragment"
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
+        <action
+            android:id="@+id/action_recipesFragment_to_searchFragment2"
+            app:destination="@id/searchFragment2" />
+        <action
+            android:id="@+id/action_recipesFragment_to_markFragment2"
+            app:destination="@id/markFragment2" />
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
@@ -27,5 +33,41 @@
         <argument
             android:name="thumb"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment2"
+        android:name="com.grevi.masakapa.ui.search.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment2_to_categoryFragment2"
+            app:destination="@id/categoryFragment2" />
+        <action
+            android:id="@+id/action_searchFragment2_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/categoryFragment2"
+        android:name="com.grevi.masakapa.ui.category.CategoryFragment"
+        android:label="fragment_category"
+        tools:layout="@layout/fragment_category" >
+        <action
+            android:id="@+id/action_categoryFragment2_to_detailFragment"
+            app:destination="@id/detailFragment" />
+        <argument
+            android:name="catKey"
+            app:argType="string" />
+        <argument
+            android:name="catName"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/markFragment2"
+        android:name="com.grevi.masakapa.ui.marked.MarkFragment"
+        android:label="fragment_mark"
+        tools:layout="@layout/fragment_mark" >
+        <action
+            android:id="@+id/action_markFragment2_to_detailFragment"
+            app:destination="@id/detailFragment" />
     </fragment>
 </navigation>

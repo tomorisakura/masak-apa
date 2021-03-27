@@ -11,6 +11,8 @@ import com.grevi.masakapa.network.data.ApiHelperImpl
 import com.grevi.masakapa.network.data.ApiService
 import com.grevi.masakapa.repository.Repository
 import com.grevi.masakapa.repository.RepositoryImpl
+import com.grevi.masakapa.repository.mapper.MapperEntity
+import com.grevi.masakapa.repository.mapper.MapperImpl
 import com.grevi.masakapa.util.Constant
 import dagger.Module
 import dagger.Provides
@@ -86,5 +88,11 @@ object ApplicationModule {
     @Singleton
     fun provideRepository(repositoryImpl: RepositoryImpl) : Repository {
         return repositoryImpl
+    }
+
+    @Provides
+    @Singleton
+    fun provideMapperEntity(mapperImpl: MapperImpl) : MapperEntity {
+        return mapperImpl
     }
 }

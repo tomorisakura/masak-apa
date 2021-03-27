@@ -2,10 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <group android:id="@+id/group_menu" android:visible="true">
+        <item android:icon="@drawable/ic_twotone_favorite_24"
+            android:title="mark"
+            android:id="@+id/bucket"
+            app:showAsAction="ifRoom|collapseActionView"/>
+
         <item android:icon="@drawable/ic_day_light"
             android:title="dark mode"
             android:id="@+id/dayNight"
             android:iconTint="?iconTint"
             app:showAsAction="ifRoom|collapseActionView"/>
+
     </group>
 </menu>

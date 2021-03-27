@@ -17,4 +17,5 @@
     <string name="add_bucket_text">Simpan</string>
     <string name="category_permission_text">Kategori saat ini tidak dapat ditampilkan, pastikan permission disetujui</string>
     <string name="bucket_permission_text">Gagal menyimpan resep, pastikan permission disetujui</string>
+    <string name="bucket_permission_reason">Permission ini digunakan untuk menyimpan resep di bucket</string>
 </resources>

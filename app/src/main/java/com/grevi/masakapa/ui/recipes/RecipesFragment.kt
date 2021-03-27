@@ -1,16 +1,12 @@
 package com.grevi.masakapa.ui.recipes
 
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,7 +15,6 @@ import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.FragmentRecipesBinding
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.RecipesAdapter
-import com.grevi.masakapa.ui.search.SearchActivity
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
 import com.grevi.masakapa.util.NetworkUtils
 import com.grevi.masakapa.util.State
@@ -51,8 +46,18 @@ class RecipesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
+        setHasOptionsMenu(true)
         observeNetwork()
         swipeRefresh()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.bucket -> {
+                RecipesFragmentDirections.actionRecipesFragmentToMarkFragment2().also { navDirections -> navController.navigate(navDirections) }
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun prepareView() = with(binding) {
@@ -81,8 +86,8 @@ class RecipesFragment : Fragment() {
         })
 
         searchCard.setOnClickListener {
-            Intent(activity, SearchActivity::class.java).also {
-                startActivity(it)
+            RecipesFragmentDirections.actionRecipesFragmentToSearchFragment2().also {
+                navController.navigate(it)
             }
         }
     }

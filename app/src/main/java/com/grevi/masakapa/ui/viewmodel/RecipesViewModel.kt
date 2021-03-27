@@ -33,6 +33,8 @@ class RecipesViewModel @Inject constructor(private val repository: Repository) :
     init {
         getRecipes()
         getCategoryLocal()
+
+        viewModelScope.launch(Dispatchers.IO) { repository.getCategory() }
     }
 
     private fun getRecipes() {

@@ -16,15 +16,9 @@ import com.grevi.masakapa.databinding.FragmentMarkBinding
 import com.grevi.masakapa.db.entity.RecipesTable
 import com.grevi.masakapa.ui.adapter.MarkAdapter
 import com.grevi.masakapa.ui.viewmodel.DatabaseViewModel
-import com.grevi.masakapa.util.HandlerListener
 import com.grevi.masakapa.util.State
 import com.grevi.masakapa.util.snackBar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MarkFragment : Fragment() {
@@ -106,12 +100,14 @@ class MarkFragment : Fragment() {
     }
 
     private fun prepareNavigate(recipesTable: RecipesTable) {
-        val action = MarkFragmentDirections.actionMarkFragmentToDetailFragment3(recipesTable.key, recipesTable.imageThumb)
-        navController.navigate(action)
+        MarkFragmentDirections
+            .actionMarkFragment2ToDetailFragment(recipesTable.key, recipesTable.imageThumb).also {
+            navController.navigate(it)
+        }
     }
 
     override fun onResume() {
-        super.onResume()
         prepareView()
+        super.onResume()
     }
 }

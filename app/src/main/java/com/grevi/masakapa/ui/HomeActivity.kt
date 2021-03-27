@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.fragment.NavHostFragment
 import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.ActivityHomeBinding
-import com.grevi.masakapa.model.Detail
 import com.grevi.masakapa.ui.base.BaseActivity
 import com.grevi.masakapa.util.Constant.PERMISSIONS_STORAGE
 import com.permissionx.guolindev.PermissionX
@@ -61,7 +60,7 @@ class HomeActivity : BaseActivity() {
         PermissionX.init(this)
             .permissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
             .onExplainRequestReason { scope, deniedList, _ ->
-                scope.showRequestReasonDialog(deniedList, "Permission ini digunakan untuk menyimpan resep di bucket", "Ok", "Cancel")
+                scope.showRequestReasonDialog(deniedList, getString(R.string.bucket_permission_reason), "Ok", "Cancel")
             }
             .request { allGranted, _, _ ->
                 if (allGranted) {

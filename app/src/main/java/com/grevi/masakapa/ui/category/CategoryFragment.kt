@@ -47,7 +47,7 @@ class CategoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.v(TAG, arg.catKey.toString())
+        Log.v(TAG, arg.catKey)
         navController = Navigation.findNavController(view)
         observeNetwork()
         swipeRefresh()
@@ -60,7 +60,7 @@ class CategoryFragment : Fragment() {
 
         rvRecipesCategoryList.animate().alpha(0f).duration = 1000L
 
-        recipesViewModel.categoryResult(arg.catKey!!).observe(
+        recipesViewModel.categoryResult(arg.catKey).observe(
             viewLifecycleOwner, { results ->
                 categoryHintText.text = "${arg.catName} (0)"
                 when (results) {
@@ -106,8 +106,9 @@ class CategoryFragment : Fragment() {
     }
 
     private fun prepareNavigate(recipes: Recipes) {
-        val action = CategoryFragmentDirections.actionCategoryFragmentToDetailFragment2(recipes.key, recipes.imageThumb)
-        navController.navigate(action)
+        CategoryFragmentDirections.actionCategoryFragment2ToDetailFragment(recipes.key, recipes.imageThumb).also {
+            navController.navigate(it)
+        }
     }
 
 }

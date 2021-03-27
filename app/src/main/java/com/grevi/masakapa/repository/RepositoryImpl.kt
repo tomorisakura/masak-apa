@@ -1,5 +1,6 @@
 package com.grevi.masakapa.repository
 
+import android.util.Log
 import com.grevi.masakapa.db.RecipesDataSource
 import com.grevi.masakapa.db.entity.Category
 import com.grevi.masakapa.db.entity.RecipesTable
@@ -9,13 +10,15 @@ import com.grevi.masakapa.network.response.CategorysResponse
 import com.grevi.masakapa.network.response.DetailResponse
 import com.grevi.masakapa.network.response.RecipesResponse
 import com.grevi.masakapa.network.response.SearchResponse
-import com.grevi.masakapa.repository.mapper.MapperImpl
+import com.grevi.masakapa.repository.mapper.MapperEntity
 import com.grevi.masakapa.util.ResponseException
 import com.grevi.masakapa.util.State
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class RepositoryImpl @Inject constructor(private val apiHelper: ApiHelper, private val recipesDataSource: RecipesDataSource, private val mapperImpl: MapperImpl) : Repository, ApiResponse() {
+class RepositoryImpl @Inject constructor(private val apiHelper: ApiHelper, private val recipesDataSource: RecipesDataSource, private val mapper: MapperEntity) : Repository, ApiResponse() {
+
+    val TAG = RepositoryImpl::class.java.simpleName
 
     override suspend fun getRecipes() : State<RecipesResponse> {
         return apiResponse { apiHelper.getAllRecipes() }
@@ -35,7 +38,8 @@ class RepositoryImpl @Inject constructor(private val apiHelper: ApiHelper, priva
                 is State.Error -> throw ResponseException(it.msg)
                 is State.Success -> {
                     it.data.results.map { result ->
-                        mapperImpl.categoryMapper(result).let { category ->
+                        Log.i(TAG, result.category)
+                        mapper.categoryMapper(result).let { category ->
                             recipesDataSource.insertCategory(category)
                         }
                     }

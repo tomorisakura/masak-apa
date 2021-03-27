@@ -12,6 +12,10 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
+    kotlinOptions {
+        useIR = true
+    }
+
     defaultConfig {
         applicationId "com.grevi.masakapa"
         minSdkVersion 27
@@ -54,7 +58,7 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
     implementation 'com.google.android.material:material:1.3.0'
 
     //gson and coroutines
@@ -63,7 +67,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2"
 
     //fragment ktx and safe args
-    implementation "androidx.fragment:fragment-ktx:1.3.1"
+    implementation "androidx.fragment:fragment-ktx:1.3.2"
 
     //retrofit2 and gson converter
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'

@@ -170,13 +170,15 @@ class SearchFragment : Fragment() {
     }
 
     private fun prepareNavigate(search: Search) {
-        val action = SearchFragmentDirections.actionSearchFragmentToDetailFragment(search.key, search.imageThumb)
-        navController.navigate(action)
+        SearchFragmentDirections.actionSearchFragment2ToDetailFragment(search.key, search.imageThumb).also {
+            navController.navigate(it)
+        }
     }
 
     private fun prepareNavigateCategory(categorys: Category) {
-        val action = SearchFragmentDirections.actionSearchFragmentToCategoryFragment(categorys.key, categorys.category)
-        navController.navigate(action)
+        SearchFragmentDirections.actionSearchFragment2ToCategoryFragment2(categorys.key, categorys.category).also {
+            navController.navigate(it)
+        }
     }
 
     private val getSharedPermission by lazy {
