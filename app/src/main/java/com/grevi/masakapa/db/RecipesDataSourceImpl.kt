@@ -11,14 +11,9 @@ class RecipesDataSourceImpl @Inject constructor(private val recipesDAO: RecipesD
     override suspend fun isExistRecipes(key: String) : Boolean = recipesDAO.isExistsRecipes(key)
     override suspend fun getMarkRecipes() : MutableList<RecipesTable> = recipesDAO.getAllMarkRecipes()
     override suspend fun deleteRecipes(recipesTable: RecipesTable) = recipesDAO.deleteRecipes(recipesTable)
-    override suspend fun getFlowRecipes(): Flow<List<RecipesTable>> = flow { recipesDAO.getAllMarkRecipes() }
+    override suspend fun getFlowRecipes(): Flow<List<RecipesTable>> = flow { emit(recipesDAO.getAllMarkRecipes()) }
     override suspend fun insertCategory(category: Category) = recipesDAO.insertCategory(category)
     override suspend fun getAllCategory(): MutableList<Category> = recipesDAO.getAllCategory()
-
-    override suspend fun getFlowCategory(): Flow<MutableList<Category>> {
-        return flow {
-            emit(recipesDAO.getAllCategory())
-        }
-    }
+    override suspend fun getFlowCategory(): Flow<MutableList<Category>> = flow { emit(recipesDAO.getAllCategory()) }
 
 }

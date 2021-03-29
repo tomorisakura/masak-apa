@@ -22,12 +22,15 @@ class DatabaseViewModel @Inject constructor(private val repository: Repository) 
     private val _state = MutableLiveData<Boolean>()
     private val _isExist = MutableLiveData<Boolean>()
     private val _markList = MutableLiveData<State<MutableList<RecipesTable>>>()
+    private val _recipesFlow = MutableStateFlow<State<List<RecipesTable>>>(State.Data)
 
     val listMarkData : MutableLiveData<State<MutableList<RecipesTable>>> get() = _markList
     val state : MutableLiveData<Boolean> get() = _state
+    val recipesBucket : MutableStateFlow<State<List<RecipesTable>>> get() = _recipesFlow
 
     init {
         getMarkRecipesData()
+        getMarkRecipes()
     }
 
     fun insertRecipes(detail : Detail, key : String, thumb : String) {
@@ -65,8 +68,21 @@ class DatabaseViewModel @Inject constructor(private val repository: Repository) 
 
     fun deleteRecipes(recipesTable: RecipesTable) {
         viewModelScope.launch(Dispatchers.IO) {
-            Log.v("DELETE_RECIPES", "Delete : ${recipesTable.name}")
+            Log.i("DELETE_RECIPES", "Delete : ${recipesTable.name}")
             repository.deleteRecipes(recipesTable)
+        }
+    }
+
+    private fun getMarkRecipes() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getFlowLocalRecipes().collect {
+                _recipesFlow.value = State.Loading()
+                try {
+                    _recipesFlow.value = State.Success(it)
+                }catch (e : Exception) {
+                    _recipesFlow.value = State.Error(e.toString())
+                }
+            }
         }
     }
 

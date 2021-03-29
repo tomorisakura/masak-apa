@@ -1,12 +1,15 @@
 package com.grevi.masakapa.ui.marked
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -19,6 +22,8 @@ import com.grevi.masakapa.ui.viewmodel.DatabaseViewModel
 import com.grevi.masakapa.util.State
 import com.grevi.masakapa.util.snackBar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class MarkFragment : Fragment() {
@@ -27,6 +32,7 @@ class MarkFragment : Fragment() {
     private val databaseViewModel : DatabaseViewModel by viewModels()
     private val markAdapter: MarkAdapter by lazy { MarkAdapter() }
     private lateinit var navController: NavController
+    private val job : Job by lazy { Job() }
 
     private val TAG = MarkFragment::class.java.simpleName
 
@@ -51,15 +57,17 @@ class MarkFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = markAdapter
         }
-        databaseViewModel.listMarkData.observe(viewLifecycleOwner) { state ->
-            when(state) {
-                is State.Loading -> snackBar(root, state.msg).show()
-                is State.Error -> snackBar(root, state.msg).show()
-                is State.Success -> {
-                    markAdapter.addItem(state.data)
-                    markAdapter.itemTouch = { prepareNavigate(it) }
+        CoroutineScope(job + Dispatchers.Main).launch {
+            databaseViewModel.recipesBucket.collect { state ->
+                when(state) {
+                    is State.Loading -> snackBar(root, state.msg).show()
+                    is State.Error -> snackBar(root, state.msg).show()
+                    is State.Success -> {
+                        markAdapter.addItem(state.data)
+                        markAdapter.itemTouch = { prepareNavigate(it) }
+                    }
+                    else -> Unit
                 }
-                else -> Log.i(TAG, "")
             }
         }
     }
@@ -106,8 +114,13 @@ class MarkFragment : Fragment() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        job.cancel()
+    }
+
     override fun onResume() {
-        prepareView()
         super.onResume()
+        job.start()
     }
 }
