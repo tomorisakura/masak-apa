@@ -7,31 +7,32 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import coil.load
 import com.grevi.masakapa.R
+import com.grevi.masakapa.data.local.entity.RecipeFavorite
 import com.grevi.masakapa.databinding.ListsRecipesBinding
-import com.grevi.masakapa.db.entity.RecipesTable
+import com.grevi.masakapa.data.local.entity.RecipesTable
 import com.grevi.masakapa.util.DiffUtils
 
 class MarkAdapter : RecyclerView.Adapter<MarkAdapter.MarkVH>() {
-    private val recipes : MutableList<RecipesTable> = ArrayList()
-    internal var itemTouch : ((recipes : RecipesTable) -> Unit)? = null
+    private val recipes : MutableList<RecipeFavorite> = ArrayList()
+    internal var itemTouch : ((favorite : RecipeFavorite) -> Unit)? = null
 
     private val TAG = MarkAdapter::class.java.simpleName
 
     inner class MarkVH(private val binding : ListsRecipesBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(recipesTable : RecipesTable) = with(binding) {
-            imgThumb.load(recipesTable.imageThumb) {
+        fun bind(favorite : RecipeFavorite) = with(binding) {
+            imgThumb.load(favorite.imageThumb) {
                 allowHardware(false)
                 crossfade(true)
                 placeholder(R.drawable.placeholder)
             }
-            recipesTitle.text = recipesTable.name
-            dificultyText.text = recipesTable.dificulty
-            portionText.text = recipesTable.portion
-            timesText.text = recipesTable.times
+            recipesTitle.text = favorite.name
+            dificultyText.text = favorite.dificulty
+            portionText.text = favorite.portion
+            timesText.text = favorite.times
         }
     }
 
-    fun addItem(item : List<RecipesTable>) {
+    fun addItem(item : List<RecipeFavorite>) {
         val diffResult = DiffUtil.calculateDiff(DiffUtils(recipes, item), true)
         recipes.clear()
         recipes.addAll(item)
@@ -42,7 +43,7 @@ class MarkAdapter : RecyclerView.Adapter<MarkAdapter.MarkVH>() {
         return recipes.remove(recipes[position])
     }
 
-    fun deleteItem(position: Int) : RecipesTable = recipes[position]
+    fun deleteItem(position: Int) : RecipeFavorite = recipes[position]
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MarkVH {
         val view = ListsRecipesBinding.inflate(LayoutInflater.from(parent.context), parent, false)

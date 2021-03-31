@@ -1,4 +1,4 @@
-package com.grevi.masakapa.network
+package com.grevi.masakapa.data.remote
 
 import com.grevi.masakapa.util.ResponseException
 import com.grevi.masakapa.util.State

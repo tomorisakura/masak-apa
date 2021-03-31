@@ -1,9 +1,9 @@
-package com.grevi.masakapa.network.data
+package com.grevi.masakapa.data.remote.data
 
-import com.grevi.masakapa.network.response.CategorysResponse
-import com.grevi.masakapa.network.response.DetailResponse
-import com.grevi.masakapa.network.response.RecipesResponse
-import com.grevi.masakapa.network.response.SearchResponse
+import com.grevi.masakapa.data.remote.response.CategorysResponse
+import com.grevi.masakapa.data.remote.response.DetailResponse
+import com.grevi.masakapa.data.remote.response.RecipesResponse
+import com.grevi.masakapa.data.remote.response.SearchResponse
 import retrofit2.Response
 
 interface ApiHelper {

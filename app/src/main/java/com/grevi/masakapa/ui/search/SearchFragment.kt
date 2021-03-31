@@ -3,10 +3,7 @@ package com.grevi.masakapa.ui.search
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.FragmentSearchBinding
 import com.grevi.masakapa.databinding.SnapLayoutBinding
-import com.grevi.masakapa.db.entity.Category
+import com.grevi.masakapa.data.local.entity.Category
 import com.grevi.masakapa.model.Search
 import com.grevi.masakapa.ui.adapter.CategorysAdapter
 import com.grevi.masakapa.ui.adapter.SearchAdapter
@@ -58,6 +55,7 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
+        setHasOptionsMenu(true)
         snapBinding.root.animate().alpha(1f)
         showSoftKey(binding.textInputSearch, true)
         networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnect ->
@@ -81,6 +79,11 @@ class SearchFragment : Fragment() {
                 snackBar(binding.root, getString(R.string.no_inet_text)).show()
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.findItem(R.id.bucket)?.isVisible = false
     }
 
     private fun showSoftKey(view: View, state : Boolean) {

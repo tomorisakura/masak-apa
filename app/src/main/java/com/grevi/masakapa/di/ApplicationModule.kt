@@ -2,13 +2,13 @@ package com.grevi.masakapa.di
 
 import android.content.Context
 import androidx.room.Room
-import com.grevi.masakapa.db.RecipesDAO
-import com.grevi.masakapa.db.RecipesDataSource
-import com.grevi.masakapa.db.RecipesDataSourceImpl
-import com.grevi.masakapa.db.RecipesDatabase
-import com.grevi.masakapa.network.data.ApiHelper
-import com.grevi.masakapa.network.data.ApiHelperImpl
-import com.grevi.masakapa.network.data.ApiService
+import com.grevi.masakapa.data.local.RecipesDAO
+import com.grevi.masakapa.data.local.RecipesDataSource
+import com.grevi.masakapa.data.local.RecipesDataSourceImpl
+import com.grevi.masakapa.data.local.RecipesDatabase
+import com.grevi.masakapa.data.remote.data.ApiHelper
+import com.grevi.masakapa.data.remote.data.ApiHelperImpl
+import com.grevi.masakapa.data.remote.data.ApiService
 import com.grevi.masakapa.repository.Repository
 import com.grevi.masakapa.repository.RepositoryImpl
 import com.grevi.masakapa.repository.mapper.MapperEntity

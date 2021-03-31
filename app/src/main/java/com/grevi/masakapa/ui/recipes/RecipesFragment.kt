@@ -7,11 +7,13 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import com.grevi.masakapa.R
+import com.grevi.masakapa.data.local.entity.RecipesTable
 import com.grevi.masakapa.databinding.FragmentRecipesBinding
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.RecipesAdapter
@@ -21,6 +23,7 @@ import com.grevi.masakapa.util.State
 import com.grevi.masakapa.util.snackBar
 import com.grevi.masakapa.util.toast
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class RecipesFragment : Fragment() {
@@ -67,32 +70,27 @@ class RecipesFragment : Fragment() {
         snapHelper.attachToRecyclerView(rvRecipesList)
         rvRecipesList.animate().alpha(0f).duration = 1000L
 
-        recipesViewModel.recipes.observe(viewLifecycleOwner, {response ->
-            when(response) {
-                is State.Loading -> pg.visibility = View.VISIBLE
-                is State.Error -> toast(requireContext(), response.msg).show()
-                is State.Success -> {
-                    pg.visibility = View.GONE
-                    refreshLayout.isRefreshing = false
-                    recipesAdapter.addItem(response.data.results)
-                    rvRecipesList.animate().alpha(1f).duration = 1000L
-                    tvGreeting.visibility = View.VISIBLE
-                    tvGreeting.animate().alpha(1f).duration = 1000L
-                    recipesAdapter.itemTouch = { prepareNavigate(it) }
+        lifecycleScope.launchWhenCreated {
+            recipesViewModel.recipes.collect { state ->
+                when(state) {
+                    is State.Loading -> pg.visibility = View.VISIBLE
+                    is State.Error -> toast(requireContext(), state.msg).show()
+                    is State.Success -> {
+                        pg.visibility = View.GONE
+                        refreshLayout.isRefreshing = false
+                        recipesAdapter.addItem(state.data)
+                        rvRecipesList.animate().alpha(1f).duration = 1000L
+                        tvGreeting.visibility = View.VISIBLE
+                        tvGreeting.animate().alpha(1f).duration = 1000L
+                        recipesAdapter.itemTouch = { prepareNavigate(it) }
+                    }
+                    else -> Log.i(TAG, "")
                 }
-                else -> Log.i(TAG, "")
-            }
-
-        })
-
-        searchCard.setOnClickListener {
-            RecipesFragmentDirections.actionRecipesFragmentToSearchFragment2().also {
-                navController.navigate(it)
             }
         }
     }
 
-    private fun prepareNavigate(recipes : Recipes) {
+    private fun prepareNavigate(recipes : RecipesTable) {
         val action = RecipesFragmentDirections.actionRecipesFragmentToDetailFragment(recipes.key, recipes.imageThumb)
         navController.navigate(action)
     }

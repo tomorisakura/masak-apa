@@ -1,4 +1,4 @@
-package com.grevi.masakapa.db.entity
+package com.grevi.masakapa.data.local.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

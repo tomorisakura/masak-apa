@@ -1,22 +1,19 @@
 package com.grevi.masakapa.ui.marked
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.grevi.masakapa.data.local.entity.RecipeFavorite
 import com.grevi.masakapa.databinding.FragmentMarkBinding
-import com.grevi.masakapa.db.entity.RecipesTable
+import com.grevi.masakapa.data.local.entity.RecipesTable
 import com.grevi.masakapa.ui.adapter.MarkAdapter
 import com.grevi.masakapa.ui.viewmodel.DatabaseViewModel
 import com.grevi.masakapa.util.State
@@ -107,9 +104,9 @@ class MarkFragment : Fragment() {
         }
     }
 
-    private fun prepareNavigate(recipesTable: RecipesTable) {
+    private fun prepareNavigate(favorite: RecipeFavorite) {
         MarkFragmentDirections
-            .actionMarkFragment2ToDetailFragment(recipesTable.key, recipesTable.imageThumb).also {
+            .actionMarkFragment2ToDetailFragment(favorite.key, favorite.imageThumb).also {
             navController.navigate(it)
         }
     }

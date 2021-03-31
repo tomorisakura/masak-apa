@@ -5,12 +5,14 @@ import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.fragment.NavHostFragment
 import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.ActivityHomeBinding
 import com.grevi.masakapa.ui.base.BaseActivity
 import com.grevi.masakapa.util.Constant.PERMISSIONS_STORAGE
+import com.grevi.masakapa.util.snackBar
 import com.permissionx.guolindev.PermissionX
 
 class HomeActivity : BaseActivity() {
@@ -28,6 +30,17 @@ class HomeActivity : BaseActivity() {
         //init navhost container
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_container) as NavHostFragment
         navHostFragment.navController
+        navHostFragment.navController.addOnDestinationChangedListener { controller, destination, _ ->
+            when(destination.id) {
+                R.id.recipesFragment -> {
+                    binding.searchCard.visibility = View.VISIBLE
+                    binding.searchCard.setOnClickListener {
+                        controller.navigate(R.id.searchFragment2)
+                    }
+                }
+                else -> binding.searchCard.visibility = View.GONE
+            }
+        }
         storageHandler()
     }
 
