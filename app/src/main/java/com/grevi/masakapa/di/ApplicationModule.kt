@@ -14,6 +14,7 @@ import com.grevi.masakapa.repository.RepositoryImpl
 import com.grevi.masakapa.repository.mapper.MapperEntity
 import com.grevi.masakapa.repository.mapper.MapperImpl
 import com.grevi.masakapa.util.Constant
+import com.grevi.masakapa.util.ViewModelFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -94,5 +95,11 @@ object ApplicationModule {
     @Singleton
     fun provideMapperEntity(mapperImpl: MapperImpl) : MapperEntity {
         return mapperImpl
+    }
+
+    @Provides
+    @Singleton
+    fun provideViewModelFactory(repository: RepositoryImpl): ViewModelFactory {
+        return ViewModelFactory(repository)
     }
 }

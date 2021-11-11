@@ -12,9 +12,9 @@ import com.grevi.masakapa.databinding.ListMainRecipesBinding
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.util.DiffUtils
 
-class RecipesAdapter : RecyclerView.Adapter<RecipesAdapter.RecipesVH>() {
+class RecipesAdapter(private val itemTouch : ((recipes : RecipesTable) -> Unit))
+    : RecyclerView.Adapter<RecipesAdapter.RecipesVH>() {
     private val recipes : MutableList<RecipesTable> = ArrayList()
-    internal var itemTouch : ((recipes : RecipesTable) -> Unit)? = null
 
     inner class RecipesVH(private val binding : ListMainRecipesBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(recipes : RecipesTable) = with(binding) {

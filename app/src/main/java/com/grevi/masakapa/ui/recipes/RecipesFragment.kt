@@ -1,125 +1,89 @@
 package com.grevi.masakapa.ui.recipes
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
-import android.view.*
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import com.grevi.masakapa.R
 import com.grevi.masakapa.data.local.entity.RecipesTable
 import com.grevi.masakapa.databinding.FragmentRecipesBinding
-import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.RecipesAdapter
+import com.grevi.masakapa.ui.base.BaseFragment
+import com.grevi.masakapa.ui.base.observeDataListFlow
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
-import com.grevi.masakapa.util.NetworkUtils
-import com.grevi.masakapa.util.State
-import com.grevi.masakapa.util.snackBar
-import com.grevi.masakapa.util.toast
+import com.grevi.masakapa.util.Constant.ONE_FLOAT
+import com.grevi.masakapa.util.Constant.ONE_SECOND
+import com.grevi.masakapa.util.Constant.ZERO_FLOAT
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
-class RecipesFragment : Fragment() {
+class RecipesFragment : BaseFragment<FragmentRecipesBinding, RecipesViewModel>() {
 
-    private lateinit var binding : FragmentRecipesBinding
-    private lateinit var navController: NavController
-    private val recipesViewModel by viewModels<RecipesViewModel>()
-    private val recipesAdapter: RecipesAdapter by lazy { RecipesAdapter() }
     private val snapHelper: LinearSnapHelper by lazy { LinearSnapHelper() }
-    private val networkUtils : NetworkUtils by lazy { NetworkUtils(requireContext()) }
 
-    private val TAG = RecipesFragment::class.java.simpleName
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        binding = FragmentRecipesBinding.inflate(inflater)
-        return binding.root
+    private val recipesAdapter: RecipesAdapter by lazy {
+        RecipesAdapter{ navigateToDetail(it) }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        navController = Navigation.findNavController(view)
-        setHasOptionsMenu(true)
-        observeNetwork()
-        swipeRefresh()
-    }
+    override fun getViewModelClass(): Class<RecipesViewModel> = RecipesViewModel::class.java
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.bucket -> {
-                RecipesFragmentDirections.actionRecipesFragmentToMarkFragment2().also { navDirections -> navController.navigate(navDirections) }
+                RecipesFragmentDirections.actionRecipesFragmentToMarkFragment2().also {
+                        navDirections -> navController.navigate(navDirections)
+                }
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
-    private fun prepareView() = with(binding) {
-        rvRecipesList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+    override fun getViewBindingInflater(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentRecipesBinding {
+        return FragmentRecipesBinding.inflate(inflater, container, false)
+    }
+
+    override fun subscribeUI() {
+        observeView()
+        observeRecipes()
+        binding.apply {
+            onSwipeRefresh(refreshLayout, pg) { observeView() }
+        }
+    }
+
+    private fun observeView() = with(binding) {
+        rvRecipesList.layoutManager = LinearLayoutManager(context,
+            LinearLayoutManager.VERTICAL, false
+        )
         rvRecipesList.adapter = recipesAdapter
-
         snapHelper.attachToRecyclerView(rvRecipesList)
-        rvRecipesList.animate().alpha(0f).duration = 1000L
+        rvRecipesList.animate().alpha(ZERO_FLOAT).duration = ONE_SECOND
+    }
 
-        lifecycleScope.launchWhenCreated {
-            recipesViewModel.recipes.collect { state ->
-                when(state) {
-                    is State.Loading -> pg.visibility = View.VISIBLE
-                    is State.Error -> toast(requireContext(), state.msg).show()
-                    is State.Success -> {
-                        pg.visibility = View.GONE
-                        refreshLayout.isRefreshing = false
-                        recipesAdapter.addItem(state.data)
-                        rvRecipesList.animate().alpha(1f).duration = 1000L
-                        tvGreeting.visibility = View.VISIBLE
-                        tvGreeting.animate().alpha(1f).duration = 1000L
-                        recipesAdapter.itemTouch = { prepareNavigate(it) }
-                    }
-                    else -> Log.i(TAG, "")
-                }
-            }
+    private fun observeRecipes() = with(viewModels) {
+        observeDataListFlow(recipes) { recipes ->
+            observeViewState()
+            recipesAdapter.addItem(recipes)
         }
     }
 
-    private fun prepareNavigate(recipes : RecipesTable) {
-        val action = RecipesFragmentDirections.actionRecipesFragmentToDetailFragment(recipes.key, recipes.imageThumb)
-        navController.navigate(action)
+    private fun observeViewState() = with(binding) {
+        pg.visibility = View.GONE
+        refreshLayout.isRefreshing = false
+        rvRecipesList.animate().alpha(ONE_FLOAT).duration = ONE_SECOND
+        tvGreeting.visibility = View.VISIBLE
+        tvGreeting.animate().alpha(ONE_FLOAT).duration = ONE_SECOND
     }
 
-    private fun swipeRefresh() = with(binding) {
-        networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnect ->
-            if (isConnect) {
-                refreshLayout.setOnRefreshListener {
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        prepareView()
-                        pg.visibility = View.GONE
-                    }, 2000L)
-                }
-            } else {
-                pg.visibility = View.VISIBLE
-                snackBar(root, getString(R.string.no_inet_text)).show()
+    private fun navigateToDetail(recipes : RecipesTable) {
+        RecipesFragmentDirections
+            .actionRecipesFragmentToDetailFragment(recipes.key, recipes.imageThumb).also {
+                navController.navigate(it)
             }
-        }
-    }
-
-    private fun observeNetwork() = with(binding) {
-        networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnect ->
-            if (isConnect) {
-                pg.visibility = View.GONE
-                prepareView()
-            } else {
-                pg.visibility = View.VISIBLE
-                snackBar(root, getString(R.string.no_inet_text)).show()
-            }
-        }
     }
 }

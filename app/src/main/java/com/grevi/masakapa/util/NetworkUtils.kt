@@ -8,9 +8,8 @@ import androidx.core.content.getSystemService
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
-class NetworkUtils(context: Context) : ConnectivityManager.NetworkCallback() {
+class NetworkUtils(private val context: Context) : ConnectivityManager.NetworkCallback() {
     private val _networkDataStatus = MutableLiveData<Boolean>()
-    private val appContext = context
     val networkDataStatus : MutableLiveData<Boolean> get() = _networkDataStatus
 
     init {
@@ -18,7 +17,7 @@ class NetworkUtils(context: Context) : ConnectivityManager.NetworkCallback() {
     }
 
     private fun observeConnectivity() : LiveData<Boolean> {
-        val connectivityManager = appContext.getSystemService<ConnectivityManager>()
+        val connectivityManager = context.getSystemService<ConnectivityManager>()
         if (connectivityManager != null) {
             connectivityManager.registerDefaultNetworkCallback(this)
 
