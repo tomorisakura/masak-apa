@@ -1,31 +1,53 @@
 package com.grevi.masakapa.repository
 
-import android.util.Log
-import com.grevi.masakapa.db.RecipesDataSource
-import com.grevi.masakapa.db.entity.Category
-import com.grevi.masakapa.db.entity.RecipesTable
-import com.grevi.masakapa.network.ApiResponse
-import com.grevi.masakapa.network.data.ApiHelper
-import com.grevi.masakapa.network.response.CategorysResponse
-import com.grevi.masakapa.network.response.DetailResponse
-import com.grevi.masakapa.network.response.RecipesResponse
-import com.grevi.masakapa.network.response.SearchResponse
+import com.grevi.masakapa.data.local.RecipesDataSource
+import com.grevi.masakapa.data.local.entity.*
+import com.grevi.masakapa.data.remote.ApiResponse
+import com.grevi.masakapa.data.remote.data.ApiHelper
+import com.grevi.masakapa.data.remote.response.CategorysResponse
+import com.grevi.masakapa.data.remote.response.DetailResponse
+import com.grevi.masakapa.data.remote.response.RecipesResponse
+import com.grevi.masakapa.data.remote.response.SearchResponse
 import com.grevi.masakapa.repository.mapper.MapperEntity
 import com.grevi.masakapa.util.ResponseException
 import com.grevi.masakapa.util.State
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class RepositoryImpl @Inject constructor(private val apiHelper: ApiHelper, private val recipesDataSource: RecipesDataSource, private val mapper: MapperEntity) : Repository, ApiResponse() {
-
-    val TAG = RepositoryImpl::class.java.simpleName
+class RepositoryImpl @Inject constructor(private val apiHelper: ApiHelper,
+                                         private val recipesDataSource: RecipesDataSource,
+                                         private val mapper: MapperEntity) : Repository, ApiResponse() {
 
     override suspend fun getRecipes() : State<RecipesResponse> {
-        return apiResponse { apiHelper.getAllRecipes() }
+        return apiResponse { apiHelper.getAllRecipes() }.also { state ->
+            when(state) {
+                is State.Error -> throw  ResponseException(state.msg)
+                is State.Success -> {
+                    state.data.results.map { recipes ->
+                        mapper.recipesMapper(recipes).let {
+                            recipesDataSource.insertRecipes(it)
+                        }
+                    }
+                }
+                else -> Unit
+            }
+        }
     }
 
     override suspend fun getDetailRecipes(key : String) : State<DetailResponse> {
-        return apiResponse { apiHelper.getDetailRecipes(key) }
+        return apiResponse { apiHelper.getDetailRecipes(key) }.also { state ->
+            when(state) {
+                is State.Error -> throw ResponseException(state.msg)
+                is State.Success -> {
+                    state.data.let {
+                        mapper.detailMapper(it.results).let { detail ->
+                            recipesDataSource.insertDetail(detail)
+                        }
+                    }
+                }
+                else -> Unit
+            }
+        }
     }
 
     override suspend fun getSearchRecipe(query : String) : State<SearchResponse> {
@@ -38,7 +60,6 @@ class RepositoryImpl @Inject constructor(private val apiHelper: ApiHelper, priva
                 is State.Error -> throw ResponseException(it.msg)
                 is State.Success -> {
                     it.data.results.map { result ->
-                        Log.i(TAG, result.category)
                         mapper.categoryMapper(result).let { category ->
                             recipesDataSource.insertCategory(category)
                         }
@@ -53,21 +74,22 @@ class RepositoryImpl @Inject constructor(private val apiHelper: ApiHelper, priva
         return apiResponse { apiHelper.getCategoryRecipes(key) }
     }
 
-    override suspend fun insertRecipes(recipesTable : RecipesTable) {
-        recipesDataSource.insertRecipes(recipesTable)
-    }
+    /**
+     *Local Recipes
+     * */
 
-    override suspend fun isExistRecipes(key : String) : Boolean {
-        return recipesDataSource.isExistRecipes(key)
-    }
-
-    override suspend fun getMarkedRecipes() : MutableList<RecipesTable> {
-        return recipesDataSource.getMarkRecipes()
-    }
-
-    override suspend fun deleteRecipes(recipesTable: RecipesTable) = recipesDataSource.deleteRecipes(recipesTable)
-
-    override suspend fun getFlowLocalRecipes() : Flow<List<RecipesTable>> = recipesDataSource.getFlowRecipes()
+    override suspend fun getFlowLocalRecipes() : Flow<MutableList<RecipesTable>> = recipesDataSource.getFlowRecipes()
+    override suspend fun insertRecipes(recipesTable : RecipesTable) = recipesDataSource.insertRecipes(recipesTable)
 
     override suspend fun getFlowCategory() : Flow<MutableList<Category>> = recipesDataSource.getFlowCategory()
+    override suspend fun getFlowDetail(name: String): Flow<List<DetailWithIngredientsAndSteps>> = recipesDataSource.findDetail(name)
+
+    /**
+     * Favorite Recipes
+     * */
+
+    override suspend fun getFlowFavorite(): Flow<List<RecipeFavorite>> = recipesDataSource.getFavorite()
+    override suspend fun insertFavorite(favorite: RecipeFavorite) = recipesDataSource.insertFavorite(favorite)
+    override suspend fun isFavoriteExists(key: String): Boolean = recipesDataSource.isFavoriteExists(key)
+    override suspend fun deleteFavorite(favorite: RecipeFavorite) = recipesDataSource.deleteFavorite(favorite)
 }

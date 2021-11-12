@@ -4,16 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.grevi.masakapa.db.entity.Category
-import com.grevi.masakapa.network.response.DetailResponse
-import com.grevi.masakapa.network.response.RecipesResponse
-import com.grevi.masakapa.network.response.SearchResponse
+import com.grevi.masakapa.data.local.entity.Category
+import com.grevi.masakapa.data.local.entity.DetailTable
+import com.grevi.masakapa.data.local.entity.RecipesTable
+import com.grevi.masakapa.data.remote.response.DetailResponse
+import com.grevi.masakapa.data.remote.response.RecipesResponse
+import com.grevi.masakapa.data.remote.response.SearchResponse
 import com.grevi.masakapa.repository.Repository
 import com.grevi.masakapa.util.ResponseException
 import com.grevi.masakapa.util.State
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -26,26 +27,41 @@ class RecipesViewModel @Inject constructor(private val repository: Repository) :
     private val _recipeDetail = MutableLiveData<State<DetailResponse>>()
     private val _recipeSearch = MutableLiveData<State<SearchResponse>>()
     private val _category = MutableStateFlow<State<MutableList<Category>>>(State.Data)
+    private val _recipes = MutableStateFlow<State<MutableList<RecipesTable>>>(State.Data)
 
-    val recipes : MutableLiveData<State<RecipesResponse>> get() = _recipesData
+    val recipes : MutableStateFlow<State<MutableList<RecipesTable>>> get() = _recipes
     val category : MutableStateFlow<State<MutableList<Category>>> get() = _category
 
+    private val TAG = RecipesViewModel::class.simpleName
+
     init {
-        getRecipes()
+        getLocalRecipes()
         getCategoryLocal()
 
-        viewModelScope.launch(Dispatchers.IO) { repository.getCategory() }
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getCategory()
+            repository.getRecipes()
+        }
     }
 
-    private fun getRecipes() {
+    private fun getLocalRecipes() {
         viewModelScope.launch(Dispatchers.IO) {
-            val data = repository.getRecipes()
-            try {
-                _recipesData.postValue(data)
-            } catch (e : ResponseException) {
-                e.printStackTrace()
-                _recipesData.postValue(State.Error(e.toString()))
+            repository.getFlowLocalRecipes().collect {
+                _recipes.value = State.Loading()
+                try {
+                    _recipes.value = State.Success(it)
+                }catch (e : ResponseException) {
+                    _recipes.value = State.Error(e.toString())
+                }
             }
+
+//            val data = repository.getRecipes()
+//            try {
+//                _recipesData.postValue(data)
+//            } catch (e : ResponseException) {
+//                e.printStackTrace()
+//                _recipesData.postValue(State.Error(e.toString()))
+//            }
         }
     }
 

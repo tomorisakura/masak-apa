@@ -7,16 +7,17 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.grevi.masakapa.R
+import com.grevi.masakapa.data.local.entity.RecipesTable
 import com.grevi.masakapa.databinding.ListMainRecipesBinding
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.util.DiffUtils
 
-class RecipesAdapter : RecyclerView.Adapter<RecipesAdapter.RecipesVH>() {
-    private val recipes : MutableList<Recipes> = ArrayList()
-    internal var itemTouch : ((recipes : Recipes) -> Unit)? = null
+class RecipesAdapter(private val itemTouch : ((recipes : RecipesTable) -> Unit))
+    : RecyclerView.Adapter<RecipesAdapter.RecipesVH>() {
+    private val recipes : MutableList<RecipesTable> = ArrayList()
 
     inner class RecipesVH(private val binding : ListMainRecipesBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(recipes : Recipes) = with(binding) {
+        fun bind(recipes : RecipesTable) = with(binding) {
             imgThumb.load(recipes.imageThumb) {
                 allowHardware(false)
                 crossfade(true)
@@ -29,7 +30,7 @@ class RecipesAdapter : RecyclerView.Adapter<RecipesAdapter.RecipesVH>() {
         }
     }
 
-    fun addItem(item : MutableList<Recipes>) {
+    fun addItem(item : MutableList<RecipesTable>) {
         val differCallback = DiffUtils(this.recipes, item)
         val diffResult = DiffUtil.calculateDiff(differCallback)
         recipes.clear()

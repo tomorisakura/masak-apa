@@ -5,10 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.grevi.masakapa.db.entity.RecipesTable
+import com.grevi.masakapa.data.local.entity.RecipeFavorite
+import com.grevi.masakapa.data.local.entity.RecipesTable
 import com.grevi.masakapa.model.Detail
 import com.grevi.masakapa.repository.Repository
-import com.grevi.masakapa.repository.RepositoryImpl
 import com.grevi.masakapa.util.State
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,21 +21,18 @@ import javax.inject.Inject
 class DatabaseViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
     private val _state = MutableLiveData<Boolean>()
     private val _isExist = MutableLiveData<Boolean>()
-    private val _markList = MutableLiveData<State<MutableList<RecipesTable>>>()
-    private val _recipesFlow = MutableStateFlow<State<List<RecipesTable>>>(State.Data)
+    private val _recipesFlow = MutableStateFlow<State<List<RecipeFavorite>>>(State.Data)
 
-    val listMarkData : MutableLiveData<State<MutableList<RecipesTable>>> get() = _markList
     val state : MutableLiveData<Boolean> get() = _state
-    val recipesBucket : MutableStateFlow<State<List<RecipesTable>>> get() = _recipesFlow
+    val recipesBucket : MutableStateFlow<State<List<RecipeFavorite>>> get() = _recipesFlow
 
     init {
-        getMarkRecipesData()
         getMarkRecipes()
     }
 
     fun insertRecipes(detail : Detail, key : String, thumb : String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val recipes = RecipesTable(
+            val favorite = RecipeFavorite(
                 key = key,
                 name = detail.name,
                 dificulty = detail.dificulty,
@@ -43,39 +40,27 @@ class DatabaseViewModel @Inject constructor(private val repository: Repository) 
                 portion = detail.servings,
                 times = detail.times
             )
-            repository.insertRecipes(recipes)
+            repository.insertFavorite(favorite)
         }
     }
 
     fun keyChecker(key : String) : LiveData<Boolean> {
         viewModelScope.launch(Dispatchers.IO) {
-            _isExist.postValue(repository.isExistRecipes(key))
+            _isExist.postValue(repository.isFavoriteExists(key))
         }
         return _isExist
     }
 
-    private fun getMarkRecipesData() {
+    fun deleteRecipes(favorite: RecipeFavorite) {
         viewModelScope.launch(Dispatchers.IO) {
-            val data = repository.getMarkedRecipes()
-            _markList.postValue(State.Loading())
-            try {
-                _markList.postValue(State.Success(data))
-            }catch (e : Exception) {
-                _markList.postValue(State.Error(e.toString()))
-            }
-        }
-    }
-
-    fun deleteRecipes(recipesTable: RecipesTable) {
-        viewModelScope.launch(Dispatchers.IO) {
-            Log.i("DELETE_RECIPES", "Delete : ${recipesTable.name}")
-            repository.deleteRecipes(recipesTable)
+            Log.i("DELETE_RECIPES", "Delete : ${favorite.name}")
+            repository.deleteFavorite(favorite)
         }
     }
 
     private fun getMarkRecipes() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getFlowLocalRecipes().collect {
+            repository.getFlowFavorite().collect {
                 _recipesFlow.value = State.Loading()
                 try {
                     _recipesFlow.value = State.Success(it)

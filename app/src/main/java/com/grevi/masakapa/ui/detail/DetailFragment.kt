@@ -50,17 +50,17 @@ class DetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
         observeNetwork()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        val item = menu.findItem(R.id.markToolBar)
-        item?.isEnabled = false
+        menu.findItem(R.id.bucket)?.isVisible = false
     }
 
     private fun prepareView() = with(binding) {
-        recipesViewModel.getDetail(args.key!!).observe(viewLifecycleOwner, {results ->
+        recipesViewModel.getDetail(args.key).observe(viewLifecycleOwner, {results ->
             when(results) {
                 is State.Loading -> Log.i(TAG, results.msg)
                 is State.Error -> toast(requireContext(), results.msg)
@@ -142,9 +142,9 @@ class DetailFragment : Fragment() {
     }
 
     private fun observeChecker(detail : Detail) = with(binding) {
-        databaseViewModel.keyChecker(args.key!!).observe(viewLifecycleOwner) { isExist ->
+        databaseViewModel.keyChecker(args.key).observe(viewLifecycleOwner) { isExist ->
             if (!isExist) {
-                databaseViewModel.insertRecipes(detail, args.key!!, args.thumb!!)
+                databaseViewModel.insertRecipes(detail, args.key, args.thumb)
                 snackBar(root, "${detail.name} ditambahkan di bucket !").show()
             } else {
                 snackBar(root, "${detail.name} sudah ada di bucket !").show()

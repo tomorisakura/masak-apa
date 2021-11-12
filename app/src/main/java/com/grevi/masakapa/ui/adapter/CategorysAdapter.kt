@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.grevi.masakapa.databinding.ListsCategorysBinding
-import com.grevi.masakapa.db.entity.Category
+import com.grevi.masakapa.data.local.entity.Category
 import com.grevi.masakapa.util.DiffUtils
 
 class CategorysAdapter : RecyclerView.Adapter<CategorysAdapter.CategoryVH>() {

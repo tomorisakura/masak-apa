@@ -10,11 +10,11 @@ import com.grevi.masakapa.databinding.ListsRecipesBinding
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.util.DiffUtils
 
-class CategoryItemAdapter : RecyclerView.Adapter<CategoryItemAdapter.CategoryItemVH>() {
+class CategoryItemAdapter(private val itemTouch : ((recipes : Recipes) -> Unit))
+    : RecyclerView.Adapter<CategoryItemAdapter.CategoryItemVH>() {
     private val recipes : MutableList<Recipes> = mutableListOf()
-    internal var itemTouch : ((recipes : Recipes) -> Unit)? = null
 
-    inner class CategoryItemVH(private val binding : ListsRecipesBinding) : RecyclerView.ViewHolder(binding.root) {
+    class CategoryItemVH(private val binding : ListsRecipesBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(recipes : Recipes) {
             with(binding) {
                 imgThumb.load(recipes.imageThumb) {
@@ -49,6 +49,6 @@ class CategoryItemAdapter : RecyclerView.Adapter<CategoryItemAdapter.CategoryIte
 
     override fun onBindViewHolder(holder: CategoryItemVH, position: Int) {
         holder.bind(recipes[position])
-        holder.itemView.setOnClickListener { itemTouch?.invoke(recipes[position]) }
+        holder.itemView.setOnClickListener { itemTouch.invoke(recipes[position]) }
     }
 }
