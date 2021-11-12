@@ -1,6 +1,5 @@
 package com.grevi.masakapa.ui.recipes
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -52,7 +51,7 @@ class RecipesFragment : BaseFragment<FragmentRecipesBinding, RecipesViewModel>()
         observeView()
         observeRecipes()
         binding.apply {
-            onSwipeRefresh(refreshLayout, pg) { observeView() }
+            onSwipeRefresh(refreshLayout, pg)
         }
     }
 

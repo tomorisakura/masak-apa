@@ -1,55 +1,43 @@
 package com.grevi.masakapa.ui.category
 
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
-import android.view.*
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.ViewGroup
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.FragmentCategoryBinding
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.CategoryItemAdapter
+import com.grevi.masakapa.ui.base.BaseFragment
+import com.grevi.masakapa.ui.base.observeLiveData
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
-import com.grevi.masakapa.util.NetworkUtils
-import com.grevi.masakapa.util.State
-import com.grevi.masakapa.util.snackBar
-import com.grevi.masakapa.util.toast
+import com.grevi.masakapa.util.Constant.ONE_FLOAT
+import com.grevi.masakapa.util.Constant.ONE_SECOND
+import com.grevi.masakapa.util.Constant.ZERO_FLOAT
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CategoryFragment : Fragment() {
+class CategoryFragment : BaseFragment<FragmentCategoryBinding, RecipesViewModel>() {
 
-    private lateinit var binding : FragmentCategoryBinding
     private val arg : CategoryFragmentArgs by navArgs()
-    private val recipesViewModel by viewModels<RecipesViewModel>()
-    private val categoryItemAdapter: CategoryItemAdapter by lazy { CategoryItemAdapter() }
-    private lateinit var navController: NavController
-    private val networkUtils : NetworkUtils by lazy { NetworkUtils(requireContext()) }
-
-    private val TAG = CategoryFragment::class.java.simpleName
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        binding = FragmentCategoryBinding.inflate(inflater)
-        return binding.root
+    private val categoryItemAdapter: CategoryItemAdapter by lazy {
+        CategoryItemAdapter { navigateToDetail(it) }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
-        Log.v(TAG, arg.catKey)
-        navController = Navigation.findNavController(view)
-        observeNetwork()
-        swipeRefresh()
+    override fun getViewModelClass(): Class<RecipesViewModel> = RecipesViewModel::class.java
+
+    override fun getViewBindingInflater(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentCategoryBinding {
+        return FragmentCategoryBinding.inflate(inflater, container, false)
+    }
+
+    override fun subscribeUI() {
+        observeRecipes()
+        binding.apply { onSwipeRefresh(refreshCatLayout, null) }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -57,60 +45,30 @@ class CategoryFragment : Fragment() {
         menu.findItem(R.id.bucket)?.isVisible = false
     }
 
-    private fun prepareView() = with(binding) {
-        rvRecipesCategoryList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+    private fun observeRecipes() = with(viewModels) {
+        observeLiveData(categoryResult(arg.catKey)) { recipes ->
+            observeViewState(recipes.results)
+        }
+    }
+
+    private fun observeViewState(recipes: MutableList<Recipes>) = with(binding) {
+        rvRecipesCategoryList.layoutManager = LinearLayoutManager(
+            context,
+            LinearLayoutManager.VERTICAL,
+            false)
         rvRecipesCategoryList.adapter = categoryItemAdapter
         refreshCatLayout.isRefreshing = true
+        rvRecipesCategoryList.animate().alpha(ZERO_FLOAT).duration = ONE_SECOND
 
-        rvRecipesCategoryList.animate().alpha(0f).duration = 1000L
-
-        recipesViewModel.categoryResult(arg.catKey).observe(
-            viewLifecycleOwner, { results ->
-                categoryHintText.text = "${arg.catName} (0)"
-                when (results) {
-                    is State.Loading -> Log.i(TAG, results.msg)
-                    is State.Error -> {
-                        toast(requireContext(), results.msg)
-                        refreshCatLayout.isRefreshing = true
-                    }
-                    is State.Success -> {
-                        results.data.results.let { categoryItemAdapter.addItem(it) }
-                        rvRecipesCategoryList.animate().alpha(1f).duration = 1000L
-                        refreshCatLayout.isRefreshing = false
-                        categoryHintText.text = "${arg.catName} (${results.data.results?.size})"
-                    }
-                    else -> Log.i(TAG, "")
-                }
-            })
-        categoryItemAdapter.itemTouch = { prepareNavigate(it) }
+        categoryItemAdapter.addItem(recipes)
+        rvRecipesCategoryList.animate().alpha(ONE_FLOAT).duration = ONE_SECOND
+        refreshCatLayout.isRefreshing = false
+        categoryHintText.text = "${arg.catName} (${recipes.size})"
     }
 
-    private fun swipeRefresh() = with(binding) {
-        networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnect ->
-            if (isConnect) {
-                refreshCatLayout.setOnRefreshListener {
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        prepareView()
-                    }, 2000L)
-                }
-            } else {
-                snackBar(root, getString(R.string.no_inet_text)).show()
-            }
-        }
-    }
-
-    private fun observeNetwork() {
-        networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnect ->
-            if (isConnect) {
-                prepareView()
-            } else {
-                snackBar(binding.root, getString(R.string.no_inet_text)).show()
-            }
-        }
-    }
-
-    private fun prepareNavigate(recipes: Recipes) {
-        CategoryFragmentDirections.actionCategoryFragment2ToDetailFragment(recipes.key, recipes.imageThumb).also {
+    private fun navigateToDetail(recipes: Recipes) {
+        CategoryFragmentDirections
+            .actionCategoryFragment2ToDetailFragment(recipes.key, recipes.imageThumb).also {
             navController.navigate(it)
         }
     }

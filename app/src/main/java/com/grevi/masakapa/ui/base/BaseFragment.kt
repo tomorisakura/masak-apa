@@ -67,15 +67,14 @@ abstract class BaseFragment<VB: ViewBinding, VM: ViewModel> : Fragment() {
     }
 
     protected fun onSwipeRefresh(
-        view: SwipeRefreshLayout,
-        pg : LinearProgressIndicator,
-        action: () -> Unit
+        view: SwipeRefreshLayout?,
+        pg : LinearProgressIndicator?,
     ) {
         networkUtils.networkDataStatus.observe(viewLifecycleOwner, {
-            view.setOnRefreshListener {
+            view?.setOnRefreshListener {
                 Handler(Looper.getMainLooper()).postDelayed({
-                    action.invoke()
-                    pg.visibility = View.GONE
+                    subscribeUI()
+                    pg?.visibility = View.GONE
                 }, TWO_SECOND)
             }
         })
