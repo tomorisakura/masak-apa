@@ -5,15 +5,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import coil.transform.CircleCropTransformation
 import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.ListsRecipesBinding
 import com.grevi.masakapa.model.Search
-import com.grevi.masakapa.util.DiffUtils
+import com.grevi.masakapa.common.differ.Differ
 
-class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchVH>() {
+class SearchAdapter(private val itemTouch : ((search : Search) -> Unit)) :
+    RecyclerView.Adapter<SearchAdapter.SearchVH>() {
     private val recipes : MutableList<Search> = ArrayList()
-    internal var itemTouch : ((search : Search) -> Unit)? = null
 
     inner class SearchVH(private val binding : ListsRecipesBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(search : Search) = with(binding) {
@@ -30,7 +29,7 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchVH>() {
     }
 
     fun addItem(item : List<Search>) {
-        val diffCallback = DiffUtils(this.recipes, item)
+        val diffCallback = Differ(this.recipes, item)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         recipes.clear()
         recipes.addAll(item)
@@ -48,6 +47,6 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchVH>() {
 
     override fun onBindViewHolder(holder: SearchVH, position: Int) {
         holder.bind(recipes[position])
-        holder.itemView.setOnClickListener { itemTouch?.invoke(recipes[position]) }
+        holder.itemView.setOnClickListener { itemTouch.invoke(recipes[position]) }
     }
 }

@@ -1,4 +1,4 @@
-package com.grevi.masakapa.util
+package com.grevi.masakapa.common.network
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -8,7 +8,7 @@ import androidx.core.content.getSystemService
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
-class NetworkUtils(private val context: Context) : ConnectivityManager.NetworkCallback() {
+class Network(private val context: Context) : ConnectivityManager.NetworkCallback() {
     private val _networkDataStatus = MutableLiveData<Boolean>()
     val networkDataStatus : MutableLiveData<Boolean> get() = _networkDataStatus
 

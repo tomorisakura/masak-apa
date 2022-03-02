@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.grevi.masakapa.databinding.ListsIngredientsBinding
-import com.grevi.masakapa.util.DiffUtils
+import com.grevi.masakapa.common.differ.Differ
 
 class StepAdapter :RecyclerView.Adapter<StepAdapter.StepVH>() {
     private val steps : MutableList<String> = ArrayList()
@@ -17,7 +17,7 @@ class StepAdapter :RecyclerView.Adapter<StepAdapter.StepVH>() {
     }
 
     fun addList(list: List<String>) {
-        val diffCallback = DiffUtils(steps, list)
+        val diffCallback = Differ(steps, list)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         steps.clear()
         steps.addAll(list)

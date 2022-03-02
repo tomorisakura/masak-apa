@@ -8,7 +8,7 @@ import coil.load
 import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.ListsRecipesBinding
 import com.grevi.masakapa.model.Recipes
-import com.grevi.masakapa.util.DiffUtils
+import com.grevi.masakapa.common.differ.Differ
 
 class CategoryItemAdapter(private val itemTouch : ((recipes : Recipes) -> Unit))
     : RecyclerView.Adapter<CategoryItemAdapter.CategoryItemVH>() {
@@ -31,7 +31,7 @@ class CategoryItemAdapter(private val itemTouch : ((recipes : Recipes) -> Unit))
     }
 
     fun addItem(item : MutableList<Recipes>) {
-        val diffCallback = DiffUtils(this.recipes, item)
+        val diffCallback = Differ(this.recipes, item)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         recipes.clear()
         recipes.addAll(item)

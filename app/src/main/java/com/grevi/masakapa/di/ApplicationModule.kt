@@ -14,7 +14,7 @@ import com.grevi.masakapa.repository.RepositoryImpl
 import com.grevi.masakapa.repository.mapper.MapperEntity
 import com.grevi.masakapa.repository.mapper.MapperImpl
 import com.grevi.masakapa.util.Constant
-import com.grevi.masakapa.util.ViewModelFactory
+import com.grevi.masakapa.common.factory.ViewModelFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -71,7 +71,9 @@ object ApplicationModule {
     @Provides
     @Singleton
     fun provideRecipesDatabase(@ApplicationContext context: Context) : RecipesDatabase {
-        return Room.databaseBuilder(context, RecipesDatabase::class.java, "recipesDB").fallbackToDestructiveMigration().build()
+        return Room.databaseBuilder(context, RecipesDatabase::class.java, "recipesDB")
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides

@@ -1,30 +1,35 @@
 package com.grevi.masakapa.ui.recipes
 
+import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
 import com.grevi.masakapa.R
 import com.grevi.masakapa.data.local.entity.RecipesTable
 import com.grevi.masakapa.databinding.FragmentRecipesBinding
 import com.grevi.masakapa.ui.adapter.RecipesAdapter
-import com.grevi.masakapa.ui.base.BaseFragment
-import com.grevi.masakapa.ui.base.observeDataListFlow
+import com.grevi.masakapa.common.base.BaseFragment
+import com.grevi.masakapa.common.base.observeDataFlow
+import com.grevi.masakapa.common.shared.getStoragePermission
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
 import com.grevi.masakapa.util.Constant.ONE_FLOAT
 import com.grevi.masakapa.util.Constant.ONE_SECOND
+import com.grevi.masakapa.util.Constant.PERMISSIONS_STORAGE
 import com.grevi.masakapa.util.Constant.ZERO_FLOAT
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class RecipesFragment : BaseFragment<FragmentRecipesBinding, RecipesViewModel>() {
 
-    private val snapHelper: LinearSnapHelper by lazy { LinearSnapHelper() }
-
     private val recipesAdapter: RecipesAdapter by lazy {
         RecipesAdapter{ navigateToDetail(it) }
+    }
+
+    private val isGranted: Boolean by lazy {
+        context?.let { getStoragePermission(it, PERMISSIONS_STORAGE) } ?: false
     }
 
     override fun getViewModelClass(): Class<RecipesViewModel> = RecipesViewModel::class.java
@@ -50,9 +55,7 @@ class RecipesFragment : BaseFragment<FragmentRecipesBinding, RecipesViewModel>()
     override fun subscribeUI() {
         observeView()
         observeRecipes()
-        binding.apply {
-            onSwipeRefresh(refreshLayout, pg)
-        }
+        binding.apply { onSwipeRefresh(refreshLayout, pg) }
     }
 
     private fun observeView() = with(binding) {
@@ -65,7 +68,7 @@ class RecipesFragment : BaseFragment<FragmentRecipesBinding, RecipesViewModel>()
     }
 
     private fun observeRecipes() = with(viewModels) {
-        observeDataListFlow(recipes) { recipes ->
+        observeDataFlow(recipes) { recipes ->
             observeViewState()
             recipesAdapter.addItem(recipes)
         }

@@ -5,12 +5,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import coil.transform.CircleCropTransformation
 import com.grevi.masakapa.R
 import com.grevi.masakapa.data.local.entity.RecipesTable
 import com.grevi.masakapa.databinding.ListMainRecipesBinding
-import com.grevi.masakapa.model.Recipes
-import com.grevi.masakapa.util.DiffUtils
+import com.grevi.masakapa.common.differ.Differ
 
 class RecipesAdapter(private val itemTouch : ((recipes : RecipesTable) -> Unit))
     : RecyclerView.Adapter<RecipesAdapter.RecipesVH>() {
@@ -31,7 +29,7 @@ class RecipesAdapter(private val itemTouch : ((recipes : RecipesTable) -> Unit))
     }
 
     fun addItem(item : MutableList<RecipesTable>) {
-        val differCallback = DiffUtils(this.recipes, item)
+        val differCallback = Differ(this.recipes, item)
         val diffResult = DiffUtil.calculateDiff(differCallback)
         recipes.clear()
         recipes.addAll(item)

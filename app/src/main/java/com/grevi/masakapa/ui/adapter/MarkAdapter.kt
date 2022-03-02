@@ -9,14 +9,10 @@ import coil.load
 import com.grevi.masakapa.R
 import com.grevi.masakapa.data.local.entity.RecipeFavorite
 import com.grevi.masakapa.databinding.ListsRecipesBinding
-import com.grevi.masakapa.data.local.entity.RecipesTable
-import com.grevi.masakapa.util.DiffUtils
+import com.grevi.masakapa.common.differ.Differ
 
-class MarkAdapter : RecyclerView.Adapter<MarkAdapter.MarkVH>() {
+class MarkAdapter(private val itemTouch : ((favorite : RecipeFavorite) -> Unit)) : RecyclerView.Adapter<MarkAdapter.MarkVH>() {
     private val recipes : MutableList<RecipeFavorite> = ArrayList()
-    internal var itemTouch : ((favorite : RecipeFavorite) -> Unit)? = null
-
-    private val TAG = MarkAdapter::class.java.simpleName
 
     inner class MarkVH(private val binding : ListsRecipesBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(favorite : RecipeFavorite) = with(binding) {
@@ -33,7 +29,7 @@ class MarkAdapter : RecyclerView.Adapter<MarkAdapter.MarkVH>() {
     }
 
     fun addItem(item : List<RecipeFavorite>) {
-        val diffResult = DiffUtil.calculateDiff(DiffUtils(recipes, item), true)
+        val diffResult = DiffUtil.calculateDiff(Differ(recipes, item), true)
         recipes.clear()
         recipes.addAll(item)
         diffResult.dispatchUpdatesTo(this)
@@ -61,9 +57,7 @@ class MarkAdapter : RecyclerView.Adapter<MarkAdapter.MarkVH>() {
             * filtering position when clicked item
             * */
             val adapterPosition = holder.adapterPosition.takeIf { it != NO_POSITION } ?: return@setOnClickListener
-            itemTouch?.let {
-                it(recipes[adapterPosition])
-            }
+            itemTouch(recipes[adapterPosition])
         }
     }
 

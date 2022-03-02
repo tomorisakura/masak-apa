@@ -18,4 +18,6 @@
     <string name="category_permission_text">Kategori saat ini tidak dapat ditampilkan, pastikan permission disetujui</string>
     <string name="bucket_permission_text">Gagal menyimpan resep, pastikan permission disetujui</string>
     <string name="bucket_permission_reason">Permission ini digunakan untuk menyimpan resep di bucket</string>
+    <string name="ok_text">OK</string>
+    <string name="cancel_text">Cancel</string>
 </resources>

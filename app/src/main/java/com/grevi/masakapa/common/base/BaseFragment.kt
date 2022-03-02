@@ -1,4 +1,4 @@
-package com.grevi.masakapa.ui.base
+package com.grevi.masakapa.common.base
 
 import android.content.Context
 import android.os.Bundle
@@ -12,14 +12,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.grevi.masakapa.R
 import com.grevi.masakapa.util.Constant.TWO_SECOND
-import com.grevi.masakapa.util.NetworkUtils
-import com.grevi.masakapa.util.ViewModelFactory
-import com.grevi.masakapa.util.snackBar
+import com.grevi.masakapa.common.network.Network
+import com.grevi.masakapa.common.factory.ViewModelFactory
+import com.grevi.masakapa.common.popup.snackBar
 import javax.inject.Inject
 
 abstract class BaseFragment<VB: ViewBinding, VM: ViewModel> : Fragment() {
@@ -33,11 +34,14 @@ abstract class BaseFragment<VB: ViewBinding, VM: ViewModel> : Fragment() {
     protected val viewModels get() = _viewModels
 
     private lateinit var _context: Context
+    protected val baseContext get() = _context
 
-    private val networkUtils by lazy { NetworkUtils(this.context ?: _context) }
+    private val networkUtils by lazy { Network(this.context ?: _context) }
 
     private lateinit var _navController: NavController
     val navController get() = _navController
+
+    protected val snapHelper: LinearSnapHelper by lazy { LinearSnapHelper() }
 
     abstract fun getViewModelClass(): Class<VM>
     abstract fun getViewBindingInflater(inflater: LayoutInflater, container: ViewGroup?): VB
@@ -70,21 +74,21 @@ abstract class BaseFragment<VB: ViewBinding, VM: ViewModel> : Fragment() {
         view: SwipeRefreshLayout?,
         pg : LinearProgressIndicator?,
     ) {
-        networkUtils.networkDataStatus.observe(viewLifecycleOwner, {
+        networkUtils.networkDataStatus.observe(viewLifecycleOwner) {
             view?.setOnRefreshListener {
                 Handler(Looper.getMainLooper()).postDelayed({
                     subscribeUI()
                     pg?.visibility = View.GONE
                 }, TWO_SECOND)
             }
-        })
+        }
     }
 
     private fun observeNetworkState() {
-        networkUtils.networkDataStatus.observe(viewLifecycleOwner, { isConnected ->
+        networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnected ->
             if (isConnected) subscribeUI()
             else snackBar(_binding.root, getString(R.string.no_inet_text)).show()
-        })
+        }
     }
 
     @JvmName("getBaseBinding")

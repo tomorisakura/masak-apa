@@ -15,4 +15,5 @@ interface RecipesDataSource  {
     suspend fun isFavoriteExists(key: String) : Boolean
     suspend fun getFavorite() : Flow<List<RecipeFavorite>>
     suspend fun deleteFavorite(favorite: RecipeFavorite)
+    suspend fun findRecipeByDetailName(name: String): Flow<DetailTable>
 }

@@ -34,6 +34,9 @@ interface RecipesDAO {
     @Query("SELECT * FROM favorite")
     suspend fun getAllFavorite() : MutableList<RecipeFavorite>
 
+    @Query("SELECT * FROM detail WHERE name = :name")
+    suspend fun findRecipeByDetailName(name: String): DetailTable
+
     @Delete
     suspend fun deleteFavorite(recipeFavorite: RecipeFavorite)
 

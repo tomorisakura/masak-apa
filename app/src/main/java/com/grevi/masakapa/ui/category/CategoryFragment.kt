@@ -10,8 +10,8 @@ import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.FragmentCategoryBinding
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.CategoryItemAdapter
-import com.grevi.masakapa.ui.base.BaseFragment
-import com.grevi.masakapa.ui.base.observeLiveData
+import com.grevi.masakapa.common.base.BaseFragment
+import com.grevi.masakapa.common.base.observeLiveData
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
 import com.grevi.masakapa.util.Constant.ONE_FLOAT
 import com.grevi.masakapa.util.Constant.ONE_SECOND
@@ -46,7 +46,7 @@ class CategoryFragment : BaseFragment<FragmentCategoryBinding, RecipesViewModel>
     }
 
     private fun observeRecipes() = with(viewModels) {
-        observeLiveData(categoryResult(arg.catKey)) { recipes ->
+        observeLiveData(categoryResult(arg.catKey))  { recipes ->
             observeViewState(recipes.results)
         }
     }
@@ -57,7 +57,6 @@ class CategoryFragment : BaseFragment<FragmentCategoryBinding, RecipesViewModel>
             LinearLayoutManager.VERTICAL,
             false)
         rvRecipesCategoryList.adapter = categoryItemAdapter
-        refreshCatLayout.isRefreshing = true
         rvRecipesCategoryList.animate().alpha(ZERO_FLOAT).duration = ONE_SECOND
 
         categoryItemAdapter.addItem(recipes)

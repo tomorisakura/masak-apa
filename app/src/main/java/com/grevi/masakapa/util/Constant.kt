@@ -9,4 +9,9 @@ object Constant {
 
     const val ONE_SECOND = 1_000L
     const val TWO_SECOND = 2_000L
+
+    const val ZERO = 0
+    const val ONE = 1
+    const val TWO = 2
+    const val THREE = 3
 }

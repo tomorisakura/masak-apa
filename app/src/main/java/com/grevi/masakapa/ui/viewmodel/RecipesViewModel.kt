@@ -5,14 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.grevi.masakapa.data.local.entity.Category
-import com.grevi.masakapa.data.local.entity.DetailTable
 import com.grevi.masakapa.data.local.entity.RecipesTable
 import com.grevi.masakapa.data.remote.response.DetailResponse
 import com.grevi.masakapa.data.remote.response.RecipesResponse
 import com.grevi.masakapa.data.remote.response.SearchResponse
 import com.grevi.masakapa.repository.Repository
 import com.grevi.masakapa.util.ResponseException
-import com.grevi.masakapa.util.State
+import com.grevi.masakapa.common.state.State
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,13 +28,10 @@ class RecipesViewModel @Inject constructor(private val repository: Repository) :
     private val _category = MutableStateFlow<State<MutableList<Category>>>(State.Data)
     private val _recipes = MutableStateFlow<State<MutableList<RecipesTable>>>(State.Data)
 
-    val recipes : MutableStateFlow<State<MutableList<RecipesTable>>> get() = _recipes
-    val category : MutableStateFlow<State<MutableList<Category>>> get() = _category
-
-    private val TAG = RecipesViewModel::class.simpleName
+    val recipes : MutableStateFlow<State<MutableList<RecipesTable>>> = _recipes
+    val category : MutableStateFlow<State<MutableList<Category>>> = _category
 
     init {
-        getLocalRecipes()
         getCategoryLocal()
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -44,7 +40,7 @@ class RecipesViewModel @Inject constructor(private val repository: Repository) :
         }
     }
 
-    private fun getLocalRecipes() {
+    private fun getLocalRecipes(isGranted: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getFlowLocalRecipes().collect {
                 _recipes.value = State.Loading()
@@ -54,14 +50,6 @@ class RecipesViewModel @Inject constructor(private val repository: Repository) :
                     _recipes.value = State.Error(e.toString())
                 }
             }
-
-//            val data = repository.getRecipes()
-//            try {
-//                _recipesData.postValue(data)
-//            } catch (e : ResponseException) {
-//                e.printStackTrace()
-//                _recipesData.postValue(State.Error(e.toString()))
-//            }
         }
     }
 

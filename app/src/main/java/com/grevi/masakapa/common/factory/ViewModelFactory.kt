@@ -1,4 +1,4 @@
-package com.grevi.masakapa.util
+package com.grevi.masakapa.common.factory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

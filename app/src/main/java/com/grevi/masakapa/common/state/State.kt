@@ -1,4 +1,4 @@
-package com.grevi.masakapa.util
+package com.grevi.masakapa.common.state
 
 sealed class State<out T> {
     object Data : State<Nothing>()

@@ -1,15 +1,12 @@
 package com.grevi.masakapa.ui.splash
 
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import com.grevi.masakapa.R
 import com.grevi.masakapa.ui.HomeActivity
-import com.grevi.masakapa.ui.base.BaseActivity
 import com.grevi.masakapa.util.Constant.TWO_SECOND
 import dagger.hilt.android.AndroidEntryPoint
 

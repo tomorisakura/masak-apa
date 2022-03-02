@@ -5,7 +5,7 @@ import com.grevi.masakapa.data.remote.response.CategorysResponse
 import com.grevi.masakapa.data.remote.response.DetailResponse
 import com.grevi.masakapa.data.remote.response.RecipesResponse
 import com.grevi.masakapa.data.remote.response.SearchResponse
-import com.grevi.masakapa.util.State
+import com.grevi.masakapa.common.state.State
 import kotlinx.coroutines.flow.Flow
 
 interface Repository {
@@ -22,4 +22,5 @@ interface Repository {
     suspend fun insertFavorite(favorite: RecipeFavorite)
     suspend fun isFavoriteExists(key : String) : Boolean
     suspend fun deleteFavorite(favorite: RecipeFavorite)
+    suspend fun findLocalDetailRecipeByName(name: String): Flow<DetailTable>
 }

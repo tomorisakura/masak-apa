@@ -1,76 +1,64 @@
 package com.grevi.masakapa.ui.marked
 
-import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.grevi.masakapa.data.local.entity.RecipeFavorite
 import com.grevi.masakapa.databinding.FragmentMarkBinding
-import com.grevi.masakapa.data.local.entity.RecipesTable
 import com.grevi.masakapa.ui.adapter.MarkAdapter
+import com.grevi.masakapa.common.base.BaseFragment
+import com.grevi.masakapa.common.base.observeDataFlow
+import com.grevi.masakapa.common.coroutine.coroutineJob
 import com.grevi.masakapa.ui.viewmodel.DatabaseViewModel
-import com.grevi.masakapa.util.State
-import com.grevi.masakapa.util.snackBar
+import com.grevi.masakapa.common.popup.snackBar
+import com.grevi.masakapa.util.Constant.ONE_FLOAT
+import com.grevi.masakapa.util.Constant.ZERO
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
-class MarkFragment : Fragment() {
+class MarkFragment : BaseFragment<FragmentMarkBinding, DatabaseViewModel>() {
 
-    private lateinit var binding : FragmentMarkBinding
     private val databaseViewModel : DatabaseViewModel by viewModels()
-    private val markAdapter: MarkAdapter by lazy { MarkAdapter() }
-    private lateinit var navController: NavController
+    private val markAdapter: MarkAdapter by lazy { MarkAdapter{ navigateToDetail(it) } }
     private val job : Job by lazy { Job() }
 
-    private val TAG = MarkFragment::class.java.simpleName
+    override fun getViewModelClass(): Class<DatabaseViewModel> = DatabaseViewModel::class.java
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        binding = FragmentMarkBinding.inflate(inflater)
-        return binding.root
+    override fun getViewBindingInflater(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentMarkBinding {
+        return FragmentMarkBinding.inflate(inflater, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        navController = Navigation.findNavController(view)
-        prepareView()
+    override fun subscribeUI() {
+        observeView()
         deleteRecipes()
     }
 
-    private fun prepareView() = with(binding) {
+    private fun observeView() = with(binding) {
         rvRecipesMark.apply {
-            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            layoutManager = LinearLayoutManager(
+                baseContext,
+                LinearLayoutManager.VERTICAL,
+                false)
             adapter = markAdapter
         }
-        CoroutineScope(job + Dispatchers.Main).launch {
-            databaseViewModel.recipesBucket.collect { state ->
-                when(state) {
-                    is State.Loading -> snackBar(root, state.msg).show()
-                    is State.Error -> snackBar(root, state.msg).show()
-                    is State.Success -> {
-                        markAdapter.addItem(state.data)
-                        markAdapter.itemTouch = { prepareNavigate(it) }
-                    }
-                    else -> Unit
-                }
+        coroutineJob(job) {
+            observeDataFlow(databaseViewModel.recipesBucket) {
+                markAdapter.addItem(it)
             }
         }
     }
 
     private fun deleteRecipes() = with(binding) {
-        val simpleTouchCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.ACTION_STATE_IDLE, 0 or ItemTouchHelper.RIGHT) {
+        val simpleTouchCallback = object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.ACTION_STATE_IDLE,
+            ZERO or ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -95,7 +83,7 @@ class MarkFragment : Fragment() {
                 viewHolder: RecyclerView.ViewHolder
             ) {
                 super.clearView(recyclerView, viewHolder)
-                viewHolder.itemView.alpha = 1.0f
+                viewHolder.itemView.alpha = ONE_FLOAT
             }
 
         }
@@ -104,7 +92,7 @@ class MarkFragment : Fragment() {
         }
     }
 
-    private fun prepareNavigate(favorite: RecipeFavorite) {
+    private fun navigateToDetail(favorite: RecipeFavorite) {
         MarkFragmentDirections
             .actionMarkFragment2ToDetailFragment(favorite.key, favorite.imageThumb).also {
             navController.navigate(it)

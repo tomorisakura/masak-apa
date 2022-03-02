@@ -1,12 +1,11 @@
 package com.grevi.masakapa.ui
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.navigation.NavController
 import com.grevi.masakapa.R
 import com.grevi.masakapa.databinding.ActivityHomeBinding
-import com.grevi.masakapa.ui.base.BaseActivity
+import com.grevi.masakapa.common.base.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

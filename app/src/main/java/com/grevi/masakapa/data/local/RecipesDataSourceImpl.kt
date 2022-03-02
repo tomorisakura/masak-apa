@@ -17,4 +17,7 @@ class RecipesDataSourceImpl @Inject constructor(private val recipesDAO: RecipesD
     override suspend fun isFavoriteExists(key: String): Boolean = recipesDAO.isFavoriteExists(key)
     override suspend fun getFavorite(): Flow<List<RecipeFavorite>> = flow { emit(recipesDAO.getAllFavorite()) }
     override suspend fun deleteFavorite(favorite: RecipeFavorite) = recipesDAO.deleteFavorite(favorite)
+    override suspend fun findRecipeByDetailName(name: String): Flow<DetailTable> = flow {
+        emit(recipesDAO.findRecipeByDetailName(name))
+    }
 }

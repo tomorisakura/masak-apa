@@ -1,7 +1,7 @@
 package com.grevi.masakapa.data.remote
 
 import com.grevi.masakapa.util.ResponseException
-import com.grevi.masakapa.util.State
+import com.grevi.masakapa.common.state.State
 import retrofit2.Response
 
 open class ApiResponse {
