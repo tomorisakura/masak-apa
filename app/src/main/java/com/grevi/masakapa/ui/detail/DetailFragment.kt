@@ -9,22 +9,21 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.grevi.masakapa.R
+import com.grevi.masakapa.common.base.BaseFragment
+import com.grevi.masakapa.common.base.observeLiveData
+import com.grevi.masakapa.common.popup.snackBar
 import com.grevi.masakapa.data.remote.response.DetailResponse
 import com.grevi.masakapa.databinding.FragmentDetailBinding
 import com.grevi.masakapa.databinding.ItemCardBinding
 import com.grevi.masakapa.model.Detail
 import com.grevi.masakapa.ui.adapter.IngredientsAdapter
 import com.grevi.masakapa.ui.adapter.StepAdapter
-import com.grevi.masakapa.common.base.BaseFragment
-import com.grevi.masakapa.common.base.observeLiveData
 import com.grevi.masakapa.ui.viewmodel.DatabaseViewModel
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
 import com.grevi.masakapa.util.Constant
-import com.grevi.masakapa.util.Constant.ONE_FLOAT
-import com.grevi.masakapa.util.Constant.ONE_SECOND
 import com.grevi.masakapa.util.Constant.TWO
-import com.grevi.masakapa.util.Constant.TWO_SECOND
-import com.grevi.masakapa.common.popup.snackBar
+import com.grevi.masakapa.util.hide
+import com.grevi.masakapa.util.show
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -52,7 +51,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, RecipesViewModel>() {
 
     override fun subscribeUI() {
         observeRecipesDetail()
-        prepareViewLayout()
+        hideViewComponent()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -85,9 +84,8 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, RecipesViewModel>() {
             publishedText.text = it.author.published
             prepareRV(it.ingredients, it.step)
         }
-
-        pgMainRecipes.visibility = View.GONE
-
+        pgMainRecipes.hide()
+        showViewComponent()
         floatButton.setOnClickListener {
             response.results.let { data ->
                 if (getSharedPermission) {
@@ -114,19 +112,22 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, RecipesViewModel>() {
         stepAdapter.addList(stepList)
     }
 
-    private fun prepareViewLayout() = with(binding) {
-        cardLayout.visibility = ViewGroup.VISIBLE
-        cardLayout.animate().alpha(ONE_FLOAT).duration = ONE_SECOND
-        floatButton.visibility = View.VISIBLE
-        floatButton.animate().alpha(ONE_FLOAT).duration = TWO_SECOND
-        textChefLayout.visibility = View.VISIBLE
-        textChefLayout.animate().alpha(ONE_FLOAT).duration = ONE_SECOND
-        textIngredientLabel.visibility = View.VISIBLE
-        textIngredientLabel.animate().alpha(ONE_FLOAT)
-        textStepLabel.visibility = View.VISIBLE
-        textStepLabel.animate().alpha(ONE_FLOAT)
-        recipeTitleText.visibility = View.VISIBLE
-        recipeTitleText.animate().alpha(ONE_FLOAT)
+    private fun showViewComponent() = with(binding) {
+        cardLayout.show()
+        floatButton.show()
+        textChefLayout.show()
+        textIngredientLabel.show()
+        textStepLabel.show()
+        recipeTitleText.show()
+    }
+
+    private fun hideViewComponent() = with(binding) {
+        cardLayout.hide()
+        floatButton.hide()
+        textChefLayout.hide()
+        textIngredientLabel.hide()
+        textStepLabel.hide()
+        recipeTitleText.hide()
     }
 
     private fun observeChecker(detail : Detail) = with(binding) {
@@ -136,40 +137,6 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, RecipesViewModel>() {
                 snackBar(root, "${detail.name} ditambahkan di bucket !").show()
             } else {
                 snackBar(root, "${detail.name} sudah ada di bucket !").show()
-            }
-        }
-    }
-
-    private fun prepareViewLayout(state : Boolean) = with(binding) {
-        when (state) {
-            false -> {
-                cardLayout.animate().alpha(0f)
-                cardLayout.visibility = ViewGroup.INVISIBLE
-                floatButton.animate().alpha(0f)
-                floatButton.visibility = View.INVISIBLE
-                textChefLayout.animate().alpha(0f)
-                textChefLayout.visibility = View.INVISIBLE
-                textIngredientLabel.animate().alpha(0f)
-                textIngredientLabel.visibility = View.INVISIBLE
-                textStepLabel.animate().alpha(0f)
-                textStepLabel.visibility = View.INVISIBLE
-                recipeTitleText.animate().alpha(0f)
-                recipeTitleText.visibility = View.INVISIBLE
-            }
-
-            true -> {
-                cardLayout.visibility = ViewGroup.VISIBLE
-                cardLayout.animate().alpha(1f).duration = 1000L
-                floatButton.visibility = View.VISIBLE
-                floatButton.animate().alpha(1f).duration = 2000L
-                textChefLayout.visibility = View.VISIBLE
-                textChefLayout.animate().alpha(1f).duration = 1000L
-                textIngredientLabel.visibility = View.VISIBLE
-                textIngredientLabel.animate().alpha(1f)
-                textStepLabel.visibility = View.VISIBLE
-                textStepLabel.animate().alpha(1f)
-                recipeTitleText.visibility = View.VISIBLE
-                recipeTitleText.animate().alpha(1f)
             }
         }
     }

@@ -1,6 +1,6 @@
 package com.grevi.masakapa.data.remote.data
 
-import com.grevi.masakapa.data.remote.response.CategorysResponse
+import com.grevi.masakapa.data.remote.response.CategoryResponse
 import com.grevi.masakapa.data.remote.response.DetailResponse
 import com.grevi.masakapa.data.remote.response.RecipesResponse
 import com.grevi.masakapa.data.remote.response.SearchResponse
@@ -19,9 +19,9 @@ interface ApiService {
     @GET("/api/search/")
     suspend fun getSearchRecipe(@Query("q") query : String) : Response<SearchResponse>
 
-    @GET("/api/categorys/recipes")
-    suspend fun getCategorys() : Response<CategorysResponse>
+    @GET("/api/category/recipes")
+    suspend fun getCategory() : Response<CategoryResponse>
 
-    @GET("/api/categorys/recipes/{key}")
+    @GET("/api/category/recipes/{key}")
     suspend fun getCategoryRecipes(@Path("key") key: String) : Response<RecipesResponse>
 }

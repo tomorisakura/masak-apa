@@ -1,7 +1,5 @@
 package com.grevi.masakapa.common.base
 
-import android.Manifest
-import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -15,12 +13,10 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.viewbinding.ViewBinding
 import com.grevi.masakapa.R
 import com.grevi.masakapa.common.permission.storagePermission
-import com.grevi.masakapa.util.Constant
-import com.permissionx.guolindev.PermissionX
 
 abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
 
-    private lateinit var _binding : VB
+    private lateinit var _binding: VB
     protected val binding get() = _binding
 
     private var state = false //should save state on shared pref
@@ -49,12 +45,13 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
     }
 
     private fun setupNavigation(
-        onBindView : (nav :NavController) -> Unit,
+        onBindView: (nav: NavController) -> Unit,
         onNegativeView: () -> Unit
     ) {
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_container) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_container) as NavHostFragment
         navHostFragment.navController.addOnDestinationChangedListener { controller, destination, _ ->
-            when(destination.id) {
+            when (destination.id) {
                 R.id.recipesFragment -> onBindView(controller)
                 else -> onNegativeView()
             }
@@ -68,9 +65,9 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.dayNight -> {
-                state = when(state) {
+                state = when (state) {
                     true -> {
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                         false

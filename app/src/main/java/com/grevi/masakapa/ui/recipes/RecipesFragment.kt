@@ -14,6 +14,7 @@ import com.grevi.masakapa.ui.adapter.RecipesAdapter
 import com.grevi.masakapa.common.base.BaseFragment
 import com.grevi.masakapa.common.base.observeDataFlow
 import com.grevi.masakapa.common.shared.getStoragePermission
+import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
 import com.grevi.masakapa.util.Constant.ONE_FLOAT
 import com.grevi.masakapa.util.Constant.ONE_SECOND
@@ -68,9 +69,9 @@ class RecipesFragment : BaseFragment<FragmentRecipesBinding, RecipesViewModel>()
     }
 
     private fun observeRecipes() = with(viewModels) {
-        observeDataFlow(recipes) { recipes ->
+        observeDataFlow(recipesLimit) { recipes ->
             observeViewState()
-            recipesAdapter.addItem(recipes)
+            recipesAdapter.addItem(recipes.results)
         }
     }
 
@@ -82,7 +83,7 @@ class RecipesFragment : BaseFragment<FragmentRecipesBinding, RecipesViewModel>()
         tvGreeting.animate().alpha(ONE_FLOAT).duration = ONE_SECOND
     }
 
-    private fun navigateToDetail(recipes : RecipesTable) {
+    private fun navigateToDetail(recipes : Recipes) {
         RecipesFragmentDirections
             .actionRecipesFragmentToDetailFragment(recipes.key, recipes.imageThumb).also {
                 navController.navigate(it)

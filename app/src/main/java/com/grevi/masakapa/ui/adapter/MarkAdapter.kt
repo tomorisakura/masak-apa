@@ -22,7 +22,7 @@ class MarkAdapter(private val itemTouch : ((favorite : RecipeFavorite) -> Unit))
                 placeholder(R.drawable.placeholder)
             }
             recipesTitle.text = favorite.name
-            dificultyText.text = favorite.dificulty
+            dificultyText.text = favorite.difficulty
             portionText.text = favorite.portion
             timesText.text = favorite.times
         }

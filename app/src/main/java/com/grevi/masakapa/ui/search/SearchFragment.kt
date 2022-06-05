@@ -29,9 +29,9 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class SearchFragment : BaseFragment<FragmentSearchBinding, RecipesViewModel>() {
 
-    private lateinit var snapBinding : SnapLayoutBinding
-    private val searchAdapter: SearchAdapter by lazy { SearchAdapter{ navigateToDetail(it) } }
-    private val categoryAdapter: CategoryAdapter by lazy { CategoryAdapter{ navigateToCategory(it) } }
+    private lateinit var snapBinding: SnapLayoutBinding
+    private val searchAdapter: SearchAdapter by lazy { SearchAdapter { navigateToDetail(it) } }
+    private val categoryAdapter: CategoryAdapter by lazy { CategoryAdapter { navigateToCategory(it) } }
 
     private val getSharedPermission by lazy {
         context?.let { getStoragePermission(it, PERMISSIONS_STORAGE) } ?: false
@@ -79,7 +79,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, RecipesViewModel>() {
         menu.findItem(R.id.bucket)?.isVisible = false
     }
 
-    private fun observeView(query : String) = with(binding) {
+    private fun observeView(query: String) = with(binding) {
         observeLiveData(viewModels.searchRecipe(query)) {
             if (!it.results.isNullOrEmpty()) {
                 val text = getString(R.string.search_success_text)
@@ -97,9 +97,10 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, RecipesViewModel>() {
         }
     }
 
-    private fun observeSearchRecyclerView(search : MutableList<Search>) = with(binding) {
+    private fun observeSearchRecyclerView(search: MutableList<Search>) = with(binding) {
         rvSearchList.apply {
-            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = searchAdapter
             searchAdapter.addItem(search)
             this.animate().alpha(1f).duration = 2000L
@@ -107,7 +108,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, RecipesViewModel>() {
     }
 
     private fun observeCategory() = with(binding) {
-        lifecycleScope.launchWhenCreated{
+        lifecycleScope.launchWhenCreated {
             observeDataFlow(viewModels.category) {
                 categorysHintLabel.animate().alpha(ONE_FLOAT)
                 rvCategorysList.apply {

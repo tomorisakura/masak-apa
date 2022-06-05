@@ -2,12 +2,9 @@ package com.grevi.masakapa.repository.mapper
 
 import com.grevi.masakapa.data.local.RecipesDataSource
 import com.grevi.masakapa.data.local.entity.*
-import com.grevi.masakapa.data.remote.response.CategorysResponse
+import com.grevi.masakapa.data.remote.response.CategoryResponse
 import com.grevi.masakapa.data.remote.response.DetailResponse
 import com.grevi.masakapa.data.remote.response.RecipesResponse
-import com.grevi.masakapa.model.Categorys
-import com.grevi.masakapa.model.Detail
-import com.grevi.masakapa.model.Recipes
 import javax.inject.Inject
 
 class MapperImpl @Inject constructor(
@@ -23,12 +20,12 @@ class MapperImpl @Inject constructor(
                     imageThumb = model.imageThumb,
                     times = model.times,
                     portion = model.portion,
-                    dificulty = model.dificulty)
+                    difficulty = model.dificulty)
             )
         }
     }
 
-    override suspend fun categoryMapper(response: CategorysResponse) {
+    override suspend fun categoryMapper(response: CategoryResponse) {
         response.results.map { model ->
             recipesDataSource.insertCategory(
                 Category(

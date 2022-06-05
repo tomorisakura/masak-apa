@@ -36,7 +36,7 @@ class DatabaseViewModel @Inject constructor(private val repository: Repository) 
             val favorite = RecipeFavorite(
                 key = key,
                 name = detail.name,
-                dificulty = detail.dificulty,
+                difficulty = detail.dificulty,
                 imageThumb = thumb,
                 portion = detail.servings,
                 times = detail.times

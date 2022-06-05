@@ -4,14 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.grevi.masakapa.common.state.State
 import com.grevi.masakapa.data.local.entity.Category
-import com.grevi.masakapa.data.local.entity.RecipesTable
 import com.grevi.masakapa.data.remote.response.DetailResponse
 import com.grevi.masakapa.data.remote.response.RecipesResponse
 import com.grevi.masakapa.data.remote.response.SearchResponse
 import com.grevi.masakapa.repository.Repository
 import com.grevi.masakapa.util.ResponseException
-import com.grevi.masakapa.common.state.State
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,40 +25,39 @@ class RecipesViewModel @Inject constructor(private val repository: Repository) :
     private val _recipeDetail = MutableLiveData<State<DetailResponse>>()
     private val _recipeSearch = MutableLiveData<State<SearchResponse>>()
     private val _category = MutableStateFlow<State<MutableList<Category>>>(State.Data)
-    private val _recipes = MutableStateFlow<State<MutableList<RecipesTable>>>(State.Data)
+    private val _recipesLimit = MutableStateFlow<State<RecipesResponse>>(State.Data)
 
-    val recipes : MutableStateFlow<State<MutableList<RecipesTable>>> = _recipes
-    val category : MutableStateFlow<State<MutableList<Category>>> = _category
+    val category: MutableStateFlow<State<MutableList<Category>>> = _category
+    val recipesLimit: MutableStateFlow<State<RecipesResponse>> = _recipesLimit
 
     init {
         getCategoryLocal()
-
+        getRecipes()
         viewModelScope.launch(Dispatchers.IO) {
             repository.getCategory()
-            repository.getRecipes()
         }
     }
 
-    private fun getLocalRecipes(isGranted: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.getFlowLocalRecipes().collect {
-                _recipes.value = State.Loading()
+    private fun getRecipes() {
+        viewModelScope.launch {
+            repository.getRecipes().collect {
+                _recipesLimit.value = State.Loading()
                 try {
-                    _recipes.value = State.Success(it)
-                }catch (e : ResponseException) {
-                    _recipes.value = State.Error(e.toString())
+                    _recipesLimit.value = it
+                } catch (e: ResponseException) {
+                    _recipesLimit.value = State.Error(e.message.toString())
                 }
             }
         }
     }
 
-    fun getDetail(key : String) : LiveData<State<DetailResponse>> {
+    fun getDetail(key: String): LiveData<State<DetailResponse>> {
         viewModelScope.launch(Dispatchers.IO) {
             val data = repository.getDetailRecipes(key)
             _recipeDetail.postValue(State.Loading())
             try {
                 _recipeDetail.postValue(data)
-            } catch (e : ResponseException) {
+            } catch (e: ResponseException) {
                 e.printStackTrace()
                 _recipeDetail.postValue(State.Error(e.toString()))
             }
@@ -68,13 +66,13 @@ class RecipesViewModel @Inject constructor(private val repository: Repository) :
         return _recipeDetail
     }
 
-    fun searchRecipe(query : String) : LiveData<State<SearchResponse>> {
+    fun searchRecipe(query: String): LiveData<State<SearchResponse>> {
         viewModelScope.launch(Dispatchers.IO) {
             val data = repository.getSearchRecipe(query)
             _recipeSearch.postValue(State.Loading())
             try {
                 _recipeSearch.postValue(data)
-            }catch (e : Exception) {
+            } catch (e: Exception) {
                 e.printStackTrace()
                 _recipeSearch.postValue(State.Error(e.toString()))
             }
@@ -88,7 +86,7 @@ class RecipesViewModel @Inject constructor(private val repository: Repository) :
                 _category.value = State.Loading()
                 try {
                     _category.value = State.Success(it)
-                }catch (e : ResponseException) {
+                } catch (e: ResponseException) {
                     e.printStackTrace()
                     _category.value = State.Error(e.toString())
                 }
@@ -96,13 +94,13 @@ class RecipesViewModel @Inject constructor(private val repository: Repository) :
         }
     }
 
-    fun categoryResult(key: String) : LiveData<State<RecipesResponse>> {
+    fun categoryResult(key: String): LiveData<State<RecipesResponse>> {
         viewModelScope.launch(Dispatchers.IO) {
             val data = repository.getCategoryRecipes(key)
             _recipesData.postValue(State.Loading())
             try {
                 _recipesData.postValue(data)
-            } catch (e : ResponseException) {
+            } catch (e: ResponseException) {
                 e.printStackTrace()
                 _recipesData.postValue(State.Error(e.toString()))
             }

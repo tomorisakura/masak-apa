@@ -4,13 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.grevi.masakapa.databinding.ListsIngredientsBinding
 import com.grevi.masakapa.common.differ.Differ
+import com.grevi.masakapa.databinding.ListsIngredientsBinding
 
 class IngredientsAdapter : RecyclerView.Adapter<IngredientsAdapter.IngredientsVH>() {
-    private val ingredient : MutableList<String> = ArrayList()
+    private val ingredient: MutableList<String> = ArrayList()
 
-    fun addList(list : MutableList<String>) {
+    fun addList(list: MutableList<String>) {
         val diffCallback = Differ(ingredient, list)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         ingredient.clear()
@@ -18,14 +18,16 @@ class IngredientsAdapter : RecyclerView.Adapter<IngredientsAdapter.IngredientsVH
         diffResult.dispatchUpdatesTo(this)
     }
 
-    inner class IngredientsVH(private val binding : ListsIngredientsBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(name : String) = with(binding) {
+    inner class IngredientsVH(private val binding: ListsIngredientsBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(name: String) = with(binding) {
             ingredientsText.text = name
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IngredientsVH {
-        val view = ListsIngredientsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val view =
+            ListsIngredientsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return IngredientsVH(view)
     }
 

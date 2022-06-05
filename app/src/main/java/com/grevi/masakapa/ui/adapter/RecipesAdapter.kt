@@ -6,16 +6,17 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.grevi.masakapa.R
+import com.grevi.masakapa.common.differ.Differ
 import com.grevi.masakapa.data.local.entity.RecipesTable
 import com.grevi.masakapa.databinding.ListMainRecipesBinding
-import com.grevi.masakapa.common.differ.Differ
+import com.grevi.masakapa.model.Recipes
 
-class RecipesAdapter(private val itemTouch : ((recipes : RecipesTable) -> Unit))
+class RecipesAdapter(private val itemTouch : ((recipes : Recipes) -> Unit))
     : RecyclerView.Adapter<RecipesAdapter.RecipesVH>() {
-    private val recipes : MutableList<RecipesTable> = ArrayList()
+    private val recipes : MutableList<Recipes> = ArrayList()
 
     inner class RecipesVH(private val binding : ListMainRecipesBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(recipes : RecipesTable) = with(binding) {
+        fun bind(recipes : Recipes) = with(binding) {
             imgThumb.load(recipes.imageThumb) {
                 allowHardware(false)
                 crossfade(true)
@@ -28,7 +29,7 @@ class RecipesAdapter(private val itemTouch : ((recipes : RecipesTable) -> Unit))
         }
     }
 
-    fun addItem(item : MutableList<RecipesTable>) {
+    fun addItem(item : MutableList<Recipes>) {
         val differCallback = Differ(this.recipes, item)
         val diffResult = DiffUtil.calculateDiff(differCallback)
         recipes.clear()

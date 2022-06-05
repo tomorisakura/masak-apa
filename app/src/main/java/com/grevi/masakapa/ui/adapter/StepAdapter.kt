@@ -4,13 +4,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.grevi.masakapa.databinding.ListsIngredientsBinding
 import com.grevi.masakapa.common.differ.Differ
+import com.grevi.masakapa.databinding.ListsIngredientsBinding
 
-class StepAdapter :RecyclerView.Adapter<StepAdapter.StepVH>() {
-    private val steps : MutableList<String> = ArrayList()
+class StepAdapter : RecyclerView.Adapter<StepAdapter.StepVH>() {
+    private val steps: MutableList<String> = ArrayList()
 
-    inner class StepVH(private val binding : ListsIngredientsBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class StepVH(private val binding: ListsIngredientsBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(string: String) = with(binding) {
             ingredientsText.text = string
         }
@@ -25,7 +26,8 @@ class StepAdapter :RecyclerView.Adapter<StepAdapter.StepVH>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StepVH {
-        val view = ListsIngredientsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val view =
+            ListsIngredientsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return StepVH(view)
     }
 

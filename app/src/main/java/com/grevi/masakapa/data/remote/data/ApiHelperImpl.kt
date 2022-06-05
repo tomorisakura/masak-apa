@@ -1,6 +1,6 @@
 package com.grevi.masakapa.data.remote.data
 
-import com.grevi.masakapa.data.remote.response.CategorysResponse
+import com.grevi.masakapa.data.remote.response.CategoryResponse
 import com.grevi.masakapa.data.remote.response.DetailResponse
 import com.grevi.masakapa.data.remote.response.RecipesResponse
 import com.grevi.masakapa.data.remote.response.SearchResponse
@@ -20,8 +20,8 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.getSearchRecipe(query)
     }
 
-    override suspend fun getCategorys(): Response<CategorysResponse> {
-        return apiService.getCategorys()
+    override suspend fun getCategory(): Response<CategoryResponse> {
+        return apiService.getCategory()
     }
 
     override suspend fun getCategoryRecipes(key: String): Response<RecipesResponse> {

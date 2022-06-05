@@ -10,13 +10,13 @@ import androidx.lifecycle.MutableLiveData
 
 class Network(private val context: Context) : ConnectivityManager.NetworkCallback() {
     private val _networkDataStatus = MutableLiveData<Boolean>()
-    val networkDataStatus : MutableLiveData<Boolean> get() = _networkDataStatus
+    val networkDataStatus: MutableLiveData<Boolean> = _networkDataStatus
 
     init {
         observeConnectivity()
     }
 
-    private fun observeConnectivity() : LiveData<Boolean> {
+    private fun observeConnectivity(): LiveData<Boolean> {
         val connectivityManager = context.getSystemService<ConnectivityManager>()
         if (connectivityManager != null) {
             connectivityManager.registerDefaultNetworkCallback(this)
