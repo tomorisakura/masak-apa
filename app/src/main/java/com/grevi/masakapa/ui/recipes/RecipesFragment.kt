@@ -1,25 +1,22 @@
 package com.grevi.masakapa.ui.recipes
 
-import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.grevi.masakapa.R
-import com.grevi.masakapa.data.local.entity.RecipesTable
-import com.grevi.masakapa.databinding.FragmentRecipesBinding
-import com.grevi.masakapa.ui.adapter.RecipesAdapter
 import com.grevi.masakapa.common.base.BaseFragment
 import com.grevi.masakapa.common.base.observeDataFlow
 import com.grevi.masakapa.common.shared.getStoragePermission
+import com.grevi.masakapa.databinding.FragmentRecipesBinding
 import com.grevi.masakapa.model.Recipes
+import com.grevi.masakapa.ui.adapter.RecipesAdapter
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
-import com.grevi.masakapa.util.Constant.ONE_FLOAT
 import com.grevi.masakapa.util.Constant.ONE_SECOND
 import com.grevi.masakapa.util.Constant.PERMISSIONS_STORAGE
 import com.grevi.masakapa.util.Constant.ZERO_FLOAT
+import com.grevi.masakapa.util.show
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -78,9 +75,8 @@ class RecipesFragment : BaseFragment<FragmentRecipesBinding, RecipesViewModel>()
     private fun observeViewState() = with(binding) {
         pg.visibility = View.GONE
         refreshLayout.isRefreshing = false
-        rvRecipesList.animate().alpha(ONE_FLOAT).duration = ONE_SECOND
-        tvGreeting.visibility = View.VISIBLE
-        tvGreeting.animate().alpha(ONE_FLOAT).duration = ONE_SECOND
+        rvRecipesList.show()
+        tvGreeting.show()
     }
 
     private fun navigateToDetail(recipes : Recipes) {

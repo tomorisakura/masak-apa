@@ -21,10 +21,10 @@ class Network(private val context: Context) : ConnectivityManager.NetworkCallbac
         if (connectivityManager != null) {
             connectivityManager.registerDefaultNetworkCallback(this)
 
-            val connectionStatus = connectivityManager.allNetworks.any { network ->
-                val networkCapability = connectivityManager.getNetworkCapabilities(network)
-                return@any networkCapability?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
-            }
+            val connectionStatus = connectivityManager.activeNetwork?.let {
+                val networkCapability = connectivityManager.getNetworkCapabilities(it)
+                return@let networkCapability?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+            } ?: false
             _networkDataStatus.postValue(connectionStatus)
         }
 

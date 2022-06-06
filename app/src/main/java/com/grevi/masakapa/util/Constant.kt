@@ -14,4 +14,7 @@ object Constant {
     const val ONE = 1
     const val TWO = 2
     const val THREE = 3
+
+    const val EMPTY_STRING = ""
+    const val DIALOG_TAG = "dialog_tag"
 }

@@ -17,10 +17,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.grevi.masakapa.R
+import com.grevi.masakapa.common.dialog.DialogBottomSheet
 import com.grevi.masakapa.util.Constant.TWO_SECOND
 import com.grevi.masakapa.common.network.Network
 import com.grevi.masakapa.common.factory.ViewModelFactory
 import com.grevi.masakapa.common.popup.snackBar
+import com.grevi.masakapa.util.Constant.DIALOG_TAG
 import javax.inject.Inject
 
 abstract class BaseFragment<VB: ViewBinding, VM: ViewModel> : Fragment() {
@@ -43,6 +45,13 @@ abstract class BaseFragment<VB: ViewBinding, VM: ViewModel> : Fragment() {
 
     protected val snapHelper: LinearSnapHelper by lazy { LinearSnapHelper() }
 
+    private val noInternetDialogAlert by lazy {
+        DialogBottomSheet.newInstance(
+            title = getString(R.string.no_inet_title),
+            description = getString(R.string.no_inet_text)
+        )
+    }
+
     abstract fun getViewModelClass(): Class<VM>
     abstract fun getViewBindingInflater(inflater: LayoutInflater, container: ViewGroup?): VB
 
@@ -50,7 +59,7 @@ abstract class BaseFragment<VB: ViewBinding, VM: ViewModel> : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        _viewModels = ViewModelProvider(this, factory).get(getViewModelClass())
+        _viewModels = ViewModelProvider(this, factory)[getViewModelClass()]
         _context = context
     }
 
@@ -87,7 +96,7 @@ abstract class BaseFragment<VB: ViewBinding, VM: ViewModel> : Fragment() {
     private fun observeNetworkState() {
         networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnected ->
             if (isConnected) subscribeUI()
-            else snackBar(_binding.root, getString(R.string.no_inet_text)).show()
+            else noInternetDialogAlert.show(childFragmentManager, DIALOG_TAG)
         }
     }
 
