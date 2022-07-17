@@ -18,19 +18,18 @@ import androidx.viewbinding.ViewBinding
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.grevi.masakapa.R
 import com.grevi.masakapa.common.dialog.DialogBottomSheet
-import com.grevi.masakapa.util.Constant.TWO_SECOND
-import com.grevi.masakapa.common.network.Network
 import com.grevi.masakapa.common.factory.ViewModelFactory
-import com.grevi.masakapa.common.popup.snackBar
+import com.grevi.masakapa.common.network.Network
 import com.grevi.masakapa.util.Constant.DIALOG_TAG
+import com.grevi.masakapa.util.Constant.TWO_SECOND
 import javax.inject.Inject
 
-abstract class BaseFragment<VB: ViewBinding, VM: ViewModel> : Fragment() {
+abstract class BaseFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
     private lateinit var _binding: VB
     protected val binding get() = _binding
 
     @Inject
-    lateinit var factory : ViewModelFactory
+    lateinit var factory: ViewModelFactory
 
     private lateinit var _viewModels: VM
     protected val viewModels get() = _viewModels
@@ -81,7 +80,7 @@ abstract class BaseFragment<VB: ViewBinding, VM: ViewModel> : Fragment() {
 
     protected fun onSwipeRefresh(
         view: SwipeRefreshLayout?,
-        pg : LinearProgressIndicator?,
+        pg: LinearProgressIndicator?,
     ) {
         networkUtils.networkDataStatus.observe(viewLifecycleOwner) {
             view?.setOnRefreshListener {
@@ -96,7 +95,12 @@ abstract class BaseFragment<VB: ViewBinding, VM: ViewModel> : Fragment() {
     private fun observeNetworkState() {
         networkUtils.networkDataStatus.observe(viewLifecycleOwner) { isConnected ->
             if (isConnected) subscribeUI()
-            else noInternetDialogAlert.show(childFragmentManager, DIALOG_TAG)
+            else {
+                noInternetDialogAlert.apply {
+                    show(childFragmentManager, DIALOG_TAG)
+                    onButtonClick = { dismiss() }
+                }
+            }
         }
     }
 
