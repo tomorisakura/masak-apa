@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <com.github.florent37.shapeofview.shapes.RoundRectView
+        <io.github.florent37.shapeofview.shapes.RoundRectView
             android:id="@+id/imgGuideLine"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
                 android:scaleType="fitXY"
                 tools:src="@drawable/ic_launcher_background" />
 
-        </com.github.florent37.shapeofview.shapes.RoundRectView>
+        </io.github.florent37.shapeofview.shapes.RoundRectView>
 
         <TextView
             android:id="@+id/recipesTitleMain"

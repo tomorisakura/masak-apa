@@ -46,8 +46,8 @@ object Dependencies {
 
     // region swipe refresh
     const val swipeRefresh = "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
-    const val shapeOfView = "com.github.florent37:shapeofview:1.4.7"
     const val motionLayout = "androidx.constraintlayout:constraintlayout:2.2.0-alpha03"
+    const val shapeOfView = "io.github.florent37:shapeofview:1.4.7"
     // end region
 
     // region room
@@ -57,6 +57,6 @@ object Dependencies {
     // end region
 
     // region permissionX
-    const val permissionX = "com.permissionx.guolindev:permissionx:1.4.0"
+    const val permissionX = "com.guolindev.permissionx:permissionx:1.6.4"
     // end region
 }
