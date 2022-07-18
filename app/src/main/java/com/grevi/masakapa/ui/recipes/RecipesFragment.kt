@@ -8,13 +8,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.grevi.masakapa.R
 import com.grevi.masakapa.common.base.BaseFragment
 import com.grevi.masakapa.common.base.observeDataFlow
-import com.grevi.masakapa.common.shared.getStoragePermission
 import com.grevi.masakapa.databinding.FragmentRecipesBinding
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.RecipesAdapter
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
 import com.grevi.masakapa.util.Constant.ONE_SECOND
-import com.grevi.masakapa.util.Constant.PERMISSIONS_STORAGE
 import com.grevi.masakapa.util.Constant.ZERO_FLOAT
 import com.grevi.masakapa.util.show
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,10 +22,6 @@ class RecipesFragment : BaseFragment<FragmentRecipesBinding, RecipesViewModel>()
 
     private val recipesAdapter: RecipesAdapter by lazy {
         RecipesAdapter{ navigateToDetail(it) }
-    }
-
-    private val isGranted: Boolean by lazy {
-        context?.let { getStoragePermission(it, PERMISSIONS_STORAGE) } ?: false
     }
 
     override fun getViewModelClass(): Class<RecipesViewModel> = RecipesViewModel::class.java

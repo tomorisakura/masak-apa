@@ -10,7 +10,6 @@ import com.grevi.masakapa.common.base.observeDataFlow
 import com.grevi.masakapa.common.base.observeLiveData
 import com.grevi.masakapa.common.base.showSoftKey
 import com.grevi.masakapa.common.popup.snackBar
-import com.grevi.masakapa.common.shared.getStoragePermission
 import com.grevi.masakapa.data.local.entity.Category
 import com.grevi.masakapa.databinding.FragmentSearchBinding
 import com.grevi.masakapa.databinding.SnapLayoutBinding
@@ -20,7 +19,6 @@ import com.grevi.masakapa.ui.adapter.SearchAdapter
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
 import com.grevi.masakapa.util.Constant.ONE_FLOAT
 import com.grevi.masakapa.util.Constant.ONE_SECOND
-import com.grevi.masakapa.util.Constant.PERMISSIONS_STORAGE
 import com.grevi.masakapa.util.Constant.THREE
 import com.grevi.masakapa.util.Constant.TWO_SECOND
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,10 +30,6 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, RecipesViewModel>() {
     private lateinit var snapBinding: SnapLayoutBinding
     private val searchAdapter: SearchAdapter by lazy { SearchAdapter { navigateToDetail(it) } }
     private val categoryAdapter: CategoryAdapter by lazy { CategoryAdapter { navigateToCategory(it) } }
-
-    private val getSharedPermission by lazy {
-        context?.let { getStoragePermission(it, PERMISSIONS_STORAGE) } ?: false
-    }
 
     override fun getViewModelClass(): Class<RecipesViewModel> = RecipesViewModel::class.java
 
@@ -67,10 +61,11 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, RecipesViewModel>() {
     }
 
     private fun checkPermission() {
-        if (getSharedPermission) {
+        if (viewModels.getStoragePermission()) {
             observeCategory()
         } else {
-            snackBar(binding.root, getString(R.string.category_permission_text)).show()
+            snackBar(binding.root, getString(R.string.category_permission_text))
+                .show()
         }
     }
 
@@ -100,10 +95,10 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, RecipesViewModel>() {
     private fun observeSearchRecyclerView(search: MutableList<Search>) = with(binding) {
         rvSearchList.apply {
             layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = searchAdapter
             searchAdapter.addItem(search)
-            this.animate().alpha(1f).duration = 2000L
+            this.animate().alpha(ONE_FLOAT).duration = TWO_SECOND
         }
     }
 
@@ -113,7 +108,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, RecipesViewModel>() {
                 categorysHintLabel.animate().alpha(ONE_FLOAT)
                 rvCategorysList.apply {
                     this.animate().alpha(ONE_FLOAT)
-                    layoutManager = GridLayoutManager(requireContext(), THREE)
+                    layoutManager = GridLayoutManager(context, THREE)
                     adapter = categoryAdapter
                     categoryAdapter.addItem(it)
                     this.animate().alpha(ONE_FLOAT).duration = TWO_SECOND

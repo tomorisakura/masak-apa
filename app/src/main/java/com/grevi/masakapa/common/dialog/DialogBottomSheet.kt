@@ -26,6 +26,7 @@ class DialogBottomSheet: BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        isCancelable = false
         observeView()
     }
 
@@ -33,10 +34,6 @@ class DialogBottomSheet: BottomSheetDialogFragment() {
         tvTitle.text = arguments?.getString(EXTRA_TITLE) ?: EMPTY_STRING
         tvDescription.text = arguments?.getString(EXTRA_DESCRIPTION) ?: EMPTY_STRING
         btnDone.text = arguments?.getString(EXTRA_BUTTON_TITLE) ?: getString(R.string.ok_text)
-        btnDone.setOnClickListener {
-            onButtonClick?.invoke()
-            dialog?.dismiss()
-        }
     }
 
     companion object {
@@ -44,6 +41,7 @@ class DialogBottomSheet: BottomSheetDialogFragment() {
         private const val EXTRA_DESCRIPTION = "extra_description"
         private const val EXTRA_BUTTON_TITLE = "extra_button_title"
 
+        @JvmStatic
         fun newInstance(
             title: String,
             description: String,

@@ -11,6 +11,7 @@ abstract class ResponseMapper {
         call: suspend () -> Response<T>,
         saveToLocal: (suspend (T) -> Unit)? = null
     ): State<T> {
+        State.Loading()
         return try {
             val response = call()
             if (response.isSuccessful) {

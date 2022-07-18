@@ -43,7 +43,7 @@ class MarkFragment : BaseFragment<FragmentMarkBinding, DatabaseViewModel>() {
     private fun observeView() = with(binding) {
         rvRecipesMark.apply {
             layoutManager = LinearLayoutManager(
-                baseContext,
+                context,
                 LinearLayoutManager.VERTICAL,
                 false)
             adapter = markAdapter

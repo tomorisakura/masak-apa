@@ -4,19 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.grevi.masakapa.common.state.State
 import com.grevi.masakapa.data.local.entity.DetailTable
 import com.grevi.masakapa.data.local.entity.RecipeFavorite
 import com.grevi.masakapa.model.Detail
 import com.grevi.masakapa.repository.Repository
-import com.grevi.masakapa.common.state.State
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
 class DatabaseViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
     private val _state = MutableLiveData<Boolean>()
     private val _isExist = MutableLiveData<Boolean>()

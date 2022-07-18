@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/app_navigate"
-    app:startDestination="@id/recipesFragment">
+    app:startDestination="@id/splashFragment">
 
     <fragment
         android:id="@+id/recipesFragment"
@@ -69,5 +69,17 @@
         <action
             android:id="@+id/action_markFragment2_to_detailFragment"
             app:destination="@id/detailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.grevi.masakapa.ui.splash.SplashFragment"
+        android:label="fragment_splash"
+        tools:layout="@layout/fragment_splash" >
+        <action
+            android:id="@+id/action_splashFragment_to_recipesFragment"
+            app:destination="@id/recipesFragment"
+            app:popUpToInclusive="true"
+            app:popUpTo="@id/splashFragment"
+            app:enterAnim="@anim/nav_default_pop_enter_anim"/>
     </fragment>
 </navigation>

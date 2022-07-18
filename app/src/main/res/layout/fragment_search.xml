@@ -19,7 +19,6 @@
         android:drawablePadding="15dp"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:foreground="@color/material_on_primary_disabled"
         android:hint="@string/app_name"
         android:lines="1"
         android:maxLines="1"

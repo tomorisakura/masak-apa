@@ -3,7 +3,9 @@ package com.grevi.masakapa.common.shared
 import android.content.Context
 import android.content.SharedPreferences
 import com.grevi.masakapa.common.base.BaseFragment
+import javax.inject.Inject
 
-fun BaseFragment<*,*>.getStoragePermission(context: Context, key: String): Boolean {
-    return context.getSharedPreferences(key, Context.MODE_PRIVATE).getBoolean(key, false)
+class SharedPref @Inject constructor(private val context: Context) {
+    fun getStoragePermission(key: String) =
+        context.getSharedPreferences(key, Context.MODE_PRIVATE).getBoolean(key, false)
 }

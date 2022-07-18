@@ -12,7 +12,10 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.viewbinding.ViewBinding
 import com.grevi.masakapa.R
+import com.grevi.masakapa.common.dialog.DialogBottomSheet
+import com.grevi.masakapa.common.network.Network
 import com.grevi.masakapa.common.permission.storagePermission
+import com.grevi.masakapa.util.Constant.ZERO_FLOAT
 
 abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
 
@@ -20,6 +23,15 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
     protected val binding get() = _binding
 
     private var state = false //should save state on shared pref
+
+    private val networkUtils by lazy { Network(this) }
+
+    private val noInternetDialogAlert by lazy {
+        DialogBottomSheet.newInstance(
+            title = getString(R.string.no_inet_title),
+            description = getString(R.string.no_inet_text)
+        )
+    }
 
     abstract fun getViewBindingInflater(inflater: LayoutInflater): VB
 
@@ -32,16 +44,25 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = getViewBindingInflater(layoutInflater)
-        setContentView(_binding.root)
+        setContentView(binding.root)
         supportActionBar?.hide()
         supportActionBar?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
         storagePermission()
-        subscribeUI()
+        observeNetwork()
         setupNavigation(onBindView = {
             navigationStateView(it)
         }, onNegativeView = {
             navigationOnDisableView()
         })
+    }
+
+    private fun observeNetwork() {
+        networkUtils.networkDataStatus.observe(this) { isActive ->
+            if (isActive) {
+                subscribeUI()
+            }
+            else noInternetDialogAlert.show(supportFragmentManager, this::class.java.simpleName)
+        }
     }
 
     private fun setupNavigation(
@@ -52,11 +73,24 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.nav_container) as NavHostFragment
         navHostFragment.navController.addOnDestinationChangedListener { controller, destination, _ ->
             when (destination.id) {
-                R.id.recipesFragment -> onBindView(controller)
-                else -> onNegativeView()
+                R.id.recipesFragment -> {
+                    onBindView(controller)
+                    setupToolbar(false)
+                }
+                else -> {
+                    onNegativeView()
+                    setupToolbar(destination.id == R.id.splashFragment)
+                }
             }
         }
     }
+
+    private fun setupToolbar(state: Boolean) =
+        if (state) {
+            supportActionBar?.hide()
+        } else {
+            supportActionBar?.show()
+        }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         super.onCreateOptionsMenu(menu)
