@@ -9,14 +9,14 @@
 
     <TextView
         android:id="@+id/categoryHintText"
-        style="@style/title_rv"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        style="@style/textMiniHead_style"
+        android:background="@drawable/ic_background_round_search"
         android:gravity="center"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
+        android:padding="10dp"
+        android:layout_marginHorizontal="10dp"
         android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/search_success_text" />

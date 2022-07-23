@@ -25,8 +25,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:layout_gravity="center"
+                android:layout_gravity="start"
                 style="@style/textMiniHead_style"
+                android:background="@drawable/ic_background_round_search"
+                android:padding="10dp"
                 android:text="@string/recipe_for_you_text" />
 
             <com.google.android.material.progressindicator.LinearProgressIndicator
