@@ -11,6 +11,7 @@ object Dependencies {
     const val junitTestImplementation = "androidx.test.ext:junit:1.1.3"
     const val espressoTestImplementation = "androidx.test.espresso:espresso-core:3.4.0"
     const val androidLifecycle = "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
+    const val preferenceManager = "androidx.preference:preference-ktx:1.1.1"
     //end region
 
     //gson and coroutine

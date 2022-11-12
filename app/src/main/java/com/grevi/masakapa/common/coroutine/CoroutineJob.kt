@@ -1,13 +1,8 @@
 package com.grevi.masakapa.common.coroutine
 
 import com.grevi.masakapa.common.base.BaseFragment
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
-fun BaseFragment<*,*>.coroutineJob(job: Job = Job(),invoke: suspend () -> Unit) {
-    CoroutineScope(job + Dispatchers.IO).launch {
-        invoke()
-    }
+fun BaseFragment<*,*>.runTask(invoke: suspend () -> Unit) = runBlocking {
+    CoroutineScope(job + Dispatchers.IO).launch { invoke() }
 }

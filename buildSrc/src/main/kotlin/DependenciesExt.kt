@@ -5,6 +5,7 @@ fun DependencyHandler.common() {
     add("implementation", Dependencies.androidCoreKtx)
     add("implementation", Dependencies.appCompat)
     add("implementation", Dependencies.material)
+    add("implementation", Dependencies.preferenceManager)
     add("implementation", Dependencies.constraintLayout)
     add("implementation", Dependencies.androidLegacy)
     add("implementation", Dependencies.androidLifecycle)

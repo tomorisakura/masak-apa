@@ -25,7 +25,7 @@ class CategoryItemAdapter(private val itemTouch: ((recipes: Recipes) -> Unit)) :
                 }
                 recipesTitle.text = recipes.name
                 dificultyText.text = recipes.dificulty
-                portionText.text = recipes.portion
+                portionText.text = recipes.serving
                 timesText.text = recipes.times
             }
         }

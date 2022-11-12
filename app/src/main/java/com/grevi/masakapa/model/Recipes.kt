@@ -10,6 +10,6 @@ data class Recipes(
     @SerializedName("thumb") var imageThumb : String = "",
     @SerializedName("key") var key : String = "",
     @SerializedName("times") var times : String = "",
-    @SerializedName("portion") var portion : String = "",
-    @SerializedName("dificulty") var dificulty : String = ""
+    @SerializedName("serving") var serving : String = "",
+    @SerializedName("difficulty") var dificulty : String = ""
 ) : Parcelable

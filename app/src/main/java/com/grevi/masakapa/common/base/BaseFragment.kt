@@ -17,7 +17,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.grevi.masakapa.R
-import com.grevi.masakapa.common.factory.ViewModelFactory
 import com.grevi.masakapa.common.network.Network
 import com.grevi.masakapa.common.popup.snackBar
 import com.grevi.masakapa.util.Constant.TWO_SECOND
@@ -31,8 +30,8 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
     @Inject
     lateinit var factory: ViewModelProvider.Factory
 
-    private lateinit var _viewModels: VM
-    protected val viewModels get() = _viewModels
+    private lateinit var _viewModel: VM
+    protected val viewModel get() = _viewModel
 
     private lateinit var _context: Context
     protected val baseContext get() = _context
@@ -44,7 +43,7 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
 
     protected val snapHelper: LinearSnapHelper by lazy { LinearSnapHelper() }
 
-    protected val job by lazy { Job() }
+    internal val job by lazy { Job() }
 
     abstract fun getViewModelClass(): Class<VM>
     abstract fun getViewBindingInflater(inflater: LayoutInflater, container: ViewGroup?): VB
@@ -53,7 +52,7 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        _viewModels = ViewModelProvider(this, factory)[getViewModelClass()]
+        _viewModel = ViewModelProvider(this, factory)[getViewModelClass()]
     }
 
     override fun onCreateView(
@@ -75,6 +74,11 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         job.cancel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        job.start()
     }
 
     protected fun onSwipeRefresh(

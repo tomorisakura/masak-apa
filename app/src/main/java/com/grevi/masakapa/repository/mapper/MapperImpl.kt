@@ -19,7 +19,7 @@ class MapperImpl @Inject constructor(
                     name = model.name,
                     imageThumb = model.imageThumb,
                     times = model.times,
-                    portion = model.portion,
+                    portion = model.serving,
                     difficulty = model.dificulty
                 )
             )

@@ -31,17 +31,28 @@ class AppBar @JvmOverloads constructor(
         llSearch.setOnClickListener { listener() }
     }
 
-    fun setEnableDarkMod(state : Boolean) {
-        if (state) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            false
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            true
-        }
+    fun onFavoriteClickListener(listener: () -> Unit) = with(binding) {
+        icFavorite.setOnClickListener { listener() }
     }
 
-    fun setupSearchView(isEnable: Boolean) =
-        if (isEnable) binding.llSearch.show() else binding.llSearch.hide()
+    fun onDayNightClickListener(listener: () -> Unit) = with(binding) {
+        icDayLight.setOnClickListener { listener() }
+    }
+
+    fun onBackClickListener(listener: () -> Unit) = with(binding) {
+        btnBack.setOnClickListener { listener() }
+    }
+
+    fun setupSearchView(isEnable: Boolean) = with(binding) {
+        if (isEnable) {
+            llSearch.show()
+            icLogo.show()
+            btnBack.hide()
+        } else {
+            llSearch.hide()
+            icLogo.hide()
+            btnBack.show()
+        }
+    }
 
 }

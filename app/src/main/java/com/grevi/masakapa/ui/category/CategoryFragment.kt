@@ -12,11 +12,12 @@ import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.CategoryItemAdapter
 import com.grevi.masakapa.common.base.BaseFragment
 import com.grevi.masakapa.common.base.observeLiveData
-import com.grevi.masakapa.common.coroutine.coroutineJob
+import com.grevi.masakapa.common.coroutine.runTask
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
 import com.grevi.masakapa.util.Constant.ONE_FLOAT
 import com.grevi.masakapa.util.Constant.ONE_SECOND
 import com.grevi.masakapa.util.Constant.ZERO_FLOAT
+import com.grevi.masakapa.util.show
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -39,19 +40,15 @@ class CategoryFragment : BaseFragment<FragmentCategoryBinding, RecipesViewModel>
     override fun subscribeUI() {
         getRecipes()
         observeRecipes()
+        binding.refreshCatLayout.isRefreshing = true
         binding.apply { onSwipeRefresh(refreshCatLayout, null) }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        menu.findItem(R.id.bucket)?.isVisible = false
-    }
-
     private fun getRecipes() {
-        coroutineJob { viewModels.categoryResult(arg.catKey) }
+        runTask { viewModel.categoryResult(arg.catKey) }
     }
 
-    private fun observeRecipes() = with(viewModels) {
+    private fun observeRecipes() = with(viewModel) {
         observeLiveData(recipesData)  { observeViewState(it.results) }
     }
 
@@ -66,6 +63,7 @@ class CategoryFragment : BaseFragment<FragmentCategoryBinding, RecipesViewModel>
         categoryItemAdapter.addItem(recipes)
         rvRecipesCategoryList.animate().alpha(ONE_FLOAT).duration = ONE_SECOND
         refreshCatLayout.isRefreshing = false
+        categoryHintText.show()
         categoryHintText.text = "${arg.catName} (${recipes.size})"
     }
 

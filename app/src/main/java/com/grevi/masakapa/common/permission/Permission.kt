@@ -8,7 +8,7 @@ import com.grevi.masakapa.util.Constant
 import com.permissionx.guolindev.PermissionX
 
 
-fun BaseActivity<*>.storagePermission() {
+fun BaseActivity<*>.storagePermission(onGrant: () -> Unit, onDeny: () -> Unit) {
     PermissionX.init(this)
         .permissions(
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -20,14 +20,7 @@ fun BaseActivity<*>.storagePermission() {
                 this.getString(R.string.cancel_text))
         }
         .request { allGranted, _, _ ->
-            if (allGranted) {
-                this.getSharedPreferences(Constant.PERMISSIONS_STORAGE, Context.MODE_PRIVATE)
-                    .apply {
-                        edit().let {
-                            it.putBoolean(Constant.PERMISSIONS_STORAGE, true)
-                            it.apply()
-                        }
-                    }
-            }
+            if (allGranted) onGrant()
+            else onDeny()
         }
 }

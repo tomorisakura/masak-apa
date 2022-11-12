@@ -70,7 +70,7 @@
     </style>
 
     <style name="textMini_style" parent="Theme.MaterialComponents.DayNight">
-        <item name="android:textColor">@color/forestGreen</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:textSize">13sp</item>
         <item name="android:textStyle">bold</item>
         <item name="fontFamily">@font/dm_sans_regular</item>
@@ -83,7 +83,7 @@
     </style>
 
     <style name="textMiniHead_style_with_bg" parent="Theme.MaterialComponents.DayNight">
-        <item name="android:textColor">@color/silver</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:textSize">13sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_marginTop">10dp</item>

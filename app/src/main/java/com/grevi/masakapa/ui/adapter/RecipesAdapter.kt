@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.grevi.masakapa.R
 import com.grevi.masakapa.common.differ.Differ
-import com.grevi.masakapa.data.local.entity.RecipesTable
 import com.grevi.masakapa.databinding.ListMainRecipesBinding
 import com.grevi.masakapa.model.Recipes
 
@@ -24,7 +23,7 @@ class RecipesAdapter(private val itemTouch : ((recipes : Recipes) -> Unit))
             }
             recipesTitleMain.text = recipes.name
             dificultyTextMain.text = recipes.dificulty
-            portionTextMain.text = recipes.portion
+            portionTextMain.text = recipes.serving
             timesTextMain.text = recipes.times
         }
     }

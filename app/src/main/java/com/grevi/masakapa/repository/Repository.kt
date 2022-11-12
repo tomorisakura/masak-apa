@@ -20,7 +20,7 @@ interface Repository {
     suspend fun getFlowDetail(name : String) : Flow<List<DetailWithIngredientsAndSteps>>
     suspend fun getFlowFavorite() : Flow<List<RecipeFavorite>>
     suspend fun insertFavorite(favorite: RecipeFavorite)
-    suspend fun isFavoriteExists(key : String) : Boolean
+    suspend fun isFavoriteExists(key : String) : Flow<Boolean>
     suspend fun deleteFavorite(favorite: RecipeFavorite)
     suspend fun findLocalDetailRecipeByName(name: String): Flow<DetailTable>
 }

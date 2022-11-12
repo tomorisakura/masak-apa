@@ -3,6 +3,7 @@ package com.grevi.masakapa.util
 object Constant {
     const val baseUrl = "https://masak-apa.tomorisakura.vercel.app"
     const val PERMISSIONS_STORAGE = "storage_permission"
+    const val DAY_LIGHT_STATE = "day_light_state"
 
     const val ONE_FLOAT = 1f
     const val ZERO_FLOAT = 0f

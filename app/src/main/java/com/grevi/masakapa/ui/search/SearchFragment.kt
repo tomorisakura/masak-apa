@@ -9,9 +9,9 @@ import com.grevi.masakapa.common.base.BaseFragment
 import com.grevi.masakapa.common.base.observeDataFlow
 import com.grevi.masakapa.common.base.observeLiveData
 import com.grevi.masakapa.common.base.showSoftKey
-import com.grevi.masakapa.common.coroutine.coroutineJob
+import com.grevi.masakapa.common.coroutine.runTask
 import com.grevi.masakapa.common.popup.snackBar
-import com.grevi.masakapa.data.local.entity.Category
+import com.grevi.masakapa.common.popup.toast
 import com.grevi.masakapa.databinding.FragmentSearchBinding
 import com.grevi.masakapa.databinding.SnapLayoutBinding
 import com.grevi.masakapa.model.Categorys
@@ -19,6 +19,7 @@ import com.grevi.masakapa.model.Search
 import com.grevi.masakapa.ui.adapter.CategoryAdapter
 import com.grevi.masakapa.ui.adapter.SearchAdapter
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
+import com.grevi.masakapa.util.Constant
 import com.grevi.masakapa.util.Constant.ONE_FLOAT
 import com.grevi.masakapa.util.Constant.ONE_SECOND
 import com.grevi.masakapa.util.Constant.THREE
@@ -31,7 +32,12 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, RecipesViewModel>() {
 
     private lateinit var snapBinding: SnapLayoutBinding
     private val searchAdapter: SearchAdapter by lazy { SearchAdapter { navigateToDetail(it) } }
-    private val categoryAdapter: CategoryAdapter by lazy { CategoryAdapter { navigateToCategory(it) } }
+    private val categoryAdapter: CategoryAdapter by lazy {
+        CategoryAdapter { navigateToCategory(it) }
+    }
+    private val toast by lazy {
+        toast(context ?: baseContext, getString(R.string.finding_text))
+    }
 
     override fun getViewModelClass(): Class<RecipesViewModel> = RecipesViewModel::class.java
 
@@ -45,32 +51,26 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, RecipesViewModel>() {
 
     override fun subscribeUI() {
         snapBinding.root.animate().alpha(ONE_FLOAT)
-        checkPermission()
         getCategory()
+        observeCategory()
         observeOnSearch()
     }
 
-    private fun getCategory() = coroutineJob { viewModels.getCategory() }
+    private fun getCategory() = runTask { viewModel.getCategory() }
 
     private fun observeOnSearch() = with(binding) {
         showSoftKey(textInputSearch, true)
         textInputSearch.setOnKeyListener { v, keyCode, event ->
             val ed = binding.textInputSearch.editableText.toString()
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                runTask { viewModel.searchRecipe(ed) }
+                toast.setGravity(Gravity.TOP, Constant.ZERO, Constant.ZERO)
+                toast.show()
                 observeView(ed)
                 showSoftKey(v, false)
                 return@setOnKeyListener true
             }
             false
-        }
-    }
-
-    private fun checkPermission() {
-        if (viewModels.getStoragePermission()) {
-            observeCategory()
-        } else {
-            snackBar(binding.root, getString(R.string.category_permission_text))
-                .show()
         }
     }
 
@@ -80,12 +80,12 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, RecipesViewModel>() {
     }
 
     private fun observeView(query: String) = with(binding) {
-        observeLiveData(viewModels.recipesSearch) {
+        observeLiveData(viewModel.recipesSearch) {
             if (it.results.isNotEmpty()) {
                 val text = getString(R.string.search_success_text)
                 val combine = "$text $query (${it.results.size})"
                 searchResultHintText.text = combine
-                searchResultHintText.animate().alpha(1f)
+                searchResultHintText.animate().alpha(ONE_FLOAT)
                 snackBar(root, combine)
                 observeSearchRecyclerView(it.results)
             } else {
@@ -109,7 +109,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, RecipesViewModel>() {
 
     private fun observeCategory() = with(binding) {
         lifecycleScope.launchWhenCreated {
-            observeDataFlow(viewModels.category) {
+            observeDataFlow(viewModel.category) {
                 categorysHintLabel.animate().alpha(ONE_FLOAT)
                 rvCategorysList.apply {
                     this.animate().alpha(ONE_FLOAT)
@@ -133,10 +133,10 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, RecipesViewModel>() {
         }
     }
 
-    private fun navigateToCategory(categorys: Categorys) {
+    private fun navigateToCategory(category: Categorys) {
         SearchFragmentDirections.actionSearchFragment2ToCategoryFragment2(
-            categorys.key,
-            categorys.category
+            category.key,
+            category.category
         ).also {
             navController.navigate(it)
         }

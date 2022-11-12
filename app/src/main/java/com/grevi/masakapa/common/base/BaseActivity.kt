@@ -10,7 +10,6 @@ import androidx.viewbinding.ViewBinding
 import com.grevi.masakapa.R
 import com.grevi.masakapa.common.dialog.DialogBottomSheet
 import com.grevi.masakapa.common.network.Network
-import com.grevi.masakapa.common.permission.storagePermission
 
 abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
 
@@ -36,7 +35,6 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = getViewBindingInflater(layoutInflater)
         setContentView(binding.root)
-        storagePermission()
         observeNetwork()
         setupNavigation()
     }

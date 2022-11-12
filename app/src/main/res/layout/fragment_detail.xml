@@ -34,7 +34,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <com.google.android.material.progressindicator.LinearProgressIndicator
+            <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/pgMainRecipes"
                 android:layout_width="150dp"
                 android:layout_gravity="center"

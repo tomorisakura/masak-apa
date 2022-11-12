@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.grevi.masakapa.common.factory.ViewModelFactory
 import com.grevi.masakapa.di.anotaion.ViewModelKey
-import com.grevi.masakapa.ui.viewmodel.DatabaseViewModel
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
 import com.grevi.masakapa.ui.viewmodel.SplashViewModel
 import dagger.Binds
@@ -26,11 +25,6 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(RecipesViewModel::class)
     abstract fun bindRecipesViewModel(recipesViewModel: RecipesViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(DatabaseViewModel::class)
-    abstract fun bindDatabaseViewModel(databaseViewModel: DatabaseViewModel): ViewModel
 
     @Binds
     abstract fun bindViewModelFactory(viewModelFactory: ViewModelFactory): ViewModelProvider.Factory

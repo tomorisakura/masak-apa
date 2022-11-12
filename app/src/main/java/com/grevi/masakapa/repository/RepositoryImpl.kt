@@ -6,6 +6,7 @@ import com.grevi.masakapa.data.remote.ResponseMapper
 import com.grevi.masakapa.data.remote.data.ApiHelper
 import com.grevi.masakapa.repository.mapper.MapperEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(
@@ -45,35 +46,31 @@ class RepositoryImpl @Inject constructor(
      *Local Recipes
      * */
 
-    override suspend fun getFlowLocalRecipes(): Flow<MutableList<RecipesTable>> =
-        recipesDataSource.getFlowRecipes()
+    override suspend fun getFlowLocalRecipes() = recipesDataSource.getFlowRecipes()
 
     override suspend fun insertRecipes(recipesTable: RecipesTable) =
         recipesDataSource.insertRecipes(recipesTable)
 
-    override suspend fun getFlowCategory(): Flow<MutableList<Category>> =
-        recipesDataSource.getFlowCategory()
+    override suspend fun getFlowCategory() = recipesDataSource.getFlowCategory()
 
-    override suspend fun getFlowDetail(name: String): Flow<List<DetailWithIngredientsAndSteps>> =
-        recipesDataSource.findDetail(name)
+    override suspend fun getFlowDetail(name: String) = recipesDataSource.findDetail(name)
 
     /**
      * Favorite Recipes
      * */
 
-    override suspend fun getFlowFavorite(): Flow<List<RecipeFavorite>> =
-        recipesDataSource.getFavorite()
+    override suspend fun getFlowFavorite() = recipesDataSource.getFavorite()
 
     override suspend fun insertFavorite(favorite: RecipeFavorite) =
         recipesDataSource.insertFavorite(favorite)
 
-    override suspend fun isFavoriteExists(key: String): Boolean =
-        recipesDataSource.isFavoriteExists(key)
+    override suspend fun isFavoriteExists(key: String) = flow {
+        emit(recipesDataSource.isFavoriteExists(key))
+    }
 
     override suspend fun deleteFavorite(favorite: RecipeFavorite) =
         recipesDataSource.deleteFavorite(favorite)
 
-    override suspend fun findLocalDetailRecipeByName(name: String): Flow<DetailTable> {
-        return recipesDataSource.findRecipeByDetailName(name)
-    }
+    override suspend fun findLocalDetailRecipeByName(name: String) =
+        recipesDataSource.findRecipeByDetailName(name)
 }
