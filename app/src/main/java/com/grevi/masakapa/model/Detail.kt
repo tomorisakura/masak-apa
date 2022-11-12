@@ -7,7 +7,7 @@ data class Detail(
     @SerializedName("thumb") val thumbnail : String,
     @SerializedName("servings") val servings : String,
     @SerializedName("times") val times : String,
-    @SerializedName("dificulty") val dificulty : String,
+    @SerializedName("difficulty") val difficulty : String,
     @SerializedName("author") val author : Author,
     @SerializedName("desc") val desc : String,
     @SerializedName("ingredient") val ingredients : MutableList<String>,

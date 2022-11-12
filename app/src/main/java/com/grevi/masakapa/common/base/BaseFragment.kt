@@ -21,6 +21,7 @@ import com.grevi.masakapa.common.factory.ViewModelFactory
 import com.grevi.masakapa.common.network.Network
 import com.grevi.masakapa.common.popup.snackBar
 import com.grevi.masakapa.util.Constant.TWO_SECOND
+import kotlinx.coroutines.Job
 import javax.inject.Inject
 
 abstract class BaseFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
@@ -42,6 +43,8 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
     val navController get() = _navController
 
     protected val snapHelper: LinearSnapHelper by lazy { LinearSnapHelper() }
+
+    protected val job by lazy { Job() }
 
     abstract fun getViewModelClass(): Class<VM>
     abstract fun getViewBindingInflater(inflater: LayoutInflater, container: ViewGroup?): VB
@@ -71,6 +74,7 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        job.cancel()
     }
 
     protected fun onSwipeRefresh(

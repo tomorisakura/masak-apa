@@ -4,10 +4,12 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.grevi.masakapa.R
 import com.grevi.masakapa.common.base.BaseFragment
 import com.grevi.masakapa.common.base.observeDataFlow
+import com.grevi.masakapa.common.coroutine.coroutineJob
 import com.grevi.masakapa.databinding.FragmentRecipesBinding
 import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.RecipesAdapter
@@ -46,8 +48,13 @@ class RecipesFragment : BaseFragment<FragmentRecipesBinding, RecipesViewModel>()
 
     override fun subscribeUI() {
         observeView()
+        getRecipes()
         observeRecipes()
         binding.apply { onSwipeRefresh(refreshLayout, pg) }
+    }
+
+    private fun getRecipes() = coroutineJob {
+        viewModels.getRecipes()
     }
 
     private fun observeView() = with(binding) {

@@ -11,9 +11,7 @@ data class DetailTable(
     @ColumnInfo(name = "times") val times : String,
     @ColumnInfo(name = "difficulty") val difficulty : String,
     @ColumnInfo(name = "author") val author : String,
-    @ColumnInfo(name = "published") val published : String,
-//    @ColumnInfo(name = "ingredients") val ingredients : List<Ingredients>,
-//    @ColumnInfo(name = "steps") val step : List<Steps>
+    @ColumnInfo(name = "published") val published : String
 )
 
 data class DetailWithIngredientsAndSteps(

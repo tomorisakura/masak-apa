@@ -9,10 +9,12 @@ import com.grevi.masakapa.common.base.BaseFragment
 import com.grevi.masakapa.common.base.observeDataFlow
 import com.grevi.masakapa.common.base.observeLiveData
 import com.grevi.masakapa.common.base.showSoftKey
+import com.grevi.masakapa.common.coroutine.coroutineJob
 import com.grevi.masakapa.common.popup.snackBar
 import com.grevi.masakapa.data.local.entity.Category
 import com.grevi.masakapa.databinding.FragmentSearchBinding
 import com.grevi.masakapa.databinding.SnapLayoutBinding
+import com.grevi.masakapa.model.Categorys
 import com.grevi.masakapa.model.Search
 import com.grevi.masakapa.ui.adapter.CategoryAdapter
 import com.grevi.masakapa.ui.adapter.SearchAdapter
@@ -44,8 +46,11 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, RecipesViewModel>() {
     override fun subscribeUI() {
         snapBinding.root.animate().alpha(ONE_FLOAT)
         checkPermission()
+        getCategory()
         observeOnSearch()
     }
+
+    private fun getCategory() = coroutineJob { viewModels.getCategory() }
 
     private fun observeOnSearch() = with(binding) {
         showSoftKey(textInputSearch, true)
@@ -75,8 +80,8 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, RecipesViewModel>() {
     }
 
     private fun observeView(query: String) = with(binding) {
-        observeLiveData(viewModels.searchRecipe(query)) {
-            if (!it.results.isNullOrEmpty()) {
+        observeLiveData(viewModels.recipesSearch) {
+            if (it.results.isNotEmpty()) {
                 val text = getString(R.string.search_success_text)
                 val combine = "$text $query (${it.results.size})"
                 searchResultHintText.text = combine
@@ -110,7 +115,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, RecipesViewModel>() {
                     this.animate().alpha(ONE_FLOAT)
                     layoutManager = GridLayoutManager(context, THREE)
                     adapter = categoryAdapter
-                    categoryAdapter.addItem(it)
+                    categoryAdapter.addItem(it.results)
                     this.animate().alpha(ONE_FLOAT).duration = TWO_SECOND
                 }
                 categorysHintLabel.animate().alpha(ONE_FLOAT).duration = ONE_SECOND
@@ -128,7 +133,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding, RecipesViewModel>() {
         }
     }
 
-    private fun navigateToCategory(categorys: Category) {
+    private fun navigateToCategory(categorys: Categorys) {
         SearchFragmentDirections.actionSearchFragment2ToCategoryFragment2(
             categorys.key,
             categorys.category

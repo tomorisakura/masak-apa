@@ -26,8 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:layout_gravity="start"
-                style="@style/textMiniHead_style"
-                android:background="@drawable/ic_background_round_search"
+                style="@style/textMiniHead_style_with_bg"
                 android:padding="10dp"
                 android:text="@string/recipe_for_you_text" />
 

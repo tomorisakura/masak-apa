@@ -24,7 +24,6 @@ class MarkFragment : BaseFragment<FragmentMarkBinding, DatabaseViewModel>() {
 
     private val databaseViewModel : DatabaseViewModel by viewModels()
     private val markAdapter: MarkAdapter by lazy { MarkAdapter{ navigateToDetail(it) } }
-    private val job : Job by lazy { Job() }
 
     override fun getViewModelClass(): Class<DatabaseViewModel> = DatabaseViewModel::class.java
 

@@ -1,7 +1,6 @@
 package com.grevi.masakapa.ui
 
 import android.view.LayoutInflater
-import android.view.View
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import com.grevi.masakapa.R
@@ -12,7 +11,7 @@ import com.grevi.masakapa.util.show
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HomeActivity : BaseActivity<ActivityHomeBinding>() {
+class MainActivity : BaseActivity<ActivityHomeBinding>() {
 
     override fun subscribeUI() = Unit
 

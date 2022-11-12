@@ -18,12 +18,12 @@ import javax.inject.Inject
 class DatabaseViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
     private val _state = MutableLiveData<Boolean>()
     private val _isExist = MutableLiveData<Boolean>()
-    private val _recipesFlow = MutableStateFlow<State<List<RecipeFavorite>>>(State.Data)
+    private val _recipesFlow = MutableLiveData<State<List<RecipeFavorite>>>()
 
     private val _detail = MutableStateFlow<State<DetailTable>>(State.Data)
 
     val state : MutableLiveData<Boolean> get() = _state
-    val recipesBucket : MutableStateFlow<State<List<RecipeFavorite>>> get() = _recipesFlow
+    val recipesBucket : LiveData<State<List<RecipeFavorite>>> = _recipesFlow
 
     init {
         getMarkRecipes()
@@ -34,7 +34,7 @@ class DatabaseViewModel @Inject constructor(private val repository: Repository) 
             val favorite = RecipeFavorite(
                 key = key,
                 name = detail.name,
-                difficulty = detail.dificulty,
+                difficulty = detail.difficulty,
                 imageThumb = thumb,
                 portion = detail.servings,
                 times = detail.times

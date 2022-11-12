@@ -12,11 +12,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 
 fun <T> BaseFragment<*, *>.observeDataFlow(
-    data: MutableStateFlow<State<T>>,
+    data: LiveData<State<T>>,
     onSuccessState: (T) -> Unit
 ) {
     lifecycleScope.launchWhenCreated {
-        data.collect {
+        data.observe(viewLifecycleOwner) {
             when (it) {
                 is State.Error -> snackBar(getBinding().root, it.msg).show()
                 is State.Loading -> snackBar(getBinding().root, it.msg).show()

@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class MapperImpl @Inject constructor(
     private val recipesDataSource: RecipesDataSource
-    ) : MapperEntity {
+) : MapperEntity {
 
     override suspend fun recipesMapper(response: RecipesResponse) {
         response.results.map { model ->
@@ -45,7 +45,7 @@ class MapperImpl @Inject constructor(
                 published = response.results.author.published,
                 servings = response.results.servings,
                 times = response.results.times,
-                difficulty = response.results.dificulty
+                difficulty = response.results.difficulty
             )
         )
     }

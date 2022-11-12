@@ -12,6 +12,7 @@ import com.grevi.masakapa.model.Recipes
 import com.grevi.masakapa.ui.adapter.CategoryItemAdapter
 import com.grevi.masakapa.common.base.BaseFragment
 import com.grevi.masakapa.common.base.observeLiveData
+import com.grevi.masakapa.common.coroutine.coroutineJob
 import com.grevi.masakapa.ui.viewmodel.RecipesViewModel
 import com.grevi.masakapa.util.Constant.ONE_FLOAT
 import com.grevi.masakapa.util.Constant.ONE_SECOND
@@ -36,6 +37,7 @@ class CategoryFragment : BaseFragment<FragmentCategoryBinding, RecipesViewModel>
     }
 
     override fun subscribeUI() {
+        getRecipes()
         observeRecipes()
         binding.apply { onSwipeRefresh(refreshCatLayout, null) }
     }
@@ -45,10 +47,12 @@ class CategoryFragment : BaseFragment<FragmentCategoryBinding, RecipesViewModel>
         menu.findItem(R.id.bucket)?.isVisible = false
     }
 
+    private fun getRecipes() {
+        coroutineJob { viewModels.categoryResult(arg.catKey) }
+    }
+
     private fun observeRecipes() = with(viewModels) {
-        observeLiveData(categoryResult(arg.catKey))  { recipes ->
-            observeViewState(recipes.results)
-        }
+        observeLiveData(recipesData)  { observeViewState(it.results) }
     }
 
     private fun observeViewState(recipes: MutableList<Recipes>) = with(binding) {

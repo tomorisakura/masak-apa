@@ -11,6 +11,7 @@ import coil.load
 import com.grevi.masakapa.R
 import com.grevi.masakapa.common.base.BaseFragment
 import com.grevi.masakapa.common.base.observeLiveData
+import com.grevi.masakapa.common.coroutine.coroutineJob
 import com.grevi.masakapa.common.popup.snackBar
 import com.grevi.masakapa.data.remote.response.DetailResponse
 import com.grevi.masakapa.databinding.FragmentDetailBinding
@@ -50,6 +51,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, RecipesViewModel>() {
     }
 
     override fun subscribeUI() {
+        getDetailRecipes()
         observeRecipesDetail()
         hideViewComponent()
     }
@@ -64,8 +66,12 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, RecipesViewModel>() {
         menu.findItem(R.id.bucket)?.isVisible = false
     }
 
+    private fun getDetailRecipes() = coroutineJob {
+        viewModels.getDetail(args.key)
+    }
+
     private fun observeRecipesDetail() = with(viewModels) {
-        observeLiveData(getDetail(args.key)) { observeView(it) }
+        observeLiveData(recipesDetail) { observeView(it) }
     }
 
     private fun observeView(response: DetailResponse) = with(binding) {
@@ -77,7 +83,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, RecipesViewModel>() {
 
         response.results.let {
             recipeTitleText.text = it.name
-            itemCardBinding.textDiffItem.text = it.dificulty
+            itemCardBinding.textDiffItem.text = it.difficulty
             itemCardBinding.textPortionItems.text = it.servings
             itemCardBinding.textTimesItem.text = it.times
             chefText.text = it.author.author

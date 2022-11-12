@@ -7,5 +7,4 @@ data class DetailResponse(
     @SerializedName("method") val method : String,
     @SerializedName("status") val status : Boolean,
     @SerializedName("results") val results : Detail
-
 )

@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface Repository {
     suspend fun getRecipes() : Flow<State<RecipesResponse>>
-    suspend fun getDetailRecipes(key : String) : State<DetailResponse>
-    suspend fun getSearchRecipe(query : String) : State<SearchResponse>
-    suspend fun getCategory() : State<CategoryResponse>
-    suspend fun getCategoryRecipes(key: String) : State<RecipesResponse>
+    suspend fun getDetailRecipes(key : String) : Flow<State<DetailResponse>>
+    suspend fun getSearchRecipe(query : String) : Flow<State<SearchResponse>>
+    suspend fun getCategory() : Flow<State<CategoryResponse>>
+    suspend fun getCategoryRecipes(key: String) : Flow<State<RecipesResponse>>
     suspend fun insertRecipes(recipesTable : RecipesTable)
     suspend fun getFlowLocalRecipes() : Flow<MutableList<RecipesTable>>
     suspend fun getFlowCategory() : Flow<MutableList<Category>>

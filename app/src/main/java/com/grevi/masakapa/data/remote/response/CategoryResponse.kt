@@ -6,5 +6,5 @@ import com.grevi.masakapa.model.Categorys
 data class CategoryResponse(
     @SerializedName("method") var method : String,
     @SerializedName("status") var status : Boolean,
-    @SerializedName("results") var results : MutableList<Categorys>
+    @SerializedName("results") var results : List<Categorys>
 )

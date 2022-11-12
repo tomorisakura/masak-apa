@@ -7,20 +7,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.grevi.masakapa.common.differ.Differ
 import com.grevi.masakapa.data.local.entity.Category
 import com.grevi.masakapa.databinding.ListsCategorysBinding
+import com.grevi.masakapa.model.Categorys
 
-class CategoryAdapter(private val itemTouch: ((category: Category) -> Unit)) :
+class CategoryAdapter(private val itemTouch: ((category: Categorys) -> Unit)) :
     RecyclerView.Adapter<CategoryAdapter.CategoryVH>() {
 
-    private val category: MutableList<Category> = mutableListOf()
+    private val category: MutableList<Categorys> = mutableListOf()
 
     inner class CategoryVH(private val binding: ListsCategorysBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(category: Category) = with(binding) {
+        fun bind(category: Categorys) = with(binding) {
             categorysText.text = category.category
         }
     }
 
-    fun addItem(item: List<Category>) {
+    fun addItem(item: List<Categorys>) {
         val diffCallback = Differ(category, item)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         category.clear()

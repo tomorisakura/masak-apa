@@ -43,9 +43,7 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
 
     private fun observeNetwork() {
         networkUtils.networkDataStatus.observe(this) { isActive ->
-            if (isActive) {
-                subscribeUI()
-            }
+            if (isActive) subscribeUI()
             else noInternetDialogAlert.show(supportFragmentManager, this::class.java.simpleName)
         }
     }

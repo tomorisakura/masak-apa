@@ -1,17 +1,11 @@
 package com.grevi.masakapa.repository
 
-import com.grevi.masakapa.common.state.State
 import com.grevi.masakapa.data.local.RecipesDataSource
 import com.grevi.masakapa.data.local.entity.*
 import com.grevi.masakapa.data.remote.ResponseMapper
 import com.grevi.masakapa.data.remote.data.ApiHelper
-import com.grevi.masakapa.data.remote.response.CategoryResponse
-import com.grevi.masakapa.data.remote.response.DetailResponse
-import com.grevi.masakapa.data.remote.response.RecipesResponse
-import com.grevi.masakapa.data.remote.response.SearchResponse
 import com.grevi.masakapa.repository.mapper.MapperEntity
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(
@@ -20,41 +14,32 @@ class RepositoryImpl @Inject constructor(
     private val mapper: MapperEntity,
 ) : Repository, ResponseMapper() {
 
-    override suspend fun getRecipes(): Flow<State<RecipesResponse>> {
-        return flow {
-            emit(
-                launch(
-                    call = { api.getAllRecipes() },
-                    saveToLocal = { mapper.recipesMapper(it) }
-                )
-            )
-        }
-    }
+    override suspend fun getRecipes() =
+        launch(
+            call = { api.getAllRecipes() },
+            saveToLocal = { mapper.recipesMapper(it) }
+        )
 
-    override suspend fun getDetailRecipes(key: String): State<DetailResponse> {
-        return launch(
+    override suspend fun getDetailRecipes(key: String) =
+        launch(
             call = { api.getDetailRecipes(key) },
             saveToLocal = { mapper.detailMapper(it) }
         )
-    }
 
-    override suspend fun getSearchRecipe(query: String): State<SearchResponse> {
-        return launch(call = { api.getSearchRecipes(query) })
-    }
+    override suspend fun getSearchRecipe(query: String) =
+        launch(call = { api.getSearchRecipes(query) })
 
-    override suspend fun getCategory(): State<CategoryResponse> {
-        return launch(
+    override suspend fun getCategory() =
+        launch(
             call = { api.getCategory() },
             saveToLocal = { mapper.categoryMapper(it) }
         )
-    }
 
-    override suspend fun getCategoryRecipes(key: String): State<RecipesResponse> {
-        return launch(
+    override suspend fun getCategoryRecipes(key: String) =
+        launch(
             call = { api.getCategoryRecipes(key) },
             saveToLocal = { mapper.recipesMapper(it) }
         )
-    }
 
     /**
      *Local Recipes
