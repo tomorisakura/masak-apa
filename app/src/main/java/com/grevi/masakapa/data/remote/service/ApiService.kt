@@ -1,4 +1,4 @@
-package com.grevi.masakapa.data.remote.data
+package com.grevi.masakapa.data.remote.service
 
 import com.grevi.masakapa.data.remote.response.CategoryResponse
 import com.grevi.masakapa.data.remote.response.DetailResponse
