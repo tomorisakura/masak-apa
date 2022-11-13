@@ -1,12 +1,14 @@
 package com.grevi.masakapa.model
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class Search(
-    @SerializedName("title") var name : String,
-    @SerializedName("thumb") var imageThumb : String,
-    @SerializedName("key") var key : String,
-    @SerializedName("times") var times : String,
-    @SerializedName("serving") var servings : String,
-    @SerializedName("difficulty") var difficulty : String
+    @Json(name = "title") var name: String,
+    @Json(name = "thumb") var imageThumb: String,
+    @Json(name = "key") var key: String,
+    @Json(name = "times") var times: String,
+    @Json(name = "serving") var servings: String,
+    @Json(name = "difficulty") var difficulty: String
 )

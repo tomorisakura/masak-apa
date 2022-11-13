@@ -1,10 +1,12 @@
 package com.grevi.masakapa.data.remote.response
 
-import com.google.gson.annotations.SerializedName
 import com.grevi.masakapa.model.Detail
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class DetailResponse(
-    @SerializedName("method") val method : String,
-    @SerializedName("status") val status : Boolean,
-    @SerializedName("results") val results : Detail
+    @Json(name = "method") val method: String,
+    @Json(name = "status") val status: Boolean,
+    @Json(name = "results") val results: Detail
 )

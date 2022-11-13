@@ -1,15 +1,17 @@
 package com.grevi.masakapa.model
 
 import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
+@JsonClass(generateAdapter = true)
 data class Recipes(
-    @SerializedName("title") var name : String = "",
-    @SerializedName("thumb") var imageThumb : String = "",
-    @SerializedName("key") var key : String = "",
-    @SerializedName("times") var times : String = "",
-    @SerializedName("serving") var serving : String = "",
-    @SerializedName("difficulty") var dificulty : String = ""
+    @Json(name = "title") var name: String = "",
+    @Json(name = "thumb") var imageThumb: String = "",
+    @Json(name = "key") var key: String = "",
+    @Json(name = "times") var times: String = "",
+    @Json(name = "serving") var serving: String = "",
+    @Json(name = "difficulty") var dificulty: String = ""
 ) : Parcelable

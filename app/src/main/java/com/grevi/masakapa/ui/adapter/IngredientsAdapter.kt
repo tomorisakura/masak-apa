@@ -10,7 +10,7 @@ import com.grevi.masakapa.databinding.ListsIngredientsBinding
 class IngredientsAdapter : RecyclerView.Adapter<IngredientsAdapter.IngredientsVH>() {
     private val ingredient: MutableList<String> = ArrayList()
 
-    fun addList(list: MutableList<String>) {
+    fun addList(list: List<String>) {
         val diffCallback = Differ(ingredient, list)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         ingredient.clear()

@@ -21,8 +21,6 @@ class MainActivity : BaseActivity<ActivityHomeBinding>() {
     @Inject
     lateinit var sharedPref: SharedPref
 
-    private var isDarkModeEnable = false
-
     override fun subscribeUI() = Unit
 
     override fun getViewBindingInflater(inflater: LayoutInflater): ActivityHomeBinding {

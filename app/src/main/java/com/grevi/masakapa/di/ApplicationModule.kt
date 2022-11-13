@@ -2,6 +2,7 @@ package com.grevi.masakapa.di
 
 import android.content.Context
 import androidx.room.Room
+import com.grevi.masakapa.BuildConfig
 import com.grevi.masakapa.data.local.RecipesDAO
 import com.grevi.masakapa.data.local.RecipesDataSource
 import com.grevi.masakapa.data.local.RecipesDataSourceImpl
@@ -24,7 +25,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -52,9 +53,9 @@ object ApplicationModule {
     fun provideRetrofit(okHttpClient: OkHttpClient) : Retrofit {
 
         return Retrofit.Builder()
-            .baseUrl(Constant.baseUrl)
+            .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create())
             .build()
     }
 

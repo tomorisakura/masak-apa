@@ -20,6 +20,7 @@ android {
         versionName = Config.versionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "BASE_URL", "\"https://masak-apa.tomorisakura.vercel.app\"")
     }
 
     buildFeatures {

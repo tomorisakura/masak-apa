@@ -97,7 +97,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, RecipesViewModel>() {
         }
     }
 
-    private fun prepareRV(stringList: MutableList<String>, stepList: MutableList<String>) =
+    private fun prepareRV(stringList: List<String>, stepList: List<String>) =
         with(binding) {
             rvIngredients.layoutManager = GridLayoutManager(context, TWO)
             rvIngredients.adapter = ingredientsAdapter

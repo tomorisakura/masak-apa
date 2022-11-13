@@ -14,9 +14,7 @@ object Dependencies {
     const val preferenceManager = "androidx.preference:preference-ktx:1.1.1"
     //end region
 
-    //gson and coroutine
-    const val gson = "com.google.code.gson:gson:2.8.6"
-    const val gsonConverter = "com.squareup.retrofit2:converter-gson:2.9.0"
+    //serialization and coroutine
     const val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0"
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
     // end region
@@ -31,6 +29,8 @@ object Dependencies {
     const val retrofit = "com.squareup.retrofit2:retrofit:2.9.0"
     const val loggingIntercept = "com.squareup.okhttp3:logging-interceptor:4.8.1"
     const val moshi = "com.squareup.moshi:moshi:1.13.0"
+    const val moshiConverter = "com.squareup.retrofit2:converter-moshi:2.4.0"
+    const val moshiKapt = "com.squareup.moshi:moshi-kotlin-codegen:1.14.0"
     const val timber = "com.jakewharton.timber:timber:5.0.1"
     // end region
 

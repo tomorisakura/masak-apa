@@ -19,13 +19,13 @@ fun DependencyHandler.test() {
 }
 
 fun DependencyHandler.network() {
-    add("implementation", Dependencies.gson)
-    add("implementation", Dependencies.gsonConverter)
     add("implementation", Dependencies.serialization)
     add("implementation", Dependencies.moshi)
+    add("implementation", Dependencies.moshiConverter)
     add("implementation", Dependencies.retrofit)
     add("implementation", Dependencies.loggingIntercept)
     add("implementation", Dependencies.timber)
+    add("kapt", Dependencies.moshiKapt)
 }
 
 fun DependencyHandler.fragmentKtx() {

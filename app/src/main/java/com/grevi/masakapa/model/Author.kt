@@ -1,8 +1,10 @@
 package com.grevi.masakapa.model
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class Author(
-    @SerializedName("user") val author : String,
-    @SerializedName("datePublished") val published : String
+    @Json(name = "author") val author: String = "",
+    @Json(name = "datePublished") val published: String = ""
 )

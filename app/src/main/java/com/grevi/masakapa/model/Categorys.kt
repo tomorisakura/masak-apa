@@ -1,8 +1,10 @@
 package com.grevi.masakapa.model
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class Categorys(
-    @SerializedName("category") val category : String,
-    @SerializedName("key") val key : String
+    @Json(name = "category") val category: String,
+    @Json(name = "key") val key: String
 )

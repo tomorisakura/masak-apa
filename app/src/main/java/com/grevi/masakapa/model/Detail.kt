@@ -1,16 +1,18 @@
 package com.grevi.masakapa.model
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class Detail(
-    @SerializedName("title") val name : String,
-    @SerializedName("thumb") val thumbnail : String,
-    @SerializedName("servings") val servings : String,
-    @SerializedName("times") val times : String,
-    @SerializedName("difficulty") val difficulty : String,
-    @SerializedName("author") val author : Author,
-    @SerializedName("desc") val desc : String,
-    @SerializedName("ingredient") val ingredients : MutableList<String>,
-    @SerializedName("step") val step : MutableList<String>
+    @Json(name = "title") val name: String = "",
+    @Json(name = "thumb") val thumbnail: String? = "",
+    @Json(name = "servings") val servings: String = "",
+    @Json(name = "times") val times: String = "",
+    @Json(name = "difficulty") val difficulty: String = "",
+    @Json(name = "author") val author: Author = Author(),
+    @Json(name = "desc") val desc: String = "",
+    @Json(name = "ingredient") val ingredients: List<String> = listOf(),
+    @Json(name = "step") val step: List<String> = listOf()
 )
 
