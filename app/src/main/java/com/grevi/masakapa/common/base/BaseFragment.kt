@@ -42,6 +42,7 @@ abstract class BaseFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
     val navController get() = _navController
 
     protected val snapHelper: LinearSnapHelper by lazy { LinearSnapHelper() }
+    protected var isLoadComplete = false
 
     internal val job by lazy { Job() }
 
